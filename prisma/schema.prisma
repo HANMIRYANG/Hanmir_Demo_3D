@@ -1,0 +1,81 @@
+// ============================================================================
+// Prisma Schema - 한미르 관리자 시스템
+// ============================================================================
+// 데이터베이스: PostgreSQL (Neon)
+// 배포: Vercel
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================================
+// 기술자료 (Technical Resources)
+// ============================================================================
+model Resource {
+  id        String   @id @default(cuid())
+  number    Int      @default(autoincrement())
+  category  String   // Catalogue, Manual, Datasheet, Certificate
+  title     String
+  fileName  String
+  filePath  String
+  fileSize  String
+  format    String   // PDF, DOCX, XLSX, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("resources")
+}
+
+// ============================================================================
+// 미디어 콘텐츠 (Media Items)
+// ============================================================================
+model MediaItem {
+  id        String   @id @default(cuid())
+  title     String
+  category  String   // HANMIR NEWS, HANMIR NOW, 홍보자료실
+  thumbnail String
+  link      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("media_items")
+}
+
+// ============================================================================
+// 문의 내역 (Inquiries)
+// ============================================================================
+model Inquiry {
+  id          String   @id @default(cuid())
+  name        String   // 담당자 성명
+  company     String?  // 업체명 (선택)
+  phone       String   // 연락처
+  email       String   // 이메일
+  interest    String   // 관심 분야 (자동차 배터리, 선박, 건축 및 중공업, 기타)
+  message     String?  // 문의 내용
+  productId   String?  // 관련 제품 ID (선택)
+  isRead      Boolean  @default(false) // 읽음 여부
+  createdAt   DateTime @default(now())
+
+  @@map("inquiries")
+}
+
+// ============================================================================
+// 관리자 활동 로그 (Admin Activity Log)
+// ============================================================================
+model ActivityLog {
+  id        String   @id @default(cuid())
+  action    String   // CREATE, UPDATE, DELETE
+  target    String   // Resource, MediaItem, Inquiry
+  targetId  String
+  details   String?
+  createdAt DateTime @default(now())
+
+  @@map("activity_logs")
+}
