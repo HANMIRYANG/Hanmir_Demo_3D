@@ -42,7 +42,7 @@ export default function RootLayout({
 }>) {
   return (
     // 🔧 [수정 포인트 #3] HTML 언어 설정 - 한국어 사이트면 "ko"로 변경 권장
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

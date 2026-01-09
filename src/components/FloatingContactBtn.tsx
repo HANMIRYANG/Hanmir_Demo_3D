@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 
 // ============================================================================
@@ -13,6 +14,11 @@ import { MessageCircle } from "lucide-react";
 // ============================================================================
 
 export const FloatingContactBtn: React.FC = () => {
+    const pathname = usePathname();
+
+    // 관리자 페이지(/admin으로 시작)에서는 렌더링하지 않음
+    if (pathname?.startsWith('/admin')) return null;
+
     return (
         <Link
             // 🔧 [수정 포인트 #1] 이동할 페이지 경로

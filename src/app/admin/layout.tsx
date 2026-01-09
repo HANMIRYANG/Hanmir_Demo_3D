@@ -26,6 +26,11 @@ export default function AdminLayout({
 
     const isActive = (path: string) => pathname === path || pathname?.startsWith(path + '/');
 
+    // 🔧 [수정] 로그인 페이지에서는 사이드바/헤더를 보여주지 않음 (Full Screen)
+    if (pathname === '/admin/login') {
+        return <>{children}</>;
+    }
+
     const handleLogout = async () => {
         try {
             await fetch('/api/admin/auth', { method: 'DELETE' });
