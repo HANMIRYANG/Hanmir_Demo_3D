@@ -27,11 +27,14 @@ export default function AdminLoginPage() {
 
             if (res.ok) {
                 // 로그인 성공 시 대시보드로 이동
+                // alert('로그인 성공! 대시보드로 이동합니다.'); // Debug: Uncomment if needed
                 router.push('/admin');
             } else {
+                alert(`로그인 실패: ${data.error || '알 수 없는 오류'}`); // Debug
                 setError(data.error || '로그인에 실패했습니다.');
             }
         } catch (err) {
+            alert('서버 연결 오류 발생'); // Debug
             setError('서버 연결 중 오류가 발생했습니다.');
         } finally {
             setIsLoading(false);

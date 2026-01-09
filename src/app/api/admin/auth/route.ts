@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
             value: token
         });
 
-        await logActivity('LOGIN', 'System', id, '로그인 성공');
+        // await logActivity('LOGIN', 'System', id, '로그인 성공');
 
         return response;
     } catch (error) {
