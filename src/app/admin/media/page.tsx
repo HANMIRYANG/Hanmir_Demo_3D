@@ -1,18 +1,119 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Search, Plus, Trash2, Edit, ExternalLink, X, Image as ImageIcon } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Plus, Trash2, Edit, ExternalLink, X, Image as ImageIcon, Loader2, RefreshCw } from 'lucide-react';
+
+interface MediaItem {
+    id: string;
+    title: string;
+    category: string;
+    thumbnail: string;
+    link: string;
+    createdAt: string;
+}
 
 export default function MediaAdminPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
 
-    // Dummy Data
-    const [mediaItems, setMediaItems] = useState([
-        { id: '1', title: '2025년 중소벤처기업부 기술혁신 장관상 수상', category: 'HANMIR NEWS', date: '2025.01.05', link: '#' },
-        { id: '2', title: '신규 방열 코팅 솔루션 "HM-2025" 런칭 세미나', category: 'HANMIR NEWS', date: '2024.12.20', link: '#' },
-        { id: '3', title: '[인터뷰] 한미르(주) 대표이사, "친환경 도료가 미래다"', category: 'HANMIR NOW', date: '2024.10.02', link: '#' },
-    ]);
+    // Form State
+    const [formData, setFormData] = useState({
+        title: '',
+        category: 'HANMIR NEWS',
+        thumbnail: '',
+        link: ''
+    });
+
+    // Fetch Media
+    const fetchMedia = async () => {
+        try {
+            setLoading(true);
+            const res = await fetch('/api/admin/media?timestamp=' + Date.now());
+            if (!res.ok) throw new Error('Failed to fetch');
+            const data = await res.json();
+
+            if (data.mediaItems) {
+                const mapped = data.mediaItems.map((item: any) => ({
+                    id: item.id,
+                    title: item.title,
+                    category: item.category,
+                    thumbnail: item.thumbnail,
+                    link: item.link,
+                    createdAt: new Date(item.createdAt).toISOString().split('T')[0].replace(/-/g, '.')
+                }));
+                setMediaItems(mapped);
+            }
+        } catch (error) {
+            console.error("Failed to fetch media:", error);
+            alert("미디어 목록을 불러오는데 실패했습니다.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchMedia();
+    }, []);
+
+    // Handle Create
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!formData.title) return alert("제목을 입력해주세요.");
+
+        try {
+            setSubmitting(true);
+            const res = await fetch('/api/admin/media', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (!res.ok) throw new Error('Failed to create');
+
+            await fetchMedia();
+            setIsModalOpen(false);
+            setFormData({
+                title: '',
+                category: 'HANMIR NEWS',
+                thumbnail: '',
+                link: ''
+            });
+            alert("콘텐츠가 등록되었습니다.");
+        } catch (error) {
+            console.error("Error creating media:", error);
+            alert("콘텐츠 등록에 실패했습니다.");
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    // Handle Delete
+    const handleDelete = async (id: string) => {
+        if (!confirm("정말 이 콘텐츠를 삭제하시겠습니까?")) return;
+
+        try {
+            const res = await fetch(`/api/admin/media?id=${id}`, {
+                method: 'DELETE'
+            });
+
+            if (!res.ok) throw new Error('Failed to delete');
+
+            await fetchMedia();
+            alert("삭제되었습니다.");
+        } catch (error) {
+            console.error("Error deleting media:", error);
+            alert("삭제에 실패했습니다.");
+        }
+    };
+
+    // Filtered Items
+    const filteredItems = mediaItems.filter(item =>
+        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className="space-y-6">
@@ -21,13 +122,22 @@ export default function MediaAdminPage() {
                     <h2 className="text-2xl font-bold text-white">미디어 관리</h2>
                     <p className="text-zinc-400 text-sm">뉴스, 홍보자료, 보도자료 등 미디어 콘텐츠를 관리합니다.</p>
                 </div>
-                <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-sm transition-colors text-sm"
-                >
-                    <Plus className="w-4 h-4" />
-                    새 콘텐츠 등록
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        onClick={fetchMedia}
+                        className="p-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white rounded-sm transition-colors"
+                        title="새로고침"
+                    >
+                        <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                    </button>
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-sm transition-colors text-sm"
+                    >
+                        <Plus className="w-4 h-4" />
+                        새 콘텐츠 등록
+                    </button>
+                </div>
             </div>
 
             <div className="bg-zinc-900 border border-zinc-800 p-4">
@@ -43,41 +153,68 @@ export default function MediaAdminPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {mediaItems.map((item) => (
-                    <div key={item.id} className="group bg-zinc-900 border border-zinc-800 overflow-hidden hover:border-zinc-600 transition-colors">
-                        <div className="aspect-video bg-zinc-800 relative">
-                            {/* Placeholder Image */}
-                            <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
-                                <ImageIcon className="w-8 h-8" />
-                            </div>
+            {loading && mediaItems.length === 0 ? (
+                <div className="flex items-center justify-center h-64 text-zinc-500 gap-2">
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                    <span>데이터 불러오는 중...</span>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredItems.length > 0 ? (
+                        filteredItems.map((item) => (
+                            <div key={item.id} className="group bg-zinc-900 border border-zinc-800 overflow-hidden hover:border-zinc-600 transition-colors">
+                                <div className="aspect-video bg-zinc-800 relative">
+                                    {/* Thumbnail or Placeholder */}
+                                    {item.thumbnail ? (
+                                        <div className="absolute inset-0">
+                                            <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" onError={(e) => {
+                                                (e.target as HTMLImageElement).style.display = 'none';
+                                                (e.target as HTMLImageElement).parentElement!.classList.add('flex', 'items-center', 'justify-center', 'text-zinc-600');
+                                                (e.target as HTMLImageElement).parentElement!.innerHTML = '<svg class="w-8 h-8" ...><path .../></svg>'; // Simplified fallback
+                                            }} />
+                                        </div>
+                                    ) : (
+                                        <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
+                                            <ImageIcon className="w-8 h-8" />
+                                        </div>
+                                    )}
 
-                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                <button className="p-2 bg-white text-black rounded-full hover:bg-zinc-200">
-                                    <Edit className="w-4 h-4" />
-                                </button>
-                                <button className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600">
-                                    <Trash2 className="w-4 h-4" />
-                                </button>
+                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                        <button className="p-2 bg-white text-black rounded-full hover:bg-zinc-200" title="수정 (미구현)">
+                                            <Edit className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(item.id)}
+                                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600"
+                                            title="삭제"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="p-4">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <span className="text-[10px] font-bold px-2 py-0.5 border border-zinc-700 rounded text-zinc-400">
+                                            {item.category}
+                                        </span>
+                                        <span className="text-xs text-zinc-500">{item.createdAt}</span>
+                                    </div>
+                                    <h3 className="text-white font-medium line-clamp-2 h-12 mb-4">
+                                        {item.title}
+                                    </h3>
+                                    <a href={item.link || '#'} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                                        원문 보기 <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                </div>
                             </div>
+                        ))
+                    ) : (
+                        <div className="col-span-full py-20 text-center text-zinc-500">
+                            등록된 콘텐츠가 없습니다.
                         </div>
-                        <div className="p-4">
-                            <div className="flex justify-between items-start mb-2">
-                                <span className="text-[10px] font-bold px-2 py-0.5 border border-zinc-700 rounded text-zinc-400">
-                                    {item.category}
-                                </span>
-                                <span className="text-xs text-zinc-500">{item.date}</span>
-                            </div>
-                            <h3 className="text-white font-medium line-clamp-2 h-12 mb-4">
-                                {item.title}
-                            </h3>
-                            <a href={item.link} className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
-                                원문 보기 <ExternalLink className="w-3 h-3" />
-                            </a>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                    )}
+                </div>
+            )}
 
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
@@ -91,31 +228,53 @@ export default function MediaAdminPage() {
 
                         <h3 className="text-xl font-bold text-white mb-6">미디어 콘텐츠 등록</h3>
 
-                        <form className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-xs font-bold text-zinc-500 mb-1">제목</label>
-                                <input type="text" className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none" placeholder="제목을 입력하세요" />
+                                <input
+                                    type="text"
+                                    className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none"
+                                    placeholder="제목을 입력하세요"
+                                    value={formData.title}
+                                    onChange={e => setFormData({ ...formData, title: e.target.value })}
+                                />
                             </div>
 
                             <div>
                                 <label className="block text-xs font-bold text-zinc-500 mb-1">카테고리</label>
-                                <select className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none">
-                                    <option>HANMIR NEWS</option>
-                                    <option>HANMIR NOW</option>
-                                    <option>홍보자료실</option>
+                                <select
+                                    className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none"
+                                    value={formData.category}
+                                    onChange={e => setFormData({ ...formData, category: e.target.value })}
+                                >
+                                    <option value="HANMIR NEWS">HANMIR NEWS</option>
+                                    <option value="HANMIR NOW">HANMIR NOW</option>
+                                    <option value="홍보자료실">홍보자료실</option>
                                 </select>
                             </div>
 
                             <div>
                                 <label className="block text-xs font-bold text-zinc-500 mb-1">썸네일 이미지 URL</label>
                                 <div className="flex gap-2">
-                                    <input type="text" className="full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none flex-1" placeholder="https://..." />
+                                    <input
+                                        type="text"
+                                        className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none flex-1"
+                                        placeholder="https://..."
+                                        value={formData.thumbnail}
+                                        onChange={e => setFormData({ ...formData, thumbnail: e.target.value })}
+                                    />
                                 </div>
                             </div>
 
                             <div>
                                 <label className="block text-xs font-bold text-zinc-500 mb-1">링크 URL</label>
-                                <input type="text" className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none" placeholder="연결될 페이지 주소" />
+                                <input
+                                    type="text"
+                                    className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none"
+                                    placeholder="연결될 페이지 주소"
+                                    value={formData.link}
+                                    onChange={e => setFormData({ ...formData, link: e.target.value })}
+                                />
                             </div>
 
                             <div className="pt-4 flex gap-3">
@@ -123,13 +282,16 @@ export default function MediaAdminPage() {
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
                                     className="flex-1 py-3 bg-zinc-800 text-zinc-300 font-medium hover:bg-zinc-700 transition-colors"
+                                    disabled={submitting}
                                 >
                                     취소
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 py-3 bg-blue-600 text-white font-medium hover:bg-blue-500 transition-colors"
+                                    className="flex-1 py-3 bg-blue-600 text-white font-medium hover:bg-blue-500 transition-colors flex items-center justify-center gap-2"
+                                    disabled={submitting}
                                 >
+                                    {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
                                     등록하기
                                 </button>
                             </div>

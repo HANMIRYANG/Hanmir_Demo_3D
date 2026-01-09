@@ -11,6 +11,8 @@ import prisma from '@/lib/prisma';
 import { getCurrentAdmin } from '@/lib/auth';
 import { logActivity } from '@/lib/activity';
 
+export const dynamic = 'force-dynamic';
+
 // ============================================================================
 // GET - 미디어 목록 조회
 // ============================================================================

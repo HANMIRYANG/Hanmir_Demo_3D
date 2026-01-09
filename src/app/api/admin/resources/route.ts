@@ -13,6 +13,8 @@ import { logActivity } from '@/lib/activity'; // Import logActivity
 import { unlink } from 'fs/promises';
 import { join } from 'path';
 
+export const dynamic = 'force-dynamic';
+
 // ============================================================================
 // GET - 자료 목록 조회
 // ============================================================================
