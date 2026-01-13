@@ -4,15 +4,14 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { cookies } from 'next/headers';
+import { getCurrentAdmin } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 // 관리자 인증 확인
 async function checkAdminAuth() {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('admin_token');
-    return token?.value === 'hanmir_admin_authenticated';
+    const admin = await getCurrentAdmin();
+    return !!admin;
 }
 
 // GET: 단일 연혁 조회

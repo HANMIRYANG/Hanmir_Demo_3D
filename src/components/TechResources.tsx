@@ -4,13 +4,13 @@ import React, { useState, useMemo } from "react";
 import { Download, Search, Share2, Check, X, FileText, ChevronLeft, ChevronRight, File } from "lucide-react";
 
 // Types
-type ResourceType = "Catalogue" | "Manual" | "Datasheet" | "Certificate";
+type ResourceType = "DATASHEET" | "카탈로그" | "MSDS" | "공인성적서" | "인증서" | "도장사양서" | "기타";
 type FileFormat = "PDF" | "DOCX" | "XLSX" | "JPG" | "ZIP" | "HWP" | "PPT" | "PPTX";
 
 interface Resource {
     id: string;
     number: number;
-    category: ResourceType;
+    category: ResourceType | string; // 기존 데이터 호환을 위해 string 허용
     title: string;
     date: string;
     format: FileFormat;

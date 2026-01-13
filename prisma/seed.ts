@@ -24,7 +24,7 @@ async function main() {
         const resources = await prisma.resource.createMany({
             data: [
                 {
-                    category: 'Catalogue',
+                    category: '카탈로그',
                     title: '한미르 제품 카탈로그 2025',
                     fileName: 'hanmir_catalogue_2025.pdf',
                     filePath: '/uploads/hanmir_catalogue_2025.pdf',
@@ -32,7 +32,7 @@ async function main() {
                     format: 'PDF',
                 },
                 {
-                    category: 'Manual',
+                    category: '도장사양서',
                     title: '배터리 용접기 사용 설명서',
                     fileName: 'battery_welder_manual.pdf',
                     filePath: '/uploads/battery_welder_manual.pdf',
@@ -40,7 +40,7 @@ async function main() {
                     format: 'PDF',
                 },
                 {
-                    category: 'Datasheet',
+                    category: 'DATASHEET',
                     title: 'HM-5000 시리즈 기술 사양서',
                     fileName: 'hm5000_datasheet.pdf',
                     filePath: '/uploads/hm5000_datasheet.pdf',
@@ -48,7 +48,7 @@ async function main() {
                     format: 'PDF',
                 },
                 {
-                    category: 'Certificate',
+                    category: '인증서',
                     title: 'ISO 9001:2015 인증서',
                     fileName: 'iso_9001_certificate.pdf',
                     filePath: '/uploads/iso_9001_certificate.pdf',

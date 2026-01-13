@@ -41,7 +41,7 @@ export default function ResourcesAdminPage() {
     // Form State
     const [formData, setFormData] = useState({
         title: '',
-        category: 'Catalogue',
+        category: 'DATASHEET',
         fileName: '',
         filePath: '',
         fileSize: '',
@@ -312,10 +312,12 @@ export default function ResourcesAdminPage() {
                                     value={formData.category}
                                     onChange={e => setFormData({ ...formData, category: e.target.value })}
                                 >
-                                    <option value="Catalogue">Catalogue</option>
-                                    <option value="Manual">Manual</option>
-                                    <option value="Datasheet">Datasheet</option>
-                                    <option value="Certificate">Certificate</option>
+                                    <option value="DATASHEET">DATASHEET</option>
+                                    <option value="카탈로그">카탈로그</option>
+                                    <option value="MSDS">MSDS</option>
+                                    <option value="공인성적서">공인성적서</option>
+                                    <option value="인증서">인증서</option>
+                                    <option value="도장사양서">도장사양서</option>
                                 </select>
                             </div>
 
