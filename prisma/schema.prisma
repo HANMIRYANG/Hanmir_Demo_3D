@@ -142,3 +142,19 @@ model ConstructionCase {
 
   @@map("construction_cases")
 }
+
+// ============================================================================
+// 회사 연혁 (Company History)
+// ============================================================================
+model CompanyHistory {
+  id        String   @id @default(cuid())
+  year      String   // 연도 (예: "2025")
+  title     String   // 제목
+  content   String?  // 상세 내용
+  image     String?  // 이미지 URL
+  order     Int      @default(0)  // 정렬 순서 (낮을수록 상단)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("company_history")
+}

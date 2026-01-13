@@ -14,7 +14,8 @@ import {
     Activity,
     Loader2,
     Bell,
-    Hammer
+    Hammer,
+    History
 } from 'lucide-react';
 
 export default function AdminLayout({
@@ -154,6 +155,14 @@ export default function AdminLayout({
                     >
                         <Hammer className="w-5 h-5" />
                         시공사례 관리
+                    </Link>
+                    <Link
+                        href="/admin/history"
+                        onClick={() => setSidebarOpen(false)}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${isActive('/admin/history') ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'}`}
+                    >
+                        <History className="w-5 h-5" />
+                        연혁 관리
                     </Link>
                     <Link
                         href="/admin/notices"

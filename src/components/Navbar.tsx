@@ -12,8 +12,14 @@ import Link from 'next/link';
 // 드롭다운 메뉴 구조
 const menuItems = [
     {
-        label: '회사소개',
+        label: '기업소개',
         href: '/company',
+        children: [
+            { label: '소개', href: '/company/about' },
+            { label: 'CEO 인사말', href: '/company/ceo' },
+            { label: '연혁', href: '/company/history' },
+            { label: '위치', href: '/company/location' },
+        ]
     },
     {
         label: '제품소개',
