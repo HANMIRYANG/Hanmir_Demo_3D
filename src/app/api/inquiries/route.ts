@@ -40,18 +40,21 @@ export async function POST(request: NextRequest) {
             }
         });
 
-        // 이메일 알림 발송 (비동기, 실패해도 문의는 저장됨)
-        sendInquiryNotification({
-            name,
-            company,
-            phone,
-            email,
-            interest,
-            message,
-            productId
-        }).catch(err => {
+        // 이메일 알림 발송 (await로 완료 대기 - Vercel 서버리스 환경 필수)
+        try {
+            await sendInquiryNotification({
+                name,
+                company,
+                phone,
+                email,
+                interest,
+                message,
+                productId
+            });
+        } catch (err) {
             console.error('이메일 발송 실패:', err);
-        });
+            // 이메일 실패해도 문의는 저장됨
+        }
 
         return NextResponse.json({
             success: true,
