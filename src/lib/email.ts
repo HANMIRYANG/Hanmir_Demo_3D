@@ -7,19 +7,23 @@
 import nodemailer from 'nodemailer';
 
 // ============================================================================
-// 이메일 설정
+// SMTP 설정 가져오기 (함수 호출 시점에 환경변수 읽기)
 // ============================================================================
-const SMTP_CONFIG = {
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_PORT === '465', // 465 포트면 SSL 사용 (하이웍스)
-    auth: {
-        user: process.env.SMTP_USER || '',
-        pass: process.env.SMTP_PASS || ''
-    }
-};
+function getSMTPConfig() {
+    return {
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: process.env.SMTP_PORT === '465', // 465 포트면 SSL 사용 (하이웍스)
+        auth: {
+            user: process.env.SMTP_USER || '',
+            pass: process.env.SMTP_PASS || ''
+        }
+    };
+}
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'hanmir@hanmirfe.com';
+function getAdminEmail() {
+    return process.env.ADMIN_EMAIL || 'hanmir@hanmirfe.com';
+}
 
 // ============================================================================
 // 메일 발송 함수
@@ -33,20 +37,24 @@ export async function sendInquiryNotification(inquiry: {
     message?: string;
     productId?: string;
 }): Promise<boolean> {
+    // 함수 호출 시점에 설정 가져오기 (Vercel 런타임에 환경변수 읽기)
+    const smtpConfig = getSMTPConfig();
+    const adminEmail = getAdminEmail();
+
     // SMTP 설정이 없으면 로그만 남기고 성공 반환
-    if (!SMTP_CONFIG.auth.user || !SMTP_CONFIG.auth.pass) {
+    if (!smtpConfig.auth.user || !smtpConfig.auth.pass) {
         console.log('📧 [이메일 시뮬레이션] SMTP 설정 없음, 로그만 기록');
-        console.log('받는 사람:', ADMIN_EMAIL);
+        console.log('받는 사람:', adminEmail);
         console.log('문의 내용:', inquiry);
         return true;
     }
 
     try {
-        const transporter = nodemailer.createTransport(SMTP_CONFIG);
+        const transporter = nodemailer.createTransport(smtpConfig);
 
         const mailOptions = {
-            from: `"한미르 웹사이트" <${SMTP_CONFIG.auth.user}>`,
-            to: ADMIN_EMAIL,
+            from: `"한미르 웹사이트" <${smtpConfig.auth.user}>`,
+            to: adminEmail,
             subject: `[문의] ${inquiry.interest} - ${inquiry.name}님의 문의`,
             html: `
                 <div style="font-family: 'Noto Sans KR', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -105,3 +113,4 @@ export async function sendInquiryNotification(inquiry: {
         return false;
     }
 }
+
