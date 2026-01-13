@@ -32,6 +32,7 @@ const menuItems = [
             { label: '공지사항', href: '/notice' },
             { label: '기술자료', href: '/resources' },
             { label: '미디어', href: '/media' },
+            { label: '시공사례', href: '/cases' },
         ]
     },
     {

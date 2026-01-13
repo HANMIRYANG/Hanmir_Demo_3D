@@ -13,7 +13,8 @@ import {
     X,
     Activity,
     Loader2,
-    Bell
+    Bell,
+    Hammer
 } from 'lucide-react';
 
 export default function AdminLayout({
@@ -145,6 +146,14 @@ export default function AdminLayout({
                     >
                         <ImageIcon className="w-5 h-5" />
                         미디어 관리
+                    </Link>
+                    <Link
+                        href="/admin/cases"
+                        onClick={() => setSidebarOpen(false)}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${isActive('/admin/cases') ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'}`}
+                    >
+                        <Hammer className="w-5 h-5" />
+                        시공사례 관리
                     </Link>
                     <Link
                         href="/admin/notices"

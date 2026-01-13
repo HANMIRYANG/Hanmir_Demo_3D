@@ -1,14 +1,19 @@
 // ============================================================================
 // 파일 업로드 API (/api/upload)
 // ============================================================================
-// Vercel Blob Storage를 사용한 파일 업로드
+// 로컬: public/uploads에 저장
+// Vercel: Blob Storage 사용
 // ============================================================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
 import path from 'path';
+import fs from 'fs/promises';
 
 export const dynamic = 'force-dynamic';
+
+// Vercel 환경 여부 확인
+const isVercel = process.env.VERCEL === '1' || !!process.env.BLOB_READ_WRITE_TOKEN;
 
 // POST: 파일 업로드
 export async function POST(request: NextRequest) {
@@ -46,20 +51,46 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // 고유한 파일명 생성 (타임스탬프 + 랜덤 + 원본이름)
+        // 고유한 파일명 생성
         const timestamp = Date.now();
         const random = Math.random().toString(36).substring(2, 8);
         const safeFileName = fileName.replace(/[^a-zA-Z0-9가-힣._-]/g, '_');
-        const newFileName = `${type === 'image' ? 'images' : 'files'}/${timestamp}_${random}_${safeFileName}`;
 
-        // Vercel Blob에 업로드
-        const blob = await put(newFileName, file, {
-            access: 'public',
-        });
+        // Vercel 환경: Blob Storage 사용
+        if (isVercel) {
+            const blobPath = `${type === 'image' ? 'images' : 'files'}/${timestamp}_${random}_${safeFileName}`;
+            const blob = await put(blobPath, file, {
+                access: 'public',
+            });
+
+            return NextResponse.json({
+                success: true,
+                url: blob.url,
+                fileName: safeFileName,
+                originalName: fileName,
+                size: file.size
+            });
+        }
+
+        // 로컬 환경: public/uploads에 저장
+        const uploadDir = path.join(process.cwd(), 'public', 'uploads', type === 'image' ? 'images' : 'files');
+
+        // 디렉토리 생성
+        await fs.mkdir(uploadDir, { recursive: true });
+
+        const newFileName = `${timestamp}_${random}_${safeFileName}`;
+        const filePath = path.join(uploadDir, newFileName);
+
+        // 파일 저장
+        const buffer = Buffer.from(await file.arrayBuffer());
+        await fs.writeFile(filePath, buffer);
+
+        // URL 반환 (로컬용)
+        const url = `/uploads/${type === 'image' ? 'images' : 'files'}/${newFileName}`;
 
         return NextResponse.json({
             success: true,
-            url: blob.url,
+            url: url,
             fileName: safeFileName,
             originalName: fileName,
             size: file.size

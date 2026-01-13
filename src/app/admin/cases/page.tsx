@@ -4,24 +4,24 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Search, Plus, Trash2, Edit, ExternalLink, X, Image as ImageIcon, Loader2, RefreshCw, Eye, Upload } from 'lucide-react';
 import Link from 'next/link';
 
-interface MediaItem {
+interface CaseItem {
     id: string;
     title: string;
     category: string;
     thumbnail: string;
     content?: string;
     images?: string;
-    link?: string;
+    shopUrl?: string;
     views: number;
     createdAt: string;
 }
 
-export default function MediaAdminPage() {
+export default function CasesAdminPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
-    const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+    const [cases, setCases] = useState<CaseItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -31,45 +31,45 @@ export default function MediaAdminPage() {
     // Form State
     const [formData, setFormData] = useState({
         title: '',
-        category: 'HANMIR NEWS',
+        category: '페인트',
         thumbnail: '',
         content: '',
         images: [] as string[],
-        link: ''
+        shopUrl: ''
     });
 
-    // Fetch Media
-    const fetchMedia = async () => {
+    // Fetch Cases
+    const fetchCases = async () => {
         try {
             setLoading(true);
-            const res = await fetch('/api/admin/media?timestamp=' + Date.now());
+            const res = await fetch('/api/admin/cases?timestamp=' + Date.now());
             if (!res.ok) throw new Error('Failed to fetch');
             const data = await res.json();
 
-            if (data.mediaItems) {
-                const mapped = data.mediaItems.map((item: any) => ({
+            if (data.cases) {
+                const mapped = data.cases.map((item: any) => ({
                     id: item.id,
                     title: item.title,
                     category: item.category,
                     thumbnail: item.thumbnail,
                     content: item.content,
                     images: item.images,
-                    link: item.link,
+                    shopUrl: item.shopUrl,
                     views: item.views || 0,
                     createdAt: new Date(item.createdAt).toISOString().split('T')[0].replace(/-/g, '.')
                 }));
-                setMediaItems(mapped);
+                setCases(mapped);
             }
         } catch (error) {
-            console.error("Failed to fetch media:", error);
-            alert("미디어 목록을 불러오는데 실패했습니다.");
+            console.error("Failed to fetch cases:", error);
+            alert("시공사례 목록을 불러오는데 실패했습니다.");
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchMedia();
+        fetchCases();
     }, []);
 
     // Handle File Upload
@@ -110,17 +110,17 @@ export default function MediaAdminPage() {
         setEditingId(null);
         setFormData({
             title: '',
-            category: 'HANMIR NEWS',
+            category: '페인트',
             thumbnail: '',
             content: '',
             images: [],
-            link: ''
+            shopUrl: ''
         });
         setIsModalOpen(true);
     };
 
     // Open Edit Modal
-    const openEditModal = (item: MediaItem) => {
+    const openEditModal = (item: CaseItem) => {
         setIsEditMode(true);
         setEditingId(item.id);
         let parsedImages: string[] = [];
@@ -133,7 +133,7 @@ export default function MediaAdminPage() {
             thumbnail: item.thumbnail || '',
             content: item.content || '',
             images: parsedImages,
-            link: item.link || ''
+            shopUrl: item.shopUrl || ''
         });
         setIsModalOpen(true);
     };
@@ -142,47 +142,38 @@ export default function MediaAdminPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!formData.title) return alert("제목을 입력해주세요.");
+        if (!formData.thumbnail) return alert("썸네일 이미지를 업로드해주세요.");
 
         try {
             setSubmitting(true);
 
             const payload = {
                 ...formData,
-                images: JSON.stringify(formData.images)
+                images: formData.images
             };
 
             if (isEditMode && editingId) {
-                // Update
-                const res = await fetch(`/api/admin/media/${editingId}`, {
+                const res = await fetch(`/api/admin/cases/${editingId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 if (!res.ok) throw new Error('Failed to update');
-                alert("콘텐츠가 수정되었습니다.");
+                alert("시공사례가 수정되었습니다.");
             } else {
-                // Create
-                const res = await fetch('/api/admin/media', {
+                const res = await fetch('/api/admin/cases', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 if (!res.ok) throw new Error('Failed to create');
-                alert("콘텐츠가 등록되었습니다.");
+                alert("시공사례가 등록되었습니다.");
             }
 
-            await fetchMedia();
+            await fetchCases();
             setIsModalOpen(false);
-            setFormData({
-                title: '',
-                category: 'HANMIR NEWS',
-                thumbnail: '',
-                content: '',
-                images: [],
-                link: ''
-            });
         } catch (error) {
-            console.error("Error saving media:", error);
+            console.error("Error saving case:", error);
             alert("저장에 실패했습니다.");
         } finally {
             setSubmitting(false);
@@ -191,19 +182,19 @@ export default function MediaAdminPage() {
 
     // Handle Delete
     const handleDelete = async (id: string) => {
-        if (!confirm("정말 이 콘텐츠를 삭제하시겠습니까?")) return;
+        if (!confirm("정말 이 시공사례를 삭제하시겠습니까?")) return;
 
         try {
-            const res = await fetch(`/api/admin/media?id=${id}`, {
+            const res = await fetch(`/api/admin/cases/${id}`, {
                 method: 'DELETE'
             });
 
             if (!res.ok) throw new Error('Failed to delete');
 
-            await fetchMedia();
+            await fetchCases();
             alert("삭제되었습니다.");
         } catch (error) {
-            console.error("Error deleting media:", error);
+            console.error("Error deleting case:", error);
             alert("삭제에 실패했습니다.");
         }
     };
@@ -217,21 +208,30 @@ export default function MediaAdminPage() {
     };
 
     // Filtered Items
-    const filteredItems = mediaItems.filter(item =>
+    const filteredItems = cases.filter(item =>
         item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // Category Color
+    const getCategoryColor = (category: string) => {
+        switch (category) {
+            case '페인트': return 'text-blue-400 border-blue-500';
+            case '건축자재': return 'text-green-400 border-green-500';
+            default: return 'text-zinc-400 border-zinc-500';
+        }
+    };
 
     return (
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-white">미디어 관리</h2>
-                    <p className="text-zinc-400 text-sm">뉴스, 홍보자료, 보도자료 등 미디어 콘텐츠를 관리합니다.</p>
+                    <h2 className="text-2xl font-bold text-white">시공사례 관리</h2>
+                    <p className="text-zinc-400 text-sm">페인트, 건축자재 시공 사례를 관리합니다.</p>
                 </div>
                 <div className="flex gap-2">
                     <button
-                        onClick={fetchMedia}
+                        onClick={fetchCases}
                         className="p-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white rounded-sm transition-colors"
                         title="새로고침"
                     >
@@ -242,7 +242,7 @@ export default function MediaAdminPage() {
                         className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-sm transition-colors text-sm"
                     >
                         <Plus className="w-4 h-4" />
-                        새 콘텐츠 등록
+                        새 시공사례 등록
                     </button>
                 </div>
             </div>
@@ -252,7 +252,7 @@ export default function MediaAdminPage() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                     <input
                         type="text"
-                        placeholder="제목 또는 내용 검색..."
+                        placeholder="제목 또는 카테고리 검색..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full bg-black border border-zinc-800 text-white pl-10 pr-4 py-2 focus:outline-none focus:border-blue-500 transition-colors placeholder-zinc-600 text-sm"
@@ -260,7 +260,7 @@ export default function MediaAdminPage() {
                 </div>
             </div>
 
-            {loading && mediaItems.length === 0 ? (
+            {loading && cases.length === 0 ? (
                 <div className="flex items-center justify-center h-64 text-zinc-500 gap-2">
                     <Loader2 className="w-6 h-6 animate-spin" />
                     <span>데이터 불러오는 중...</span>
@@ -271,7 +271,6 @@ export default function MediaAdminPage() {
                         filteredItems.map((item) => (
                             <div key={item.id} className="group bg-zinc-900 border border-zinc-800 overflow-hidden hover:border-zinc-600 transition-colors">
                                 <div className="aspect-video bg-zinc-800 relative">
-                                    {/* Thumbnail or Placeholder */}
                                     {item.thumbnail ? (
                                         <div className="absolute inset-0">
                                             <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" onError={(e) => {
@@ -303,7 +302,7 @@ export default function MediaAdminPage() {
                                 </div>
                                 <div className="p-4">
                                     <div className="flex justify-between items-start mb-2">
-                                        <span className="text-[10px] font-bold px-2 py-0.5 border border-zinc-700 rounded text-zinc-400">
+                                        <span className={`text-[10px] font-bold px-2 py-0.5 border rounded ${getCategoryColor(item.category)}`}>
                                             {item.category}
                                         </span>
                                         <div className="flex items-center gap-2 text-xs text-zinc-500">
@@ -319,7 +318,7 @@ export default function MediaAdminPage() {
                                     </h3>
                                     <div className="flex gap-2">
                                         <Link
-                                            href={`/media/${item.id}`}
+                                            href={`/cases/${item.id}`}
                                             target="_blank"
                                             className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
                                         >
@@ -331,7 +330,7 @@ export default function MediaAdminPage() {
                         ))
                     ) : (
                         <div className="col-span-full py-20 text-center text-zinc-500">
-                            등록된 콘텐츠가 없습니다.
+                            등록된 시공사례가 없습니다.
                         </div>
                     )}
                 </div>
@@ -343,7 +342,7 @@ export default function MediaAdminPage() {
                     <div className="w-full max-w-2xl bg-zinc-900 border border-zinc-700 shadow-2xl max-h-[90vh] overflow-y-auto">
                         <div className="sticky top-0 bg-zinc-900 border-b border-zinc-700 p-6 flex justify-between items-center">
                             <h3 className="text-xl font-bold text-white">
-                                {isEditMode ? '미디어 콘텐츠 수정' : '미디어 콘텐츠 등록'}
+                                {isEditMode ? '시공사례 수정' : '시공사례 등록'}
                             </h3>
                             <button
                                 onClick={() => setIsModalOpen(false)}
@@ -359,28 +358,27 @@ export default function MediaAdminPage() {
                                 <input
                                     type="text"
                                     className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none"
-                                    placeholder="제목을 입력하세요"
+                                    placeholder="시공사례 제목을 입력하세요"
                                     value={formData.title}
                                     onChange={e => setFormData({ ...formData, title: e.target.value })}
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-zinc-500 mb-1">카테고리</label>
+                                <label className="block text-xs font-bold text-zinc-500 mb-1">카테고리 <span className="text-red-500">*</span></label>
                                 <select
                                     className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none"
                                     value={formData.category}
                                     onChange={e => setFormData({ ...formData, category: e.target.value })}
                                 >
-                                    <option value="HANMIR NEWS">HANMIR NEWS</option>
-                                    <option value="HANMIR NOW">HANMIR NOW</option>
-                                    <option value="홍보자료실">홍보자료실</option>
+                                    <option value="페인트">페인트</option>
+                                    <option value="건축자재">건축자재</option>
                                 </select>
                             </div>
 
                             {/* 썸네일 이미지 업로드 */}
                             <div>
-                                <label className="block text-xs font-bold text-zinc-500 mb-1">썸네일 이미지</label>
+                                <label className="block text-xs font-bold text-zinc-500 mb-1">썸네일 이미지 <span className="text-red-500">*</span></label>
                                 <input
                                     type="file"
                                     ref={fileInputRef}
@@ -419,9 +417,9 @@ export default function MediaAdminPage() {
                             <div>
                                 <label className="block text-xs font-bold text-zinc-500 mb-1">본문 내용</label>
                                 <textarea
-                                    rows={8}
+                                    rows={6}
                                     className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none resize-none"
-                                    placeholder="미디어 상세 내용을 입력하세요."
+                                    placeholder="시공사례 상세 내용을 입력하세요."
                                     value={formData.content}
                                     onChange={e => setFormData({ ...formData, content: e.target.value })}
                                 />
@@ -465,14 +463,15 @@ export default function MediaAdminPage() {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-zinc-500 mb-1">외부 링크 URL (선택)</label>
+                                <label className="block text-xs font-bold text-zinc-500 mb-1">네이버 스마트스토어 URL (선택)</label>
                                 <input
                                     type="text"
                                     className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none"
-                                    placeholder="연결될 페이지 주소 (선택사항)"
-                                    value={formData.link}
-                                    onChange={e => setFormData({ ...formData, link: e.target.value })}
+                                    placeholder="https://smartstore.naver.com/..."
+                                    value={formData.shopUrl}
+                                    onChange={e => setFormData({ ...formData, shopUrl: e.target.value })}
                                 />
+                                <p className="text-xs text-zinc-500 mt-1">관련 제품 구매 페이지 URL을 입력하세요.</p>
                             </div>
 
                             <div className="pt-4 flex gap-3 border-t border-zinc-700">

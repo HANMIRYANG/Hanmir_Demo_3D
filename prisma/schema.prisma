@@ -125,3 +125,20 @@ model QnaPost {
   @@map("qna_posts")
 }
 
+// ============================================================================
+// 시공사례 (Construction Cases)
+// ============================================================================
+model ConstructionCase {
+  id        String   @id @default(cuid())
+  title     String
+  category  String   // 페인트, 건축자재
+  thumbnail String
+  content   String?
+  images    String?  // JSON array
+  shopUrl   String?  // 네이버 스마트스토어 구매 링크
+  views     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("construction_cases")
+}
