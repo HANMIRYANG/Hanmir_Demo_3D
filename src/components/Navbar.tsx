@@ -14,9 +14,6 @@ const menuItems = [
     {
         label: '회사소개',
         href: '/company',
-        children: [
-            { label: '기업소개', href: '/company' },
-        ]
     },
     {
         label: '제품소개',
