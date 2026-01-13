@@ -23,15 +23,22 @@ export const ChatWidget: React.FC = () => {
     // AI가 처음 보여주는 환영 메시지입니다.
     // 아래 text 값을 수정하면 초기 메시지가 변경됩니다.
     // ============================================================================
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: 'init',
-            role: 'model',
-            text: '안녕하세요. 한미르(주) 기술 지원 AI입니다. 해당 AI는 Genmini 를 기반으로 하였기 때문에 정확한 정보는 문의하기를 통해 주시길 바랍니다.',
-            timestamp: new Date()
-        }
-    ]);
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [isInitialized, setIsInitialized] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    // 클라이언트에서만 초기 메시지 설정 (Hydration 오류 방지)
+    useEffect(() => {
+        if (!isInitialized) {
+            setMessages([{
+                id: 'init',
+                role: 'model',
+                text: '안녕하세요. 한미르(주) 기술 지원 AI입니다. 해당 AI는 Genmini 를 기반으로 하였기 때문에 정확한 정보는 문의하기를 통해 주시길 바랍니다.',
+                timestamp: new Date()
+            }]);
+            setIsInitialized(true);
+        }
+    }, [isInitialized]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
