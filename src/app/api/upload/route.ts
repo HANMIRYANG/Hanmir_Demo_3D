@@ -1,7 +1,12 @@
+// ============================================================================
+// 파일 업로드 API (/api/upload)
+// ============================================================================
+// Vercel Blob Storage를 사용한 파일 업로드
+// ============================================================================
+
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
+import { put } from '@vercel/blob';
 import path from 'path';
-import { existsSync } from 'fs';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,32 +46,20 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // 업로드 폴더 설정
-        const uploadDir = path.join(process.cwd(), 'public', 'uploads', type === 'image' ? 'images' : 'files');
-
-        // 폴더가 없으면 생성
-        if (!existsSync(uploadDir)) {
-            await mkdir(uploadDir, { recursive: true });
-        }
-
         // 고유한 파일명 생성 (타임스탬프 + 랜덤 + 원본이름)
         const timestamp = Date.now();
         const random = Math.random().toString(36).substring(2, 8);
         const safeFileName = fileName.replace(/[^a-zA-Z0-9가-힣._-]/g, '_');
-        const newFileName = `${timestamp}_${random}_${safeFileName}`;
-        const filePath = path.join(uploadDir, newFileName);
+        const newFileName = `${type === 'image' ? 'images' : 'files'}/${timestamp}_${random}_${safeFileName}`;
 
-        // 파일 저장
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        await writeFile(filePath, buffer);
-
-        // URL 생성
-        const url = `/uploads/${type === 'image' ? 'images' : 'files'}/${newFileName}`;
+        // Vercel Blob에 업로드
+        const blob = await put(newFileName, file, {
+            access: 'public',
+        });
 
         return NextResponse.json({
             success: true,
-            url,
+            url: blob.url,
             fileName: safeFileName,
             originalName: fileName,
             size: file.size
