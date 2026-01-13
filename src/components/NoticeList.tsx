@@ -126,6 +126,31 @@ export const NoticeList: React.FC = () => {
         return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
     };
 
+    // 파일 다운로드 핸들러 (외부 URL도 강제 다운로드)
+    const handleDownload = async (url: string, fileName: string, e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            console.error('Download error:', error);
+            // 실패 시 새 탭에서 열기
+            window.open(url, '_blank');
+        }
+    };
+
     return (
         <section id="notice" className="bg-white py-24 relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -347,18 +372,16 @@ export const NoticeList: React.FC = () => {
                                         </h4>
                                         <div className="space-y-2">
                                             {attachments.map((att, index) => (
-                                                <a
+                                                <button
                                                     key={index}
-                                                    href={att.url}
-                                                    download={att.name}
-                                                    className="flex items-center justify-between p-3 bg-white border border-gray-200 hover:border-amber-500 transition-colors group"
-                                                    onClick={(e) => e.stopPropagation()}
+                                                    onClick={(e) => handleDownload(att.url, att.name, e)}
+                                                    className="flex items-center justify-between p-3 bg-white border border-gray-200 hover:border-amber-500 transition-colors group w-full text-left"
                                                 >
                                                     <span className="text-sm text-gray-700 truncate flex-1">
                                                         {att.name}
                                                     </span>
                                                     <Download className="w-4 h-4 text-gray-400 group-hover:text-amber-500 transition-colors ml-2" />
-                                                </a>
+                                                </button>
                                             ))}
                                         </div>
                                     </div>
