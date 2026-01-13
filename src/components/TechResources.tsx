@@ -5,7 +5,7 @@ import { Download, Search, Share2, Check, X, FileText, ChevronLeft, ChevronRight
 
 // Types
 type ResourceType = "Catalogue" | "Manual" | "Datasheet" | "Certificate";
-type FileFormat = "PDF" | "DOCX" | "XLSX" | "JPG";
+type FileFormat = "PDF" | "DOCX" | "XLSX" | "JPG" | "ZIP" | "HWP" | "PPT" | "PPTX";
 
 interface Resource {
     id: string;
@@ -15,6 +15,8 @@ interface Resource {
     date: string;
     format: FileFormat;
     size: string;
+    filePath: string;
+    fileName: string;
 }
 
 export const TechResources: React.FC = () => {
@@ -25,6 +27,7 @@ export const TechResources: React.FC = () => {
     const [sharedResource, setSharedResource] = useState<Resource | null>(null);
     const [resources, setResources] = useState<Resource[]>([]);
     const [loading, setLoading] = useState(true);
+    const [downloading, setDownloading] = useState(false);
 
     // Fetch Resources
     React.useEffect(() => {
@@ -40,8 +43,10 @@ export const TechResources: React.FC = () => {
                         category: r.category as ResourceType,
                         title: r.title,
                         date: new Date(r.createdAt).toISOString().split('T')[0],
-                        format: r.format as FileFormat,
-                        size: r.fileSize
+                        format: r.format,
+                        size: r.fileSize,
+                        filePath: r.filePath,
+                        fileName: r.fileName || r.title // fileName이 없을 경우 title 사용 (fallback)
                     }));
                     setResources(mappedResources);
                 }
@@ -93,8 +98,59 @@ export const TechResources: React.FC = () => {
         setShareModalOpen(true);
     };
 
-    const handleBulkDownload = () => {
-        alert(`Downloading ${selectedItems.size} files...`);
+    const handleBulkDownload = async () => {
+        if (selectedItems.size === 0) return;
+
+        try {
+            setDownloading(true);
+            const JSZip = (await import('jszip')).default;
+            const zip = new JSZip();
+
+            const selectedResources = resources.filter(r => selectedItems.has(r.id));
+            const folder = zip.folder("hanmir_resources");
+
+            // 파일 다운로드 및 ZIP 추가
+            const promises = selectedResources.map(async (resource) => {
+                try {
+                    const response = await fetch(resource.filePath);
+                    if (!response.ok) throw new Error(`Failed to fetch ${resource.fileName}`);
+                    const blob = await response.blob();
+
+                    // 파일명 결정 (resource.fileName 우선, 없으면 title + format)
+                    let fileName = resource.fileName;
+                    if (!fileName) {
+                        const ext = resource.format.toLowerCase();
+                        fileName = `${resource.title}.${ext}`;
+                    }
+
+                    folder?.file(fileName, blob);
+                } catch (err) {
+                    console.error(`Error downloading ${resource.title}:`, err);
+                }
+            });
+
+            await Promise.all(promises);
+
+            // ZIP 생성 및 다운로드
+            const content = await zip.generateAsync({ type: "blob" });
+            const url = URL.createObjectURL(content);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `hanmir_resources_${new Date().toISOString().split('T')[0]}.zip`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            // 선택 해제
+            setSelectedItems(new Set());
+            alert(`${selectedResources.length}개 파일 다운로드가 완료되었습니다.`);
+        } catch (error) {
+            console.error("Bulk download failed:", error);
+            alert("일괄 다운로드 중 오류가 발생했습니다.");
+        } finally {
+            setDownloading(false);
+        }
     };
 
     return (
@@ -138,10 +194,11 @@ export const TechResources: React.FC = () => {
                     <div className={`transition-all duration-300 ${selectedItems.size > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
                         <button
                             onClick={handleBulkDownload}
-                            className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white text-sm font-bold hover:bg-gray-800 transition-colors"
+                            disabled={downloading}
+                            className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white text-sm font-bold hover:bg-gray-800 transition-colors disabled:opacity-70"
                         >
-                            <Download className="w-4 h-4" />
-                            선택 다운로드 ({selectedItems.size})
+                            <Download className={`w-4 h-4 ${downloading ? 'animate-bounce' : ''}`} />
+                            {downloading ? '파일 준비 중...' : `선택 다운로드 (${selectedItems.size})`}
                         </button>
                     </div>
                 </div>
@@ -211,12 +268,17 @@ export const TechResources: React.FC = () => {
                                         <td className="py-4 px-4 hidden md:table-cell text-gray-400 text-xs font-mono">{resource.date}</td>
                                         <td className="py-4 px-4 text-right">
                                             <div className="flex items-center justify-end gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button
-                                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-900"
+                                                <a
+                                                    href={resource.filePath}
+                                                    download={resource.fileName}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-900 inline-flex items-center justify-center"
                                                     title="Download"
+                                                    onClick={(e) => e.stopPropagation()}
                                                 >
                                                     <Download className="w-4 h-4" />
-                                                </button>
+                                                </a>
                                                 <button
                                                     onClick={() => handleShare(resource)}
                                                     className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-900"

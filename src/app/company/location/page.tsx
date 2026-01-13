@@ -89,7 +89,7 @@ export default function LocationPage() {
                                         </div>
                                         <div>
                                             <h3 className="font-bold text-gray-900 mb-1">전화</h3>
-                                            <p className="text-gray-600">032-123-4567</p>
+                                            <p className="text-gray-600">1533-2112</p>
                                         </div>
                                     </div>
 
@@ -100,7 +100,7 @@ export default function LocationPage() {
                                         </div>
                                         <div>
                                             <h3 className="font-bold text-gray-900 mb-1">이메일</h3>
-                                            <p className="text-gray-600">info@hanmir.co.kr</p>
+                                            <p className="text-gray-600">hanmir@hanmirfe.com</p>
                                         </div>
                                     </div>
 

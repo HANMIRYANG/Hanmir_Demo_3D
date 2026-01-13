@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Search, Plus, FileText, Trash2, Edit, Download, X, Upload, Loader2, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, Plus, FileText, Trash2, Edit, Download, X, Upload, Loader2, RefreshCw, File } from 'lucide-react';
 
 interface Resource {
     id: string;
@@ -13,21 +13,39 @@ interface Resource {
     createdAt: string;
 }
 
+// 파일 크기 포맷 함수
+const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
+// 확장자에서 포맷 추출 함수
+const getFormatFromFileName = (fileName: string): string => {
+    const ext = fileName.split('.').pop()?.toUpperCase() || 'UNKNOWN';
+    return ext;
+};
+
 export default function ResourcesAdminPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [resources, setResources] = useState<Resource[]>([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Form State
     const [formData, setFormData] = useState({
         title: '',
         category: 'Catalogue',
-        fileName: '', // 실제 파일 업로드는 구현 복잡도를 위해 일단 텍스트/목의로 처리하거나 추후 구현. 현재는 시뮬레이션
-        filePath: '/uploads/demo.pdf', // 임시 기본값
-        fileSize: '0 MB',
-        format: 'PDF'
+        fileName: '',
+        filePath: '',
+        fileSize: '',
+        format: ''
     });
 
     // Fetch Resources
@@ -66,33 +84,66 @@ export default function ResourcesAdminPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!formData.title) return alert("제목을 입력해주세요.");
+        if (!selectedFile) return alert("파일을 첨부해주세요.");
 
         try {
             setSubmitting(true);
+
+            // 1. 파일 업로드
+            setUploading(true);
+            const uploadFormData = new FormData();
+            uploadFormData.append('file', selectedFile);
+            uploadFormData.append('type', 'attachment');
+
+            const uploadRes = await fetch('/api/upload', {
+                method: 'POST',
+                body: uploadFormData
+            });
+
+            if (!uploadRes.ok) {
+                const uploadError = await uploadRes.json();
+                throw new Error(uploadError.error || '파일 업로드 실패');
+            }
+
+            const uploadData = await uploadRes.json();
+            setUploading(false);
+
+            // 2. 기술자료 등록 (업로드된 파일 정보 사용)
+            const resourceData = {
+                title: formData.title,
+                category: formData.category,
+                fileName: uploadData.originalName || selectedFile.name,
+                filePath: uploadData.url,
+                fileSize: formData.fileSize,
+                format: formData.format
+            };
+
             const res = await fetch('/api/admin/resources', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(resourceData)
             });
 
             if (!res.ok) throw new Error('Failed to create');
 
             await fetchResources(); // 목록 갱신
             setIsModalOpen(false);
+            setSelectedFile(null);
             setFormData({
                 title: '',
                 category: 'Catalogue',
                 fileName: '',
-                filePath: '/uploads/demo.pdf',
-                fileSize: '1.2 MB', // 데모용
-                format: 'PDF'
+                filePath: '',
+                fileSize: '',
+                format: ''
             });
             alert("자료가 등록되었습니다.");
         } catch (error) {
             console.error("Error creating resource:", error);
-            alert("자료 등록에 실패했습니다.");
+            alert("자료 등록에 실패했습니다: " + (error instanceof Error ? error.message : ''));
         } finally {
             setSubmitting(false);
+            setUploading(false);
         }
     };
 
@@ -269,11 +320,64 @@ export default function ResourcesAdminPage() {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-zinc-500 mb-1">파일 첨부 (시뮬레이션)</label>
-                                <div className="border-2 border-dashed border-zinc-700 rounded-lg p-8 text-center hover:border-zinc-500 transition-colors cursor-pointer bg-zinc-950">
-                                    <Upload className="w-8 h-8 text-zinc-500 mx-auto mb-2" />
-                                    <p className="text-sm text-zinc-400">파일 업로드 기능은 준비중입니다.</p>
-                                    <p className="text-xs text-zinc-600 mt-1">현재는 DB 등록만 테스트됩니다.</p>
+                                <label className="block text-xs font-bold text-zinc-500 mb-1">파일 첨부</label>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.hwp"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            setSelectedFile(file);
+                                            setFormData({
+                                                ...formData,
+                                                fileName: file.name,
+                                                fileSize: formatFileSize(file.size),
+                                                format: getFormatFromFileName(file.name)
+                                            });
+                                        }
+                                    }}
+                                />
+                                <div
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer bg-zinc-950 ${selectedFile ? 'border-blue-500 bg-blue-500/10' : 'border-zinc-700 hover:border-zinc-500'
+                                        }`}
+                                >
+                                    {selectedFile ? (
+                                        <div className="space-y-2">
+                                            <File className="w-8 h-8 text-blue-400 mx-auto" />
+                                            <p className="text-sm text-white font-medium">{selectedFile.name}</p>
+                                            <p className="text-xs text-zinc-400">
+                                                {formData.format} • {formData.fileSize}
+                                            </p>
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setSelectedFile(null);
+                                                    setFormData({
+                                                        ...formData,
+                                                        fileName: '',
+                                                        fileSize: '',
+                                                        format: ''
+                                                    });
+                                                    if (fileInputRef.current) {
+                                                        fileInputRef.current.value = '';
+                                                    }
+                                                }}
+                                                className="mt-2 px-3 py-1 text-xs bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded transition-colors"
+                                            >
+                                                파일 변경
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <Upload className="w-8 h-8 text-zinc-500 mx-auto mb-2" />
+                                            <p className="text-sm text-zinc-400">클릭하여 파일 선택</p>
+                                            <p className="text-xs text-zinc-600 mt-1">PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, ZIP, HWP</p>
+                                        </>
+                                    )}
                                 </div>
                             </div>
 
@@ -289,10 +393,10 @@ export default function ResourcesAdminPage() {
                                 <button
                                     type="submit"
                                     className="flex-1 py-3 bg-blue-600 text-white font-medium hover:bg-blue-500 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                                    disabled={submitting}
+                                    disabled={submitting || uploading}
                                 >
-                                    {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                                    등록하기
+                                    {(submitting || uploading) && <Loader2 className="w-4 h-4 animate-spin" />}
+                                    {uploading ? '업로드 중...' : submitting ? '등록 중...' : '등록하기'}
                                 </button>
                             </div>
                         </form>
