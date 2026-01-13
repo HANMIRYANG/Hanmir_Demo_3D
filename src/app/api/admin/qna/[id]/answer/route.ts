@@ -7,17 +7,20 @@ const prisma = new PrismaClient();
 // 이메일 발송 함수
 async function sendAnswerNotification(email: string, title: string, answer: string) {
     try {
-        // 환경변수에서 이메일 설정 가져오기
-        const emailUser = process.env.EMAIL_USER;
-        const emailPass = process.env.EMAIL_PASS;
+        // 환경변수에서 이메일 설정 가져오기 (SMTP_USER/SMTP_PASS로 통일)
+        const emailUser = process.env.SMTP_USER;
+        const emailPass = process.env.SMTP_PASS;
 
         if (!emailUser || !emailPass) {
             console.log('Email credentials not configured, skipping notification');
             return;
         }
 
+        // 하이웍스 SMTP 설정 사용
         const transporter = nodemailer.createTransport({
-            service: 'gmail',
+            host: process.env.SMTP_HOST || 'smtps.hiworks.com',
+            port: parseInt(process.env.SMTP_PORT || '465'),
+            secure: process.env.SMTP_PORT === '465', // 465 포트면 SSL 사용
             auth: {
                 user: emailUser,
                 pass: emailPass,

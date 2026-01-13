@@ -12,7 +12,7 @@ import nodemailer from 'nodemailer';
 const SMTP_CONFIG = {
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: false, // true for 465, false for other ports
+    secure: process.env.SMTP_PORT === '465', // 465 포트면 SSL 사용 (하이웍스)
     auth: {
         user: process.env.SMTP_USER || '',
         pass: process.env.SMTP_PASS || ''
