@@ -14,15 +14,16 @@ export async function POST(req: Request) {
         // ============================================================================
         // 🔧 [수정 포인트 #1] API 키 설정
         // ============================================================================
-        // .env.local 파일의 GEMINI_API_KEY 환경변수를 사용합니다.
-        // 또는 아래 문자열에 직접 API 키를 입력할 수 있습니다.
+        // .env.local 또는 Vercel 환경변수의 GEMINI_API_KEY를 사용합니다.
         // Google AI Studio에서 API 키를 발급받으세요: https://aistudio.google.com/
+        // ⚠️ 절대로 코드에 API 키를 직접 입력하지 마세요! (GitHub 유출 위험)
         // ============================================================================
-        const apiKey = process.env.GEMINI_API_KEY || "AIzaSyC0Vii04IKCyU7OexPT0xEa2SGfq2jyqEs";
+        const apiKey = process.env.GEMINI_API_KEY;
 
         if (!apiKey) {
+            console.error('GEMINI_API_KEY 환경변수가 설정되지 않았습니다.');
             return NextResponse.json(
-                { error: "API Key not configured" },
+                { error: "API Key not configured. Please set GEMINI_API_KEY environment variable." },
                 { status: 500 }
             );
         }
