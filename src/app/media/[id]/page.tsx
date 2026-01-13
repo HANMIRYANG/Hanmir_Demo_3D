@@ -56,10 +56,6 @@ const ShareButtons: React.FC<{ title: string; url: string }> = ({ title, url }) 
         }
     };
 
-    const shareFacebook = () => {
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-    };
-
     const copyLink = async () => {
         try {
             await navigator.clipboard.writeText(url);
@@ -81,13 +77,6 @@ const ShareButtons: React.FC<{ title: string; url: string }> = ({ title, url }) 
                 title="카카오톡 공유"
             >
                 <MessageCircle className="w-5 h-5 text-[#3C1E1E]" />
-            </button>
-            <button
-                onClick={shareFacebook}
-                className="w-9 h-9 flex items-center justify-center bg-[#1877F2] rounded-full hover:opacity-80 transition-opacity"
-                title="페이스북 공유"
-            >
-                <span className="text-white font-bold text-sm">f</span>
             </button>
             <button
                 onClick={copyLink}
