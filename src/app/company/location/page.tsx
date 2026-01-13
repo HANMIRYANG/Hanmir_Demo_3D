@@ -43,7 +43,7 @@ export default function LocationPage() {
                             <div className="order-2 lg:order-1">
                                 <div className="aspect-square lg:aspect-auto lg:h-[500px] bg-gray-100 rounded-lg overflow-hidden shadow-lg">
                                     <iframe
-                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3167.8436745396544!2d126.6741!3d37.5462!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzfCsDMyJzQ2LjMiTiAxMjbCsDQwJzI2LjgiRQ!5e0!3m2!1sko!2skr!4v1"
+                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3161.619442523186!2d126.62113069999998!3d37.58757800000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357c8011c5cbd9a3%3A0xdc422f7087fd2a48!2z7J247LKc6rSR7Jet7IucIOyEnOq1rCDrj4Tri7TroZwgMTkw!5e0!3m2!1sko!2skr!4v1768291051183!5m2!1sko!2skr"
                                         width="100%"
                                         height="100%"
                                         style={{ border: 0 }}
