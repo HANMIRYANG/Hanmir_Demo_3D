@@ -41,7 +41,10 @@ model MediaItem {
   title     String
   category  String   // HANMIR NEWS, HANMIR NOW, 홍보자료실
   thumbnail String
-  link      String
+  content   String?  // 상세 내용
+  images    String?  // 추가 이미지 (JSON array)
+  link      String?  // 외부 링크 (선택)
+  views     Int      @default(0) // 조회수
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -79,3 +82,46 @@ model ActivityLog {
 
   @@map("activity_logs")
 }
+
+// ============================================================================
+// 공지사항 (Notices)
+// ============================================================================
+model Notice {
+  id          String   @id @default(cuid())
+  number      Int      @default(autoincrement())
+  category    String   // 공지, 뉴스, 이벤트, 채용
+  title       String
+  content     String?
+  thumbnail   String?  // 썸네일 이미지 URL
+  images      String?  // 추가 이미지 (JSON array)
+  attachments String?  // 첨부파일 (JSON array: [{name, url, size}])
+  isImportant Boolean  @default(false) // 중요 공지 여부
+  views       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("notices")
+}
+
+// ============================================================================
+// 문의게시판 (QnA Board)
+// ============================================================================
+model QnaPost {
+  id           String    @id @default(cuid())
+  number       Int       @default(autoincrement())
+  author       String    // 작성자명
+  email        String    // 이메일 (필수)
+  phone        String    // 연락처 (필수)
+  title        String    // 제목
+  content      String    // 문의 내용
+  password     String    // 비밀번호 (해시)
+  isAnswered   Boolean   @default(false)
+  answer       String?   // 관리자 답변
+  answeredAt   DateTime? // 답변 시간
+  views        Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("qna_posts")
+}
+

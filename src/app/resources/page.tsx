@@ -14,7 +14,7 @@ import { CustomCursor } from '@/components/CustomCursor';
 
 export default function ResourcesPage() {
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-blue-500 selection:text-white cursor-none">
+        <div className="min-h-screen bg-white text-gray-900 selection:bg-amber-500 selection:text-white">
             <CustomCursor />
             <Navbar />
 

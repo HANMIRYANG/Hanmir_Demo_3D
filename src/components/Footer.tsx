@@ -9,8 +9,8 @@ import React from 'react';
 
 export const Footer: React.FC = () => {
     return (
-        <footer className="bg-black py-12 border-t border-zinc-900 cursor-none">
-            <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-zinc-600 text-xs font-medium">
+        <footer className="bg-gray-900 py-12 border-t border-gray-800">
+            <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-gray-400 text-xs font-medium">
                 {/* ============================================================
                     🔧 [수정 포인트 #1] 저작권 문구
                     아래 텍스트를 수정하면 저작권 정보가 변경됩니다.

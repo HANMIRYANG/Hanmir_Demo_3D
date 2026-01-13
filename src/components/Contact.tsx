@@ -11,7 +11,7 @@ import React from 'react';
 
 export const Contact: React.FC = () => {
     return (
-        <section id="contact" className="py-32 bg-black relative border-t border-zinc-900">
+        <section id="contact" className="py-32 bg-gray-50 relative border-t border-gray-200">
             <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-20">
                 {/* ============================================================
                     🔧 [수정 포인트 #1] 좌측 정보 영역
@@ -21,14 +21,14 @@ export const Contact: React.FC = () => {
                         🔧 [수정 포인트 #1-1] 섹션 제목
                         아래 텍스트를 수정하면 문의 섹션 제목이 변경됩니다.
                     ======================================================== */}
-                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 tracking-tight leading-tight">
+                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8 tracking-tight leading-tight">
                         한미르와 함께<br />혁신을 시작하세요
                     </h2>
 
                     {/* ========================================================
                         🔧 [수정 포인트 #1-2] 섹션 설명문
                     ======================================================== */}
-                    <p className="text-zinc-400 text-lg mb-12 max-w-md break-keep">
+                    <p className="text-gray-500 text-lg mb-12 max-w-md break-keep">
                         귀사의 프로젝트에 최적화된 기능성 도료 솔루션을 제안해 드립니다. 전문 인력이 상담을 도와드립니다.
                     </p>
 
@@ -38,12 +38,12 @@ export const Contact: React.FC = () => {
                     ======================================================== */}
                     <div className="space-y-8">
                         <div>
-                            <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-2">본사 및 연구소</h4>
-                            <p className="text-zinc-500">인천광역시 서구 도담로 190<br />(우) 22667</p>
+                            <h4 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-2">본사 및 연구소</h4>
+                            <p className="text-gray-500">인천광역시 서구 도담로 190<br />(우) 22667</p>
                         </div>
                         <div>
-                            <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-2">연락처</h4>
-                            <p className="text-zinc-500">hanmir@hanmirfe.com<br />1533-2112</p>
+                            <h4 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-2">연락처</h4>
+                            <p className="text-gray-500">hanmir@hanmirfe.com<br />1533-2112</p>
                         </div>
                     </div>
                 </div>
@@ -99,24 +99,24 @@ export const Contact: React.FC = () => {
                     {/* Row 1: 담당자 성명 (필수) | 업체명 (선택) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-zinc-500">
+                            <label className="text-xs font-bold text-gray-500">
                                 담당자 성명 <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 name="name"
                                 required
-                                className="w-full bg-zinc-900 border border-zinc-800 p-4 text-white focus:outline-none focus:border-white transition-colors rounded-none placeholder-zinc-700"
+                                className="w-full bg-white border border-gray-300 p-4 text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors rounded-none placeholder-gray-400"
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-zinc-500">
-                                업체명 <span className="text-zinc-600 font-normal">(선택)</span>
+                            <label className="text-xs font-bold text-gray-500">
+                                업체명 <span className="text-gray-400 font-normal">(선택)</span>
                             </label>
                             <input
                                 type="text"
                                 name="company"
-                                className="w-full bg-zinc-900 border border-zinc-800 p-4 text-white focus:outline-none focus:border-white transition-colors rounded-none placeholder-zinc-700"
+                                className="w-full bg-white border border-gray-300 p-4 text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors rounded-none placeholder-gray-400"
                             />
                         </div>
                     </div>
@@ -124,56 +124,57 @@ export const Contact: React.FC = () => {
                     {/* Row 2: 연락처 (필수) | 이메일 (필수) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-zinc-500">
+                            <label className="text-xs font-bold text-gray-500">
                                 연락처 <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="tel"
                                 name="phone"
                                 required
-                                className="w-full bg-zinc-900 border border-zinc-800 p-4 text-white focus:outline-none focus:border-white transition-colors rounded-none placeholder-zinc-700"
+                                className="w-full bg-white border border-gray-300 p-4 text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors rounded-none placeholder-gray-400"
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-zinc-500">
+                            <label className="text-xs font-bold text-gray-500">
                                 이메일 <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="email"
                                 name="email"
                                 required
-                                className="w-full bg-zinc-900 border border-zinc-800 p-4 text-white focus:outline-none focus:border-white transition-colors rounded-none placeholder-zinc-700"
+                                className="w-full bg-white border border-gray-300 p-4 text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors rounded-none placeholder-gray-400"
                             />
                         </div>
                     </div>
 
                     {/* Interest Dropdown */}
                     <div className="space-y-2">
-                        <label className="text-xs font-bold text-zinc-500">관심 분야</label>
+                        <label className="text-xs font-bold text-gray-500">관심 분야</label>
                         <select
                             name="interest"
-                            className="w-full bg-zinc-900 border border-zinc-800 p-4 text-white focus:outline-none focus:border-white transition-colors rounded-none appearance-none"
+                            className="w-full bg-white border border-gray-300 p-4 text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors rounded-none appearance-none"
                         >
-                            <option>자동차 배터리</option>
-                            <option>선박</option>
-                            <option>건축 및 중공업</option>
+                            <option>기능성 페인트</option>
+                            <option>2차전지 면압패드</option>
+                            <option>건축자재</option>
+                            <option>가전제품</option>
                             <option>기타 특수 목적</option>
                         </select>
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-xs font-bold text-zinc-500">문의 내용</label>
+                        <label className="text-xs font-bold text-gray-500">문의 내용</label>
                         <textarea
                             name="message"
                             rows={4}
-                            className="w-full bg-zinc-900 border border-zinc-800 p-4 text-white focus:outline-none focus:border-white transition-colors rounded-none placeholder-zinc-700"
+                            className="w-full bg-white border border-gray-300 p-4 text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors rounded-none placeholder-gray-400"
                             placeholder="프로젝트 요건이나 필요한 도료의 사양을 입력해주세요."
                         ></textarea>
                     </div>
 
                     <button
                         type="submit"
-                        className="w-full bg-white text-black font-bold py-5 hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-gray-900 text-white font-bold py-5 hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         상담 신청하기
                     </button>

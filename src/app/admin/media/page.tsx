@@ -1,20 +1,26 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Trash2, Edit, ExternalLink, X, Image as ImageIcon, Loader2, RefreshCw } from 'lucide-react';
+import { Search, Plus, Trash2, Edit, ExternalLink, X, Image as ImageIcon, Loader2, RefreshCw, Eye, Upload } from 'lucide-react';
+import Link from 'next/link';
 
 interface MediaItem {
     id: string;
     title: string;
     category: string;
     thumbnail: string;
-    link: string;
+    content?: string;
+    images?: string;
+    link?: string;
+    views: number;
     createdAt: string;
 }
 
 export default function MediaAdminPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -24,6 +30,8 @@ export default function MediaAdminPage() {
         title: '',
         category: 'HANMIR NEWS',
         thumbnail: '',
+        content: '',
+        images: '',
         link: ''
     });
 
@@ -41,7 +49,10 @@ export default function MediaAdminPage() {
                     title: item.title,
                     category: item.category,
                     thumbnail: item.thumbnail,
+                    content: item.content,
+                    images: item.images,
                     link: item.link,
+                    views: item.views || 0,
                     createdAt: new Date(item.createdAt).toISOString().split('T')[0].replace(/-/g, '.')
                 }));
                 setMediaItems(mapped);
@@ -58,20 +69,63 @@ export default function MediaAdminPage() {
         fetchMedia();
     }, []);
 
-    // Handle Create
+    // Open Create Modal
+    const openCreateModal = () => {
+        setIsEditMode(false);
+        setEditingId(null);
+        setFormData({
+            title: '',
+            category: 'HANMIR NEWS',
+            thumbnail: '',
+            content: '',
+            images: '',
+            link: ''
+        });
+        setIsModalOpen(true);
+    };
+
+    // Open Edit Modal
+    const openEditModal = (item: MediaItem) => {
+        setIsEditMode(true);
+        setEditingId(item.id);
+        setFormData({
+            title: item.title,
+            category: item.category,
+            thumbnail: item.thumbnail || '',
+            content: item.content || '',
+            images: item.images || '',
+            link: item.link || ''
+        });
+        setIsModalOpen(true);
+    };
+
+    // Handle Create/Update
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!formData.title) return alert("제목을 입력해주세요.");
 
         try {
             setSubmitting(true);
-            const res = await fetch('/api/admin/media', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
 
-            if (!res.ok) throw new Error('Failed to create');
+            if (isEditMode && editingId) {
+                // Update
+                const res = await fetch(`/api/admin/media/${editingId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                if (!res.ok) throw new Error('Failed to update');
+                alert("콘텐츠가 수정되었습니다.");
+            } else {
+                // Create
+                const res = await fetch('/api/admin/media', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                if (!res.ok) throw new Error('Failed to create');
+                alert("콘텐츠가 등록되었습니다.");
+            }
 
             await fetchMedia();
             setIsModalOpen(false);
@@ -79,12 +133,13 @@ export default function MediaAdminPage() {
                 title: '',
                 category: 'HANMIR NEWS',
                 thumbnail: '',
+                content: '',
+                images: '',
                 link: ''
             });
-            alert("콘텐츠가 등록되었습니다.");
         } catch (error) {
-            console.error("Error creating media:", error);
-            alert("콘텐츠 등록에 실패했습니다.");
+            console.error("Error saving media:", error);
+            alert("저장에 실패했습니다.");
         } finally {
             setSubmitting(false);
         }
@@ -131,7 +186,7 @@ export default function MediaAdminPage() {
                         <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                     </button>
                     <button
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={openCreateModal}
                         className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-sm transition-colors text-sm"
                     >
                         <Plus className="w-4 h-4" />
@@ -169,8 +224,6 @@ export default function MediaAdminPage() {
                                         <div className="absolute inset-0">
                                             <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" onError={(e) => {
                                                 (e.target as HTMLImageElement).style.display = 'none';
-                                                (e.target as HTMLImageElement).parentElement!.classList.add('flex', 'items-center', 'justify-center', 'text-zinc-600');
-                                                (e.target as HTMLImageElement).parentElement!.innerHTML = '<svg class="w-8 h-8" ...><path .../></svg>'; // Simplified fallback
                                             }} />
                                         </div>
                                     ) : (
@@ -180,7 +233,11 @@ export default function MediaAdminPage() {
                                     )}
 
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                        <button className="p-2 bg-white text-black rounded-full hover:bg-zinc-200" title="수정 (미구현)">
+                                        <button
+                                            onClick={() => openEditModal(item)}
+                                            className="p-2 bg-white text-black rounded-full hover:bg-zinc-200"
+                                            title="수정"
+                                        >
                                             <Edit className="w-4 h-4" />
                                         </button>
                                         <button
@@ -197,14 +254,26 @@ export default function MediaAdminPage() {
                                         <span className="text-[10px] font-bold px-2 py-0.5 border border-zinc-700 rounded text-zinc-400">
                                             {item.category}
                                         </span>
-                                        <span className="text-xs text-zinc-500">{item.createdAt}</span>
+                                        <div className="flex items-center gap-2 text-xs text-zinc-500">
+                                            <span className="flex items-center gap-1">
+                                                <Eye className="w-3 h-3" />
+                                                {item.views}
+                                            </span>
+                                            <span>{item.createdAt}</span>
+                                        </div>
                                     </div>
                                     <h3 className="text-white font-medium line-clamp-2 h-12 mb-4">
                                         {item.title}
                                     </h3>
-                                    <a href={item.link || '#'} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
-                                        원문 보기 <ExternalLink className="w-3 h-3" />
-                                    </a>
+                                    <div className="flex gap-2">
+                                        <Link
+                                            href={`/media/${item.id}`}
+                                            target="_blank"
+                                            className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                                        >
+                                            상세보기 <ExternalLink className="w-3 h-3" />
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
                         ))
@@ -216,21 +285,25 @@ export default function MediaAdminPage() {
                 </div>
             )}
 
+            {/* Create/Edit Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                    <div className="w-full max-w-lg bg-zinc-900 border border-zinc-700 shadow-2xl p-6 relative">
-                        <button
-                            onClick={() => setIsModalOpen(false)}
-                            className="absolute top-4 right-4 text-zinc-500 hover:text-white"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
+                    <div className="w-full max-w-2xl bg-zinc-900 border border-zinc-700 shadow-2xl max-h-[90vh] overflow-y-auto">
+                        <div className="sticky top-0 bg-zinc-900 border-b border-zinc-700 p-6 flex justify-between items-center">
+                            <h3 className="text-xl font-bold text-white">
+                                {isEditMode ? '미디어 콘텐츠 수정' : '미디어 콘텐츠 등록'}
+                            </h3>
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="text-zinc-500 hover:text-white"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
 
-                        <h3 className="text-xl font-bold text-white mb-6">미디어 콘텐츠 등록</h3>
-
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-xs font-bold text-zinc-500 mb-1">제목</label>
+                                <label className="block text-xs font-bold text-zinc-500 mb-1">제목 <span className="text-red-500">*</span></label>
                                 <input
                                     type="text"
                                     className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none"
@@ -255,29 +328,57 @@ export default function MediaAdminPage() {
 
                             <div>
                                 <label className="block text-xs font-bold text-zinc-500 mb-1">썸네일 이미지 URL</label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="text"
-                                        className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none flex-1"
-                                        placeholder="https://..."
-                                        value={formData.thumbnail}
-                                        onChange={e => setFormData({ ...formData, thumbnail: e.target.value })}
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold text-zinc-500 mb-1">링크 URL</label>
                                 <input
                                     type="text"
                                     className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none"
-                                    placeholder="연결될 페이지 주소"
+                                    placeholder="https://..."
+                                    value={formData.thumbnail}
+                                    onChange={e => setFormData({ ...formData, thumbnail: e.target.value })}
+                                />
+                                {formData.thumbnail && (
+                                    <div className="mt-2 aspect-video max-w-xs bg-zinc-800 overflow-hidden">
+                                        <img src={formData.thumbnail} alt="Preview" className="w-full h-full object-cover" onError={(e) => {
+                                            (e.target as HTMLImageElement).style.display = 'none';
+                                        }} />
+                                    </div>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-zinc-500 mb-1">본문 내용</label>
+                                <textarea
+                                    rows={8}
+                                    className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none resize-none"
+                                    placeholder="미디어 상세 내용을 입력하세요."
+                                    value={formData.content}
+                                    onChange={e => setFormData({ ...formData, content: e.target.value })}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-zinc-500 mb-1">추가 이미지 URL (JSON 배열)</label>
+                                <textarea
+                                    rows={3}
+                                    className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none font-mono text-sm resize-none"
+                                    placeholder='["https://image1.jpg", "https://image2.jpg"]'
+                                    value={formData.images}
+                                    onChange={e => setFormData({ ...formData, images: e.target.value })}
+                                />
+                                <p className="text-xs text-zinc-500 mt-1">JSON 배열 형식으로 입력해주세요.</p>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-zinc-500 mb-1">외부 링크 URL (선택)</label>
+                                <input
+                                    type="text"
+                                    className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none"
+                                    placeholder="연결될 페이지 주소 (선택사항)"
                                     value={formData.link}
                                     onChange={e => setFormData({ ...formData, link: e.target.value })}
                                 />
                             </div>
 
-                            <div className="pt-4 flex gap-3">
+                            <div className="pt-4 flex gap-3 border-t border-zinc-700">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
@@ -292,7 +393,7 @@ export default function MediaAdminPage() {
                                     disabled={submitting}
                                 >
                                     {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                                    등록하기
+                                    {isEditMode ? '수정하기' : '등록하기'}
                                 </button>
                             </div>
                         </form>

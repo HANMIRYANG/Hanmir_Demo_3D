@@ -27,7 +27,7 @@ export const ChatWidget: React.FC = () => {
         {
             id: 'init',
             role: 'model',
-            text: '안녕하세요. 한미르(주) 기술 지원 AI입니다. 기능성 도료 및 코팅 솔루션에 대해 궁금한 점을 물어보세요.',
+            text: '안녕하세요. 한미르(주) 기술 지원 AI입니다. 해당 AI는 Genmini 를 기반으로 하였기 때문에 정확한 정보는 문의하기를 통해 주시길 바랍니다.',
             timestamp: new Date()
         }
     ]);

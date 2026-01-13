@@ -14,7 +14,7 @@ import { CustomCursor } from '@/components/CustomCursor';
 
 export default function ProductsPage() {
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-blue-500 selection:text-white cursor-none">
+        <div className="min-h-screen bg-white text-gray-900 selection:bg-amber-500 selection:text-white">
             {/* 공통 레이아웃 요소 */}
             <CustomCursor />
             <Navbar />
@@ -25,9 +25,9 @@ export default function ProductsPage() {
                     - 제목: "Product Lineup"
                     - 설명문: "한미르의 첨단 기술력이 집약된..."
                 ============================================================ */}
-                <div className="py-20 px-6 bg-zinc-950 border-b border-zinc-800 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">Product Lineup</h1>
-                    <p className="text-zinc-400">한미르의 첨단 기술력이 집약된 핵심 제품군을 소개합니다.</p>
+                <div className="py-20 px-6 bg-gray-50 border-b border-gray-200 text-center">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">Product Lineup</h1>
+                    <p className="text-gray-500">한미르의 첨단 기술력이 집약된 핵심 제품군을 소개합니다.</p>
                 </div>
 
                 {/* ============================================================

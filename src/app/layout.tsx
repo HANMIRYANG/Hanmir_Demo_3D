@@ -29,10 +29,16 @@ const geistMono = Geist_Mono({
 // 브라우저 탭 제목과 검색엔진 설명에 표시되는 정보입니다.
 // - title: 브라우저 탭에 표시되는 제목
 // - description: 검색 결과에 표시되는 설명문
+// - icons: 브라우저 탭에 표시되는 아이콘 (favicon)
 // ============================================================================
 export const metadata: Metadata = {
   title: "HANMIR - Advanced Functional Paints",
   description: "High-performance functional coating solutions by HANMIR Co., Ltd.",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 
 export async function logActivity(
     action: 'CREATE' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT',
-    target: 'Resource' | 'MediaItem' | 'Inquiry' | 'System',
+    target: 'Resource' | 'MediaItem' | 'Inquiry' | 'System' | 'Notice' | 'QnaPost',
     targetId: string,
     details?: string
 ) {

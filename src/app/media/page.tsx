@@ -52,7 +52,7 @@ export default function MediaPage() {
         : mediaItems.filter(item => item.category === activeCategory);
 
     return (
-        <div className="min-h-screen bg-black text-white cursor-none selection:bg-blue-500 selection:text-white">
+        <div className="min-h-screen bg-white text-gray-900 selection:bg-amber-500 selection:text-white">
             <CustomCursor />
             <Navbar />
 
@@ -69,23 +69,23 @@ export default function MediaPage() {
                         <div className="flex-1 min-w-0">
                             {/* 헤더: Breadcrumb & Title */}
                             <div className="mb-12">
-                                <div className="flex items-center gap-2 text-zinc-500 text-sm mb-2">
+                                <div className="flex items-center gap-2 text-gray-400 text-sm mb-2">
                                     <span>Home</span>
                                     <span>/</span>
                                     <span>Media</span>
                                     <span>/</span>
-                                    <span className="text-white font-bold">
+                                    <span className="text-gray-900 font-bold">
                                         {activeCategory === 'all' ? '전체' : activeCategory}
                                     </span>
                                 </div>
-                                <h1 className="text-4xl font-bold text-white">
+                                <h1 className="text-4xl font-bold text-gray-900">
                                     {activeCategory === 'all' ? 'HANMIR MEDIA CENTER' : activeCategory}
                                 </h1>
                             </div>
 
                             {/* 뉴스 그리드 & 검색 */}
                             {loading ? (
-                                <div className="text-center py-20 text-zinc-500">Loading...</div>
+                                <div className="text-center py-20 text-gray-400">Loading...</div>
                             ) : (
                                 <NewsGrid items={filteredItems} />
                             )}

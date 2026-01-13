@@ -40,6 +40,7 @@ export default async function ProductPage({ params }: PageProps) {
                     koreanTitle={product.koreanTitle}
                     description={product.description}
                     heroImage={product.heroImage}
+                    isDevelopment={product.isDevelopment}
                 />
 
                 {/* 섹션 2: 탭 콘텐츠 영역 (서브 네비게이션 포함) */}

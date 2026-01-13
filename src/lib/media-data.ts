@@ -10,7 +10,7 @@ export interface MediaItem {
 
 export interface SNSItem {
     id: string;
-    platform: 'Instagram' | 'YouTube' | 'Facebook';
+    platform: 'Instagram' | 'YouTube' | 'NaverBlog';
     content: string; // Post caption or summary
     date: string;
     image: string;
@@ -77,7 +77,7 @@ export const snsItems: SNSItem[] = [
         content: '#한미르 #불연도료 #화재안전 전기차 배터리 안전을 위한 필수 선택! 한미르 불연코팅 솔루션을 소개합니다. 🔥🚫',
         date: '2025.01.07',
         image: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=2672&auto=format&fit=crop',
-        link: 'https://instagram.com'
+        link: 'https://www.instagram.com/hanmir.co_paint/'
     },
     {
         id: 's2',
@@ -85,15 +85,15 @@ export const snsItems: SNSItem[] = [
         content: '[TECH CLIP] 방열 코팅 시공 가이드 영상 업데이트! 초보자도 쉽게 따라하는 스프레이 코팅 노하우를 공개합니다.',
         date: '2025.01.03',
         image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop',
-        link: 'https://youtube.com'
+        link: 'https://www.youtube.com/channel/UCO9jcum5Y0vhuDdcjhioBdA'
     },
     {
         id: 's3',
-        platform: 'Facebook',
-        content: '한미르가 2025 품질경영대상을 수상했습니다! 🎉 따뜻한 성원 보내주신 고객 여러분께 감사드립니다.',
+        platform: 'NaverBlog',
+        content: '한미르 네이버 블로그에서 더 많은 소식을 확인하세요! 🎉 코팅 기술, 시공 사례, 이벤트 정보를 공유합니다.',
         date: '2025.01.01',
         image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=2670&auto=format&fit=crop',
-        link: 'https://facebook.com'
+        link: 'https://blog.naver.com/hanmirco'
     },
     {
         id: 's4',
@@ -101,6 +101,6 @@ export const snsItems: SNSItem[] = [
         content: '연구소 일상 🧪 새로운 친환경 바인더 테스트 중! 더 안전하고 강력한 제품을 위해 오늘도 불을 밝힙니다.',
         date: '2024.12.28',
         image: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=2670&auto=format&fit=crop',
-        link: 'https://instagram.com'
+        link: 'https://www.instagram.com/hanmir.co_paint/'
     }
 ];

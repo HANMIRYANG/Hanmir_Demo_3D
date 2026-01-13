@@ -14,7 +14,7 @@ import { Contact } from '@/components/Contact';
 
 export default function ContactPage() {
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-blue-500 selection:text-white cursor-none">
+        <div className="min-h-screen bg-white text-gray-900 selection:bg-amber-500 selection:text-white">
             <CustomCursor />
             <Navbar />
 
