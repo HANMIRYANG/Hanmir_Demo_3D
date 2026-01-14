@@ -15,8 +15,10 @@ import {
     Loader2,
     Bell,
     Hammer,
-    History
+    History,
+    Settings
 } from 'lucide-react';
+
 
 export default function AdminLayout({
     children,
@@ -198,6 +200,14 @@ export default function AdminLayout({
                     >
                         <Activity className="w-5 h-5" />
                         활동 로그
+                    </Link>
+                    <Link
+                        href="/admin/settings"
+                        onClick={() => setSidebarOpen(false)}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${isActive('/admin/settings') ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'}`}
+                    >
+                        <Settings className="w-5 h-5" />
+                        사이트 설정
                     </Link>
                 </nav>
 

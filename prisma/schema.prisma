@@ -158,3 +158,17 @@ model CompanyHistory {
 
   @@map("company_history")
 }
+
+// ============================================================================
+// 사이트 설정 (Site Settings)
+// ============================================================================
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique  // 설정 키 (예: "company_brochure_url")
+  value     String   // 설정 값
+  label     String?  // 관리자용 라벨 (예: "회사소개서 URL")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}

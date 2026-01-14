@@ -1,19 +1,42 @@
 "use client";
 
-import React from 'react';
-import { Download, FileText } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Download, FileText, Loader2 } from 'lucide-react';
 
 interface CompanyDownloadCTAProps {
     className?: string;
 }
 
 export const CompanyDownloadCTA: React.FC<CompanyDownloadCTAProps> = ({ className = "" }) => {
+    const [brochureUrl, setBrochureUrl] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+
+    // DB에서 회사소개서 URL 조회
+    useEffect(() => {
+        const fetchBrochureUrl = async () => {
+            try {
+                const res = await fetch('/api/admin/settings?key=company_brochure_url');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data?.value) {
+                        setBrochureUrl(data.value);
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch brochure URL:', error);
+            }
+        };
+        fetchBrochureUrl();
+    }, []);
+
     const handleDownload = () => {
-        // PDF 다운로드 - public/company/회사소개서.pdf
+        setLoading(true);
         const link = document.createElement('a');
-        link.href = '/company/회사소개서.pdf';
+        // DB에 URL이 있으면 사용, 없으면 기본 파일
+        link.href = brochureUrl || '/company/한미르 소개서(KOR)251210.pdf';
         link.download = '한미르_회사소개서.pdf';
         link.click();
+        setTimeout(() => setLoading(false), 1000);
     };
 
     return (
@@ -28,12 +51,18 @@ export const CompanyDownloadCTA: React.FC<CompanyDownloadCTAProps> = ({ classNam
                 </p>
                 <button
                     onClick={handleDownload}
-                    className="inline-flex items-center gap-3 px-8 py-4 bg-white text-amber-600 font-bold hover:bg-gray-100 transition-colors rounded-lg shadow-lg"
+                    disabled={loading}
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-white text-amber-600 font-bold hover:bg-gray-100 transition-colors rounded-lg shadow-lg disabled:opacity-70"
                 >
-                    <Download className="w-5 h-5" />
+                    {loading ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                        <Download className="w-5 h-5" />
+                    )}
                     회사소개서 PDF 다운로드
                 </button>
             </div>
         </section>
     );
 };
+

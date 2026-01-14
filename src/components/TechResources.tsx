@@ -166,7 +166,7 @@ export const TechResources: React.FC = () => {
                         <div className="h-[1px] w-20 bg-gray-300" />
                     </div>
                     <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                        기술자료실
+                        통합 기술자료실
                     </h2>
                     <p className="text-gray-500 max-w-2xl text-lg font-light leading-relaxed">
                         한미르의 최신 기술 문서, 인증서, 매뉴얼을 확인하고 다운로드하실 수 있습니다.

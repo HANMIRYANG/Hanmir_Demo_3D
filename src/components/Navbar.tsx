@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Globe, ChevronDown } from 'lucide-react';
+import { Menu, X, Globe, ChevronDown, Search } from 'lucide-react';
 import { NavItem } from '../types';
 import Link from 'next/link';
+import { SearchModal } from './SearchModal';
 
 // ============================================================================
 // [Navbar.tsx] - 상단 네비게이션 바 컴포넌트 (드롭다운 메뉴)
@@ -61,6 +62,19 @@ export const Navbar: React.FC<NavbarProps> = ({ isSticky = true }) => {
     const [langMenuOpen, setLangMenuOpen] = useState(false);
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
     const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
+    const [searchModalOpen, setSearchModalOpen] = useState(false);
+
+    // Ctrl+K 단축키로 검색 모달 열기
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                setSearchModalOpen(true);
+            }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     useEffect(() => {
         if (!isSticky) return;
@@ -140,6 +154,17 @@ export const Navbar: React.FC<NavbarProps> = ({ isSticky = true }) => {
 
                 {/* 3. 우측 버튼 그룹 */}
                 <div className="hidden md:flex items-center gap-4 z-10">
+                    {/* 검색 버튼 */}
+                    <button
+                        onClick={() => setSearchModalOpen(true)}
+                        className="flex items-center gap-2 text-xs font-bold text-zinc-400 hover:text-white transition-colors px-3 py-1.5 border border-zinc-700 rounded-full hover:border-zinc-500 hover:bg-zinc-800/50 group"
+                        title="검색 (Ctrl+K)"
+                    >
+                        <Search className="w-3.5 h-3.5" />
+                        <span>검색</span>
+                        <span className="text-[10px] text-zinc-600 border border-zinc-700 rounded px-1">⌘K</span>
+                    </button>
+
                     {/* 네이버 스마트스토어 버튼 */}
                     <a
                         href="https://smartstore.naver.com/hanmir"
@@ -238,6 +263,9 @@ export const Navbar: React.FC<NavbarProps> = ({ isSticky = true }) => {
                     </div>
                 </div>
             )}
+
+            {/* 검색 모달 */}
+            <SearchModal isOpen={searchModalOpen} onClose={() => setSearchModalOpen(false)} />
         </nav>
     );
 };
