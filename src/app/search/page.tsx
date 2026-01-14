@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Search, ArrowRight, FileText, Package, Bell, Image, MessageCircle, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, ArrowRight, FileText, Package, Bell, Image, MessageCircle, Building2, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { CustomCursor } from '@/components/CustomCursor';
@@ -25,7 +25,8 @@ const typeConfig: Record<SearchContentType, { icon: typeof Package, label: strin
 
 const ITEMS_PER_PAGE = 10;
 
-export default function SearchPage() {
+// 검색 결과 컴포넌트 (useSearchParams 사용)
+function SearchContent() {
     const searchParams = useSearchParams();
     const query = searchParams.get('q') || '';
 
@@ -100,152 +101,171 @@ export default function SearchPage() {
     }, [results]);
 
     return (
+        <div className="max-w-4xl mx-auto px-6">
+            {/* 헤더 */}
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold mb-2">검색 결과</h1>
+                {query && (
+                    <p className="text-zinc-400">
+                        "<span className="text-blue-400">{query}</span>" 검색 결과
+                        <span className="ml-2 text-white font-bold">{filteredResults.length}</span>건
+                    </p>
+                )}
+            </div>
+
+            {/* 필터 탭 */}
+            {results && results.totalCount > 0 && (
+                <div className="flex flex-wrap gap-2 mb-6 pb-6 border-b border-zinc-800">
+                    <button
+                        onClick={() => { setActiveFilter('all'); setCurrentPage(1); }}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeFilter === 'all'
+                            ? 'bg-white text-black'
+                            : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                            }`}
+                    >
+                        전체 ({allResults.length})
+                    </button>
+                    {(Object.keys(typeConfig) as SearchContentType[]).map((type) => {
+                        const count = typeCounts[type] || 0;
+                        if (count === 0) return null;
+                        const config = typeConfig[type];
+                        return (
+                            <button
+                                key={type}
+                                onClick={() => { setActiveFilter(type); setCurrentPage(1); }}
+                                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeFilter === type
+                                    ? 'bg-white text-black'
+                                    : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                                    }`}
+                            >
+                                {config.label} ({count})
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* 로딩 */}
+            {loading && (
+                <div className="py-20 text-center">
+                    <div className="w-8 h-8 border-2 border-zinc-600 border-t-blue-500 rounded-full animate-spin mx-auto" />
+                    <p className="mt-4 text-zinc-400">검색 중...</p>
+                </div>
+            )}
+
+            {/* 검색어 없음 */}
+            {!loading && !query && (
+                <div className="py-20 text-center">
+                    <Search className="w-16 h-16 mx-auto mb-4 text-zinc-700" />
+                    <p className="text-zinc-400">검색어를 입력해주세요.</p>
+                </div>
+            )}
+
+            {/* 결과 없음 */}
+            {!loading && query && results && results.totalCount === 0 && (
+                <div className="py-20 text-center">
+                    <Search className="w-16 h-16 mx-auto mb-4 text-zinc-700" />
+                    <p className="text-xl font-medium mb-2">검색 결과가 없습니다</p>
+                    <p className="text-zinc-400">다른 검색어로 시도해보세요.</p>
+                </div>
+            )}
+
+            {/* 결과 목록 */}
+            {!loading && paginatedResults.length > 0 && (
+                <div className="space-y-3">
+                    {paginatedResults.map((item) => {
+                        const config = typeConfig[item.type];
+                        const Icon = config.icon;
+
+                        return (
+                            <Link
+                                key={`${item.type}-${item.id}`}
+                                href={item.url}
+                                className="flex items-center gap-4 p-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-zinc-600 transition-colors group"
+                            >
+                                <div className={`w-12 h-12 rounded-lg bg-zinc-800 flex items-center justify-center ${config.color}`}>
+                                    <Icon className="w-6 h-6" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-white font-medium group-hover:text-blue-400 transition-colors">
+                                        {item.title}
+                                    </p>
+                                    {item.description && (
+                                        <p className="text-sm text-zinc-500 mt-1 line-clamp-1">
+                                            {item.description}
+                                        </p>
+                                    )}
+                                    <div className="flex items-center gap-2 mt-2 text-xs text-zinc-600">
+                                        <span className={config.color}>{config.label}</span>
+                                        {item.category && <span>· {item.category}</span>}
+                                        {item.date && <span>· {item.date}</span>}
+                                    </div>
+                                </div>
+                                <ArrowRight className="w-5 h-5 text-zinc-600 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
+                            </Link>
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* 페이지네이션 */}
+            {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-8">
+                    <button
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        className="p-2 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <div className="flex items-center gap-1">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                            <button
+                                key={page}
+                                onClick={() => setCurrentPage(page)}
+                                className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${currentPage === page
+                                    ? 'bg-white text-black'
+                                    : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                                    }`}
+                            >
+                                {page}
+                            </button>
+                        ))}
+                    </div>
+                    <button
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                        className="p-2 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <ChevronRight className="w-5 h-5" />
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// 로딩 폴백
+function SearchFallback() {
+    return (
+        <div className="max-w-4xl mx-auto px-6 py-20 text-center">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto text-blue-500" />
+            <p className="mt-4 text-zinc-400">로딩 중...</p>
+        </div>
+    );
+}
+
+// 메인 페이지 컴포넌트 - Suspense로 감싸기
+export default function SearchPage() {
+    return (
         <div className="min-h-screen bg-black text-white cursor-none">
             <CustomCursor />
             <Navbar />
 
             <main className="pt-24 pb-16">
-                <div className="max-w-4xl mx-auto px-6">
-                    {/* 헤더 */}
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold mb-2">검색 결과</h1>
-                        {query && (
-                            <p className="text-zinc-400">
-                                "<span className="text-blue-400">{query}</span>" 검색 결과
-                                <span className="ml-2 text-white font-bold">{filteredResults.length}</span>건
-                            </p>
-                        )}
-                    </div>
-
-                    {/* 필터 탭 */}
-                    {results && results.totalCount > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-6 pb-6 border-b border-zinc-800">
-                            <button
-                                onClick={() => { setActiveFilter('all'); setCurrentPage(1); }}
-                                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeFilter === 'all'
-                                        ? 'bg-white text-black'
-                                        : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
-                                    }`}
-                            >
-                                전체 ({allResults.length})
-                            </button>
-                            {(Object.keys(typeConfig) as SearchContentType[]).map((type) => {
-                                const count = typeCounts[type] || 0;
-                                if (count === 0) return null;
-                                const config = typeConfig[type];
-                                return (
-                                    <button
-                                        key={type}
-                                        onClick={() => { setActiveFilter(type); setCurrentPage(1); }}
-                                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeFilter === type
-                                                ? 'bg-white text-black'
-                                                : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
-                                            }`}
-                                    >
-                                        {config.label} ({count})
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    )}
-
-                    {/* 로딩 */}
-                    {loading && (
-                        <div className="py-20 text-center">
-                            <div className="w-8 h-8 border-2 border-zinc-600 border-t-blue-500 rounded-full animate-spin mx-auto" />
-                            <p className="mt-4 text-zinc-400">검색 중...</p>
-                        </div>
-                    )}
-
-                    {/* 검색어 없음 */}
-                    {!loading && !query && (
-                        <div className="py-20 text-center">
-                            <Search className="w-16 h-16 mx-auto mb-4 text-zinc-700" />
-                            <p className="text-zinc-400">검색어를 입력해주세요.</p>
-                        </div>
-                    )}
-
-                    {/* 결과 없음 */}
-                    {!loading && query && results && results.totalCount === 0 && (
-                        <div className="py-20 text-center">
-                            <Search className="w-16 h-16 mx-auto mb-4 text-zinc-700" />
-                            <p className="text-xl font-medium mb-2">검색 결과가 없습니다</p>
-                            <p className="text-zinc-400">다른 검색어로 시도해보세요.</p>
-                        </div>
-                    )}
-
-                    {/* 결과 목록 */}
-                    {!loading && paginatedResults.length > 0 && (
-                        <div className="space-y-3">
-                            {paginatedResults.map((item) => {
-                                const config = typeConfig[item.type];
-                                const Icon = config.icon;
-
-                                return (
-                                    <Link
-                                        key={`${item.type}-${item.id}`}
-                                        href={item.url}
-                                        className="flex items-center gap-4 p-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-zinc-600 transition-colors group"
-                                    >
-                                        <div className={`w-12 h-12 rounded-lg bg-zinc-800 flex items-center justify-center ${config.color}`}>
-                                            <Icon className="w-6 h-6" />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-white font-medium group-hover:text-blue-400 transition-colors">
-                                                {item.title}
-                                            </p>
-                                            {item.description && (
-                                                <p className="text-sm text-zinc-500 mt-1 line-clamp-1">
-                                                    {item.description}
-                                                </p>
-                                            )}
-                                            <div className="flex items-center gap-2 mt-2 text-xs text-zinc-600">
-                                                <span className={config.color}>{config.label}</span>
-                                                {item.category && <span>· {item.category}</span>}
-                                                {item.date && <span>· {item.date}</span>}
-                                            </div>
-                                        </div>
-                                        <ArrowRight className="w-5 h-5 text-zinc-600 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
-                                    </Link>
-                                );
-                            })}
-                        </div>
-                    )}
-
-                    {/* 페이지네이션 */}
-                    {totalPages > 1 && (
-                        <div className="flex items-center justify-center gap-2 mt-8">
-                            <button
-                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                disabled={currentPage === 1}
-                                className="p-2 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <ChevronLeft className="w-5 h-5" />
-                            </button>
-                            <div className="flex items-center gap-1">
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                                    <button
-                                        key={page}
-                                        onClick={() => setCurrentPage(page)}
-                                        className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${currentPage === page
-                                                ? 'bg-white text-black'
-                                                : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
-                                            }`}
-                                    >
-                                        {page}
-                                    </button>
-                                ))}
-                            </div>
-                            <button
-                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                                disabled={currentPage === totalPages}
-                                className="p-2 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <ChevronRight className="w-5 h-5" />
-                            </button>
-                        </div>
-                    )}
-                </div>
+                <Suspense fallback={<SearchFallback />}>
+                    <SearchContent />
+                </Suspense>
             </main>
 
             <Footer />

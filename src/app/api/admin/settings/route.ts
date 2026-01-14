@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
     try {
         // 관리자 인증 확인
-        const admin = await getCurrentAdmin(request);
+        const admin = await getCurrentAdmin();
         if (!admin) {
             return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 });
         }
