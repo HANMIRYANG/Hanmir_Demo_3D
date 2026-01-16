@@ -35,7 +35,7 @@ export const Hero: React.FC = () => {
     // .splinecode URL을 가져와 아래에 붙여넣으세요.
     // ============================================================================
     const SPLINE_SCENE =
-        "https://prod.spline.design/ThhmVkUKSVS5CZrz/scene.splinecode";
+        "https://prod.spline.design/iCYtFSnvvRwm2M4o/scene.splinecode";
 
     return (
         <section className="relative w-full h-screen overflow-hidden bg-black flex flex-col justify-end pb-20">

@@ -167,6 +167,14 @@ export default function AdminLayout({
                         연혁 관리
                     </Link>
                     <Link
+                        href="/admin/paint-products"
+                        onClick={() => setSidebarOpen(false)}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${isActive('/admin/paint-products') ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'}`}
+                    >
+                        <FileText className="w-5 h-5" />
+                        페인트 제품 관리
+                    </Link>
+                    <Link
                         href="/admin/notices"
                         onClick={() => setSidebarOpen(false)}
                         className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${isActive('/admin/notices') ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'}`}

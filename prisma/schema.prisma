@@ -172,3 +172,47 @@ model SiteSetting {
 
   @@map("site_settings")
 }
+
+// ============================================================================
+// 페인트 제품 카테고리 (Paint Categories)
+// 메인 카테고리: building(건축), ship(선박-개발중), industrial(일반공업)
+// ============================================================================
+model PaintCategory {
+  id           String   @id @default(cuid())
+  mainCategory String   // "building" | "ship" | "industrial"
+  slug         String   @unique  // URL 슬러그 (예: "interior", "stain")
+  name         String   // 표시명 (예: "인테리어페인트")
+  order        Int      @default(0)  // 정렬 순서
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  products  PaintProduct[]
+
+  @@map("paint_categories")
+}
+
+// ============================================================================
+// 페인트 제품 (Paint Products)
+// ============================================================================
+model PaintProduct {
+  id              String   @id @default(cuid())
+  categoryId      String
+  name            String   // 제품명
+  thumbnail       String   // 제품 이미지 URL
+  description     String?  // 요약 설명
+  dataSheetPath   String?  // DataSheet 파일 경로
+  dataSheetName   String?  // DataSheet 파일명
+  usage           String?  // 용도
+  features        String?  // 특성
+  specification   String?  // 규격
+  instructions    String?  // 사용방법
+  order           Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  category        PaintCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@map("paint_products")
+}

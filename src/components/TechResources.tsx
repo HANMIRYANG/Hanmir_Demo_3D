@@ -19,8 +19,12 @@ interface Resource {
     fileName: string;
 }
 
+// 카테고리 목록
+const CATEGORIES: (ResourceType | "전체")[] = ["전체", "DATASHEET", "카탈로그", "MSDS", "공인성적서", "인증서", "도장사양서"];
+
 export const TechResources: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState<ResourceType | "전체">("전체");
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
     const [currentPage, setCurrentPage] = useState(1);
     const [shareModalOpen, setShareModalOpen] = useState(false);
@@ -63,13 +67,26 @@ export const TechResources: React.FC = () => {
     // Pagination
     const ITEMS_PER_PAGE = 10;
 
-    // Filtering
+    // 카테고리별 카운트 계산
+    const categoryCounts = useMemo(() => {
+        const counts: Record<string, number> = { "전체": resources.length };
+        CATEGORIES.forEach(cat => {
+            if (cat !== "전체") {
+                counts[cat] = resources.filter(r => r.category === cat).length;
+            }
+        });
+        return counts;
+    }, [resources]);
+
+    // Filtering (카테고리 + 검색어)
     const filteredResources = useMemo(() => {
-        return resources.filter(r =>
-            r.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            r.category?.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    }, [searchTerm, resources]);
+        return resources.filter(r => {
+            const matchesCategory = selectedCategory === "전체" || r.category === selectedCategory;
+            const matchesSearch = r.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                r.category?.toLowerCase().includes(searchTerm.toLowerCase());
+            return matchesCategory && matchesSearch;
+        });
+    }, [searchTerm, selectedCategory, resources]);
 
     const totalPages = Math.ceil(filteredResources.length / ITEMS_PER_PAGE);
     const currentData = filteredResources.slice(
@@ -201,6 +218,25 @@ export const TechResources: React.FC = () => {
                             {downloading ? '파일 준비 중...' : `선택 다운로드 (${selectedItems.size})`}
                         </button>
                     </div>
+                </div>
+
+                {/* Category Filter */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                    {CATEGORIES.map((category) => (
+                        <button
+                            key={category}
+                            onClick={() => {
+                                setSelectedCategory(category);
+                                setCurrentPage(1);
+                            }}
+                            className={`px-4 py-2 text-sm font-medium rounded-full border transition-all ${selectedCategory === category
+                                    ? 'bg-gray-900 text-white border-gray-900'
+                                    : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                                }`}
+                        >
+                            {category} ({categoryCounts[category] || 0})
+                        </button>
+                    ))}
                 </div>
 
                 {/* Table Structure */}
