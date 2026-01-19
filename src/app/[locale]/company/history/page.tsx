@@ -169,17 +169,18 @@ export default function HistoryPage() {
                             </div>
                         ) : (
                             <div className="relative">
-                                {/* 세로선 */}
-                                <div className="absolute left-0 md:left-24 top-0 bottom-0 w-px bg-gray-200" />
+                                {/* 세로선 - 왼쪽 고정 */}
+                                <div className="absolute left-2 md:left-28 top-0 bottom-0 w-px bg-gray-300" />
 
                                 {years.map((year) => (
-                                    <div key={year} className="mb-12">
-                                        {/* 연도 헤더 */}
-                                        <div className="flex items-center gap-4 mb-6">
-                                            <div className="relative z-10 min-w-[4rem] md:min-w-[6rem] px-3 h-12 bg-amber-500 text-white font-bold flex items-center justify-center text-base md:text-xl rounded whitespace-nowrap">
+                                    <div key={year} className="mb-16 relative">
+                                        {/* 연도 박스 - 왼쪽 모서리가 세로선에 맞닿음 */}
+                                        <div className="absolute left-2 md:left-28 top-0 z-10">
+                                            <div className="px-5 py-3 bg-amber-500 text-white font-bold text-base md:text-lg rounded whitespace-nowrap">
                                                 {year}
                                             </div>
                                         </div>
+                                        <div className="h-14 mb-4" /> {/* spacer */}
 
                                         {/* 해당 연도 항목들 */}
                                         <div className="space-y-6 pl-8 md:pl-32">
@@ -192,8 +193,8 @@ export default function HistoryPage() {
                                                         ${item.image ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : ''}
                                                     `}
                                                 >
-                                                    {/* 마커 */}
-                                                    <div className="absolute -left-8 md:-left-8 top-8 w-4 h-4 bg-amber-500 rounded-full border-4 border-white shadow" />
+                                                    {/* 마커 - 세로선 위에 표시 */}
+                                                    <div className="absolute -left-[30px] md:-left-[30px] top-6 w-3 h-3 bg-amber-500 rounded-full border-2 border-white shadow" />
 
                                                     {/* 텍스트 */}
                                                     <div className="flex flex-col justify-center">
