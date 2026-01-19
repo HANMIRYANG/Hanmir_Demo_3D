@@ -28,6 +28,12 @@ const PERIOD_TABS = [
     { id: '2009-2014', label: '2009 ~ 2014', start: 2009, end: 2014 },
 ];
 
+// 연도 문자열에서 첫 번째 연도 추출 ("2018~2019" -> 2018, "2017" -> 2017)
+const getFirstYear = (yearStr: string): number => {
+    const match = yearStr.match(/\d{4}/);
+    return match ? parseInt(match[0]) : 0;
+};
+
 export default function HistoryPage() {
     const [histories, setHistories] = useState<HistoryItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -57,7 +63,7 @@ export default function HistoryPage() {
         if (!currentPeriod) return [];
 
         return histories.filter(item => {
-            const year = parseInt(item.year);
+            const year = getFirstYear(item.year);
             return year >= currentPeriod.start && year <= currentPeriod.end;
         });
     }, [histories, activeTab]);
@@ -73,14 +79,14 @@ export default function HistoryPage() {
         }, {} as Record<string, HistoryItem[]>);
     }, [filteredHistories]);
 
-    const years = Object.keys(groupedHistories).sort((a, b) => parseInt(b) - parseInt(a));
+    const years = Object.keys(groupedHistories).sort((a, b) => getFirstYear(b) - getFirstYear(a));
 
     // 각 탭에 데이터가 있는지 확인
     const getTabDataCount = (tabId: string) => {
         const period = PERIOD_TABS.find(tab => tab.id === tabId);
         if (!period) return 0;
         return histories.filter(item => {
-            const year = parseInt(item.year);
+            const year = getFirstYear(item.year);
             return year >= period.start && year <= period.end;
         }).length;
     };
@@ -170,7 +176,7 @@ export default function HistoryPage() {
                                     <div key={year} className="mb-12">
                                         {/* 연도 헤더 */}
                                         <div className="flex items-center gap-4 mb-6">
-                                            <div className="relative z-10 w-16 h-12 md:w-24 md:h-12 bg-amber-500 text-white font-bold flex items-center justify-center text-lg md:text-xl rounded">
+                                            <div className="relative z-10 min-w-[4rem] md:min-w-[6rem] px-3 h-12 bg-amber-500 text-white font-bold flex items-center justify-center text-base md:text-xl rounded whitespace-nowrap">
                                                 {year}
                                             </div>
                                         </div>
