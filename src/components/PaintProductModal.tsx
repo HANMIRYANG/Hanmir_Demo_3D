@@ -102,7 +102,7 @@ export const PaintProductModal: React.FC<PaintProductModalProps> = ({
                         {/* Left: Product Image */}
                         <div className="aspect-square bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center">
                             <img
-                                src={product.thumbnail}
+                                src={product.thumbnail || '/placeholder.jpg'}
                                 alt={product.name}
                                 className="max-w-full max-h-full object-contain"
                             />

@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { Download, Search, Share2, Check, X, FileText, ChevronLeft, ChevronRight, File } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 // Types
 type ResourceType = "DATASHEET" | "카탈로그" | "MSDS" | "공인성적서" | "인증서" | "도장사양서" | "기타";
@@ -23,6 +24,7 @@ interface Resource {
 const CATEGORIES: (ResourceType | "전체")[] = ["전체", "DATASHEET", "카탈로그", "MSDS", "공인성적서", "인증서", "도장사양서"];
 
 export const TechResources: React.FC = () => {
+    const t = useTranslations();
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<ResourceType | "전체">("전체");
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
@@ -178,16 +180,15 @@ export const TechResources: React.FC = () => {
                 <div className="mb-16">
                     <div className="flex items-center gap-4 mb-4">
                         <span className="px-3 py-1 border border-gray-300 bg-gray-50 text-[11px] font-bold text-gray-500">
-                            Technical Resources
+                            {t('resources.tagline')}
                         </span>
                         <div className="h-[1px] w-20 bg-gray-300" />
                     </div>
                     <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                        통합 기술자료실
+                        {t('resources.title')}
                     </h2>
                     <p className="text-gray-500 max-w-2xl text-lg font-light leading-relaxed">
-                        한미르의 최신 기술 문서, 인증서, 매뉴얼을 확인하고 다운로드하실 수 있습니다.
-                        필요한 자료를 검색하여 업무에 활용하세요.
+                        {t('resources.description')}
                     </p>
                 </div>
 
@@ -201,7 +202,7 @@ export const TechResources: React.FC = () => {
                         <input
                             type="text"
                             className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-none leading-5 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 sm:text-sm transition-all hover:border-gray-400"
-                            placeholder="자료명 또는 키워드 검색"
+                            placeholder={t('resources.searchPlaceholder')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -215,7 +216,7 @@ export const TechResources: React.FC = () => {
                             className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white text-sm font-bold hover:bg-gray-800 transition-colors disabled:opacity-70"
                         >
                             <Download className={`w-4 h-4 ${downloading ? 'animate-bounce' : ''}`} />
-                            {downloading ? '파일 준비 중...' : `선택 다운로드 (${selectedItems.size})`}
+                            {downloading ? t('resources.preparing') : `${t('resources.bulkDownload')} (${selectedItems.size})`}
                         </button>
                     </div>
                 </div>
@@ -230,8 +231,8 @@ export const TechResources: React.FC = () => {
                                 setCurrentPage(1);
                             }}
                             className={`px-4 py-2 text-sm font-medium rounded-full border transition-all ${selectedCategory === category
-                                    ? 'bg-gray-900 text-white border-gray-900'
-                                    : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                                ? 'bg-gray-900 text-white border-gray-900'
+                                : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400 hover:bg-gray-50'
                                 }`}
                         >
                             {category} ({categoryCounts[category] || 0})

@@ -1,0 +1,163 @@
+{
+    "nav": {
+        "home": "Home",
+        "company": "About Us",
+        "companyIntro": "Company Introduction",
+        "ceoMessage": "CEO Message",
+        "history": "History",
+        "location": "Location",
+        "products": "Products",
+        "paint": "Paint",
+        "resources": "Resources",
+        "media": "Media",
+        "contact": "Contact",
+        "qna": "Q&A",
+        "cases": "Case Studies"
+    },
+    "hero": {
+        "tagline": "The Future of Functional Coating",
+        "title1": "Where You Can't See,",
+        "title2": "We Paint Perfection",
+        "description": "HANMIR develops high-performance functional coatings for heat dissipation, fireproofing, and EMI shielding. Experience unchanging value even in extreme environments.",
+        "cta": {
+            "products": "View Products",
+            "contact": "Technical Inquiry"
+        }
+    },
+    "stats": {
+        "partners": "Partners",
+        "patents": "Patents",
+        "countries": "Export Countries",
+        "satisfaction": "Satisfaction Rate"
+    },
+    "quote": {
+        "text": "The Pinnacle of Advanced Coating Technology Beyond Material Limits"
+    },
+    "footer": {
+        "company": "HANMIR Co., Ltd.",
+        "address": "190, Dodam-ro, Seo-gu, Incheon, Korea",
+        "ceo": "CEO",
+        "ceoName": "Yang Hanmir",
+        "phone": "Phone",
+        "fax": "Fax",
+        "email": "Email",
+        "copyright": "© 2025 HANMIR. All rights reserved.",
+        "businessNumber": "Business Registration",
+        "links": {
+            "privacy": "Privacy Policy",
+            "terms": "Terms of Service",
+            "sitemap": "Sitemap"
+        },
+        "quickLinks": "Quick Links",
+        "contact": "Contact"
+    },
+    "common": {
+        "learnMore": "Learn More",
+        "download": "Download",
+        "share": "Share",
+        "search": "Search",
+        "all": "All",
+        "more": "More",
+        "noResults": "No results found.",
+        "loading": "Loading...",
+        "error": "An error occurred.",
+        "scroll": "Scroll",
+        "naverStore": "Naver Store"
+    },
+    "features": {
+        "tagline": "Our Core Technology",
+        "title": "Innovation at Its Core",
+        "description": "Discover HANMIR's six specialized technologies"
+    },
+    "resources": {
+        "title": "Technical Resources",
+        "tagline": "Technical Resources",
+        "description": "Browse and download HANMIR's latest technical documents, certificates, and manuals. Search for the resources you need.",
+        "searchPlaceholder": "Search by document name or keyword",
+        "bulkDownload": "Download Selected",
+        "preparing": "Preparing files...",
+        "categories": {
+            "all": "All",
+            "datasheet": "DATASHEET",
+            "catalog": "Catalog",
+            "msds": "MSDS",
+            "certificate": "Test Report",
+            "certification": "Certificate",
+            "specification": "Paint Specification"
+        }
+    },
+    "contact": {
+        "tagline": "Contact Us",
+        "title": "Contact Us",
+        "description": "If you have any questions about HANMIR, please feel free to contact us. Our experts will respond promptly.",
+        "form": {
+            "name": "Name",
+            "company": "Company",
+            "phone": "Phone",
+            "email": "Email",
+            "interest": "Interest Area",
+            "interestOptions": {
+                "automotive": "Automotive Battery",
+                "ship": "Marine",
+                "construction": "Construction & Heavy Industry",
+                "other": "Other"
+            },
+            "message": "Message",
+            "submit": "Submit",
+            "submitting": "Submitting...",
+            "privacy": "I agree to the collection and use of personal information"
+        },
+        "success": "Your inquiry has been submitted successfully. We will respond shortly.",
+        "error": "An error occurred while submitting your inquiry. Please try again.",
+        "info": {
+            "title": "Contact Information",
+            "address": "Address",
+            "phone": "Phone",
+            "email": "Email",
+            "hours": "Business Hours",
+            "hoursValue": "Mon-Fri 09:00 - 18:00"
+        }
+    },
+    "company": {
+        "intro": {
+            "title": "About Us",
+            "subtitle": "HANMIR - Transforming the world with innovative coating technology"
+        },
+        "ceo": {
+            "title": "CEO Message"
+        },
+        "history": {
+            "title": "History",
+            "subtitle": "The history of HANMIR's growth and development"
+        },
+        "location": {
+            "title": "Location",
+            "headquarters": "Headquarters",
+            "factory": "Factory"
+        },
+        "download": {
+            "title": "Company Brochure",
+            "description": "Download our company brochure with detailed information about HANMIR.",
+            "button": "Download Brochure"
+        }
+    },
+    "paint": {
+        "title": "Paint",
+        "breadcrumb": {
+            "home": "Home",
+            "products": "Products",
+            "paint": "Paint"
+        },
+        "calculator": {
+            "title": "Paint Calculator",
+            "description": "Calculate the amount of paint you need",
+            "note": "For accurate usage per product, please contact us.",
+            "openCalculator": "Open Calculator"
+        }
+    },
+    "language": {
+        "ko": "한국어",
+        "en": "English",
+        "cn": "中文"
+    }
+}

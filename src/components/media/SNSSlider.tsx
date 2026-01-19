@@ -58,7 +58,7 @@ export const SNSSlider: React.FC = () => {
                         {/* 이미지 영역 */}
                         <div className="h-48 overflow-hidden relative">
                             <img
-                                src={item.image}
+                                src={item.image || '/placeholder.jpg'}
                                 alt={item.platform}
                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                             />

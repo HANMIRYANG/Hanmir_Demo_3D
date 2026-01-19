@@ -1,34 +1,23 @@
+"use client";
+
 import React from 'react';
+import { useTranslations } from "next-intl";
 
 // ============================================================================
-// [Footer.tsx] - 하단 푸터 컴포넌트
-// ============================================================================
-// 이 파일은 모든 페이지 최하단에 표시되는 푸터입니다.
-// 저작권 정보와 법적 링크(개인정보처리방침, 이용약관 등)를 담당합니다.
+// [Footer.tsx] - 하단 푸터 컴포넌트 (다국어 지원)
 // ============================================================================
 
 export const Footer: React.FC = () => {
+    const t = useTranslations();
+
     return (
         <footer className="bg-gray-900 py-12 border-t border-gray-800">
             <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-gray-400 text-xs font-medium">
-                {/* ============================================================
-                    🔧 [수정 포인트 #1] 저작권 문구
-                    아래 텍스트를 수정하면 저작권 정보가 변경됩니다.
-                    - 연도: "2024"를 현재/원하는 연도로 변경
-                    - 회사명: "HANMIR Co., Ltd."를 원하는 이름으로 변경
-                ============================================================ */}
-                <p>&copy; 2009 HANMIR Co., Ltd. All rights reserved.</p>
-
-                {/* ============================================================
-                    🔧 [수정 포인트 #2] 하단 링크들
-                    - href="#"을 실제 페이지 경로로 변경하세요
-                    - 예: href="/privacy" (개인정보처리방침 페이지)
-                    - 링크 텍스트를 수정하면 표시 이름이 변경됩니다
-                ============================================================ */}
+                <p>{t('footer.copyright')}</p>
                 <div className="flex gap-8 mt-4 md:mt-0">
-                    <a href="#" className="hover:text-white transition-colors">개인정보처리방침</a>
-                    <a href="#" className="hover:text-white transition-colors">이용약관</a>
-                    <a href="#" className="hover:text-white transition-colors">사이트맵</a>
+                    <a href="#" className="hover:text-white transition-colors">{t('footer.links.privacy')}</a>
+                    <a href="#" className="hover:text-white transition-colors">{t('footer.links.terms')}</a>
+                    <a href="#" className="hover:text-white transition-colors">{t('footer.links.sitemap')}</a>
                 </div>
             </div>
         </footer>

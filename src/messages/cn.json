@@ -1,0 +1,163 @@
+{
+    "nav": {
+        "home": "首页",
+        "company": "公司介绍",
+        "companyIntro": "公司简介",
+        "ceoMessage": "CEO致辞",
+        "history": "发展历程",
+        "location": "联系地址",
+        "products": "产品介绍",
+        "paint": "涂料",
+        "resources": "技术资料",
+        "media": "媒体中心",
+        "contact": "联系我们",
+        "qna": "在线咨询",
+        "cases": "施工案例"
+    },
+    "hero": {
+        "tagline": "The Future of Functional Coating",
+        "title1": "在看不见的地方",
+        "title2": "涂抹完美",
+        "description": "韩美尔开发用于散热、防火、电磁屏蔽等特殊用途的高性能功能性涂料。即使在极端环境下也能体验不变的价值。",
+        "cta": {
+            "products": "查看产品",
+            "contact": "技术咨询"
+        }
+    },
+    "stats": {
+        "partners": "合作伙伴",
+        "patents": "专利数量",
+        "countries": "出口国家",
+        "satisfaction": "满意度"
+    },
+    "quote": {
+        "text": "超越材料极限的尖端涂层技术巅峰"
+    },
+    "footer": {
+        "company": "韩美尔株式会社",
+        "address": "韩国仁川广域市西区道淡路190号",
+        "ceo": "代表理事",
+        "ceoName": "梁韩美尔",
+        "phone": "电话",
+        "fax": "传真",
+        "email": "邮箱",
+        "copyright": "© 2025 HANMIR. 版权所有.",
+        "businessNumber": "营业执照号",
+        "links": {
+            "privacy": "隐私政策",
+            "terms": "使用条款",
+            "sitemap": "网站地图"
+        },
+        "quickLinks": "快速链接",
+        "contact": "联系方式"
+    },
+    "common": {
+        "learnMore": "了解更多",
+        "download": "下载",
+        "share": "分享",
+        "search": "搜索",
+        "all": "全部",
+        "more": "更多",
+        "noResults": "未找到结果。",
+        "loading": "加载中...",
+        "error": "发生错误。",
+        "scroll": "滚动",
+        "naverStore": "Naver商店"
+    },
+    "features": {
+        "tagline": "Our Core Technology",
+        "title": "技术创新核心",
+        "description": "探索韩美尔的六大专业技术"
+    },
+    "resources": {
+        "title": "技术资料中心",
+        "tagline": "Technical Resources",
+        "description": "浏览并下载韩美尔的最新技术文档、认证和手册。搜索您需要的资料。",
+        "searchPlaceholder": "按文档名称或关键词搜索",
+        "bulkDownload": "批量下载",
+        "preparing": "准备文件中...",
+        "categories": {
+            "all": "全部",
+            "datasheet": "数据表",
+            "catalog": "产品目录",
+            "msds": "安全数据表",
+            "certificate": "检测报告",
+            "certification": "认证证书",
+            "specification": "涂装规格书"
+        }
+    },
+    "contact": {
+        "tagline": "Contact Us",
+        "title": "联系我们",
+        "description": "如果您对韩美尔有任何疑问，请随时与我们联系。我们的专家将及时回复。",
+        "form": {
+            "name": "姓名",
+            "company": "公司名称",
+            "phone": "电话",
+            "email": "邮箱",
+            "interest": "关注领域",
+            "interestOptions": {
+                "automotive": "汽车电池",
+                "ship": "船舶",
+                "construction": "建筑及重工业",
+                "other": "其他"
+            },
+            "message": "留言内容",
+            "submit": "提交",
+            "submitting": "提交中...",
+            "privacy": "我同意收集和使用个人信息"
+        },
+        "success": "您的咨询已成功提交。我们将尽快回复。",
+        "error": "提交咨询时发生错误。请重试。",
+        "info": {
+            "title": "联系信息",
+            "address": "地址",
+            "phone": "电话",
+            "email": "邮箱",
+            "hours": "营业时间",
+            "hoursValue": "周一至周五 09:00 - 18:00"
+        }
+    },
+    "company": {
+        "intro": {
+            "title": "公司简介",
+            "subtitle": "韩美尔 - 以创新涂料技术改变世界"
+        },
+        "ceo": {
+            "title": "CEO致辞"
+        },
+        "history": {
+            "title": "发展历程",
+            "subtitle": "韩美尔的成长与发展历史"
+        },
+        "location": {
+            "title": "联系地址",
+            "headquarters": "总部",
+            "factory": "工厂"
+        },
+        "download": {
+            "title": "公司简介下载",
+            "description": "下载包含韩美尔详细信息的公司简介。",
+            "button": "下载简介"
+        }
+    },
+    "paint": {
+        "title": "涂料",
+        "breadcrumb": {
+            "home": "首页",
+            "products": "产品",
+            "paint": "涂料"
+        },
+        "calculator": {
+            "title": "涂料计算器",
+            "description": "计算所需涂料量",
+            "note": "如需了解各产品的准确用量，请联系我们。",
+            "openCalculator": "打开计算器"
+        }
+    },
+    "language": {
+        "ko": "한국어",
+        "en": "English",
+        "cn": "中文"
+    }
+}

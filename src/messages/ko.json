@@ -1,0 +1,163 @@
+{
+    "nav": {
+        "home": "홈",
+        "company": "회사소개",
+        "companyIntro": "회사 소개",
+        "ceoMessage": "CEO 인사말",
+        "history": "연혁",
+        "location": "오시는 길",
+        "products": "제품소개",
+        "paint": "페인트",
+        "resources": "기술자료",
+        "media": "미디어",
+        "contact": "문의하기",
+        "qna": "문의게시판",
+        "cases": "시공사례"
+    },
+    "hero": {
+        "tagline": "The Future of Functional Coating",
+        "title1": "보이지 않는 곳에서",
+        "title2": "완벽을 칠하다",
+        "description": "한미르(주)는 방열, 불연, 전자파 차폐 등 특수 목적을 위한 고기능성 도료를 개발합니다. 극한의 환경에서도 변하지 않는 가치를 경험하십시오.",
+        "cta": {
+            "products": "제품 살펴보기",
+            "contact": "기술 문의하기"
+        }
+    },
+    "stats": {
+        "partners": "협력 파트너사",
+        "patents": "보유 특허",
+        "countries": "수출 국가",
+        "satisfaction": "기술 만족도"
+    },
+    "quote": {
+        "text": "소재의 한계를 뛰어넘는 첨단 코팅 기술의 정점"
+    },
+    "footer": {
+        "company": "한미르 주식회사",
+        "address": "인천광역시 서구 도담로 190",
+        "ceo": "대표이사",
+        "ceoName": "양한미르",
+        "phone": "대표전화",
+        "fax": "팩스",
+        "email": "이메일",
+        "copyright": "© 2025 한미르. All rights reserved.",
+        "businessNumber": "사업자등록번호",
+        "links": {
+            "privacy": "개인정보처리방침",
+            "terms": "이용약관",
+            "sitemap": "사이트맵"
+        },
+        "quickLinks": "바로가기",
+        "contact": "연락처"
+    },
+    "common": {
+        "learnMore": "자세히 보기",
+        "download": "다운로드",
+        "share": "공유",
+        "search": "검색",
+        "all": "전체",
+        "more": "더보기",
+        "noResults": "검색 결과가 없습니다.",
+        "loading": "로딩 중...",
+        "error": "오류가 발생했습니다.",
+        "scroll": "Scroll",
+        "naverStore": "네이버 스마트스토어"
+    },
+    "features": {
+        "tagline": "Our Core Technology",
+        "title": "기술 혁신의 핵심",
+        "description": "한미르의 6가지 특화 기술을 만나보세요"
+    },
+    "resources": {
+        "title": "통합 기술자료실",
+        "tagline": "Technical Resources",
+        "description": "한미르의 최신 기술 문서, 인증서, 매뉴얼을 확인하고 다운로드하실 수 있습니다. 필요한 자료를 검색하여 업무에 활용하세요.",
+        "searchPlaceholder": "자료명 또는 키워드 검색",
+        "bulkDownload": "선택 다운로드",
+        "preparing": "파일 준비 중...",
+        "categories": {
+            "all": "전체",
+            "datasheet": "DATASHEET",
+            "catalog": "카탈로그",
+            "msds": "MSDS",
+            "certificate": "공인성적서",
+            "certification": "인증서",
+            "specification": "도장사양서"
+        }
+    },
+    "contact": {
+        "tagline": "Contact Us",
+        "title": "문의하기",
+        "description": "한미르에 대해 궁금한 점이 있으시면 언제든지 문의해주세요. 전문 상담원이 빠르게 답변 드리겠습니다.",
+        "form": {
+            "name": "담당자 성명",
+            "company": "업체명",
+            "phone": "연락처",
+            "email": "이메일",
+            "interest": "관심 분야",
+            "interestOptions": {
+                "automotive": "자동차 배터리",
+                "ship": "선박",
+                "construction": "건축 및 중공업",
+                "other": "기타"
+            },
+            "message": "문의 내용",
+            "submit": "문의하기",
+            "submitting": "전송 중...",
+            "privacy": "개인정보 수집 및 이용에 동의합니다"
+        },
+        "success": "문의가 성공적으로 전송되었습니다. 빠른 시일 내에 답변 드리겠습니다.",
+        "error": "문의 전송 중 오류가 발생했습니다. 다시 시도해주세요.",
+        "info": {
+            "title": "연락처 정보",
+            "address": "주소",
+            "phone": "전화",
+            "email": "이메일",
+            "hours": "운영 시간",
+            "hoursValue": "평일 09:00 - 18:00"
+        }
+    },
+    "company": {
+        "intro": {
+            "title": "회사 소개",
+            "subtitle": "혁신적인 도료 기술로 세상을 바꾸는 한미르"
+        },
+        "ceo": {
+            "title": "CEO 인사말"
+        },
+        "history": {
+            "title": "연혁",
+            "subtitle": "한미르의 성장과 발전의 역사"
+        },
+        "location": {
+            "title": "오시는 길",
+            "headquarters": "본사",
+            "factory": "공장"
+        },
+        "download": {
+            "title": "회사소개서 다운로드",
+            "description": "한미르의 상세한 정보가 담긴 회사소개서를 다운로드하세요.",
+            "button": "회사소개서 다운로드"
+        }
+    },
+    "paint": {
+        "title": "페인트",
+        "breadcrumb": {
+            "home": "홈",
+            "products": "제품",
+            "paint": "페인트"
+        },
+        "calculator": {
+            "title": "페인트량 계산기",
+            "description": "필요한 페인트 양을 계산합니다",
+            "note": "제품별 정확한 사용량은 문의하기를 이용 바랍니다.",
+            "openCalculator": "계산기 열기"
+        }
+    },
+    "language": {
+        "ko": "한국어",
+        "en": "English",
+        "cn": "中文"
+    }
+}

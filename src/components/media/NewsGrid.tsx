@@ -59,7 +59,7 @@ export const NewsGrid: React.FC<NewsGridProps> = ({ items }) => {
                             {/* 썸네일 */}
                             <div className="relative aspect-[16/9] overflow-hidden bg-gray-200 mb-4 rounded-lg">
                                 <img
-                                    src={item.thumbnail}
+                                    src={item.thumbnail || '/placeholder.jpg'}
                                     alt={item.title}
                                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                 />

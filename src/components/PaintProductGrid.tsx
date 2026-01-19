@@ -41,7 +41,7 @@ export const PaintProductGrid: React.FC<PaintProductGridProps> = ({
                     {/* Product Image */}
                     <div className="aspect-square bg-gray-50 relative overflow-hidden">
                         <img
-                            src={product.thumbnail}
+                            src={product.thumbnail || '/placeholder.jpg'}
                             alt={product.name}
                             className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                         />

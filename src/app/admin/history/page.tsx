@@ -238,7 +238,7 @@ export default function HistoryAdminPage() {
                                     </div>
                                     <h3 className="text-white font-medium">{item.title}</h3>
                                     {item.content && (
-                                        <p className="text-zinc-500 text-sm mt-1 line-clamp-1">{item.content}</p>
+                                        <p className="text-zinc-500 text-sm mt-1 line-clamp-2 whitespace-pre-line">{item.content}</p>
                                     )}
                                 </div>
 
