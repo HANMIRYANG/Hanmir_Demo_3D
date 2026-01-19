@@ -7,12 +7,8 @@ import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
 import { CustomCursor } from '@/components/CustomCursor';
 
-// 정적 경로 생성 (SSG 최적화)
-export async function generateStaticParams() {
-    return Object.keys(products).map((slug) => ({
-        slug: slug,
-    }));
-}
+// 동적 렌더링 강제 (next-intl 미들웨어와의 충돌 방지)
+export const dynamic = 'force-dynamic';
 
 interface PageProps {
     params: Promise<{ slug: string }>;
