@@ -46,8 +46,8 @@ export async function GET(request: NextRequest) {
         // 1. 제품 검색 (정적 데이터)
         // ========================================
         if (type === 'all' || type === 'products') {
-            const productResults: SearchResultItem[] = Object.values(products)
-                .filter(product =>
+            const productResults: SearchResultItem[] = Object.entries(products)
+                .filter(([, product]) =>
                     product.title.toLowerCase().includes(searchLower) ||
                     product.koreanTitle.toLowerCase().includes(searchLower) ||
                     product.description.toLowerCase().includes(searchLower) ||
@@ -55,12 +55,12 @@ export async function GET(request: NextRequest) {
                     product.features.some(f => f.toLowerCase().includes(searchLower))
                 )
                 .slice(0, limit)
-                .map(product => ({
-                    id: product.id,
+                .map(([id, product]) => ({
+                    id: id,
                     type: 'product' as const,
                     title: product.koreanTitle,
                     description: product.description,
-                    url: `/products/${product.id}`,
+                    url: `/products/${id}`,
                     category: product.title
                 }));
             response.products = productResults;
