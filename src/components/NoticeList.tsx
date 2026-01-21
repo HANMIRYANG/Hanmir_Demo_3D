@@ -325,7 +325,7 @@ export const NoticeList: React.FC = () => {
                                     <img
                                         src={selectedNotice.thumbnail}
                                         alt="썸네일"
-                                        className="w-full max-h-80 object-cover rounded hover:opacity-90 transition-opacity"
+                                        className="w-full max-h-[500px] object-contain rounded hover:opacity-90 transition-opacity"
                                     />
                                 </div>
                             )}

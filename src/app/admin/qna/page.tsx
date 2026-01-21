@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, Eye, Send, ChevronDown, ChevronUp } from 'lucide-react';
+import { MessageCircle, Eye, Send, ChevronDown, ChevronUp, Trash2, Edit, X, Check } from 'lucide-react';
 
 interface QnaPost {
     id: string;
@@ -25,6 +25,10 @@ export default function AdminQnaPage() {
     const [answerText, setAnswerText] = useState<{ [key: string]: string }>({});
     const [submitting, setSubmitting] = useState<string | null>(null);
     const [filter, setFilter] = useState<'all' | 'pending' | 'answered'>('all');
+
+    // 답변 수정 모드 상태
+    const [editingAnswerId, setEditingAnswerId] = useState<string | null>(null);
+    const [editAnswerText, setEditAnswerText] = useState<string>('');
 
     useEffect(() => {
         fetchPosts();
@@ -51,6 +55,7 @@ export default function AdminQnaPage() {
         }
     };
 
+    // 답변 등록
     const handleSubmitAnswer = async (postId: string) => {
         const answer = answerText[postId];
         if (!answer || answer.trim() === '') {
@@ -77,6 +82,100 @@ export default function AdminQnaPage() {
             alert('오류가 발생했습니다.');
         } finally {
             setSubmitting(null);
+        }
+    };
+
+    // 답변 수정 시작
+    const handleStartEditAnswer = (post: QnaPost) => {
+        setEditingAnswerId(post.id);
+        setEditAnswerText(post.answer || '');
+    };
+
+    // 답변 수정 취소
+    const handleCancelEditAnswer = () => {
+        setEditingAnswerId(null);
+        setEditAnswerText('');
+    };
+
+    // 답변 수정 저장
+    const handleSaveEditAnswer = async (postId: string) => {
+        if (!editAnswerText || editAnswerText.trim() === '') {
+            alert('답변 내용을 입력해주세요.');
+            return;
+        }
+
+        setSubmitting(postId);
+        try {
+            const res = await fetch(`/api/admin/qna/${postId}/answer`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ answer: editAnswerText })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                alert('답변이 수정되었습니다.');
+                setEditingAnswerId(null);
+                setEditAnswerText('');
+                fetchPosts();
+            } else {
+                alert(data.error || '답변 수정에 실패했습니다.');
+            }
+        } catch (error) {
+            alert('오류가 발생했습니다.');
+        } finally {
+            setSubmitting(null);
+        }
+    };
+
+    // 답변 삭제
+    const handleDeleteAnswer = async (postId: string) => {
+        if (!confirm('답변을 삭제하시겠습니까? 게시글은 미답변 상태로 변경됩니다.')) {
+            return;
+        }
+
+        setSubmitting(postId);
+        try {
+            const res = await fetch(`/api/admin/qna/${postId}/answer`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            if (res.ok) {
+                alert('답변이 삭제되었습니다.');
+                fetchPosts();
+            } else {
+                alert(data.error || '답변 삭제에 실패했습니다.');
+            }
+        } catch (error) {
+            alert('오류가 발생했습니다.');
+        } finally {
+            setSubmitting(null);
+        }
+    };
+
+    // 게시글 삭제
+    const handleDeletePost = async (postId: string, e: React.MouseEvent) => {
+        e.stopPropagation(); // 클릭 이벤트 전파 방지
+
+        if (!confirm('게시글을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/admin/qna/${postId}`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            if (res.ok) {
+                alert('게시글이 삭제되었습니다.');
+                if (expandedId === postId) {
+                    setExpandedId(null);
+                }
+                fetchPosts();
+            } else {
+                alert(data.error || '게시글 삭제에 실패했습니다.');
+            }
+        } catch (error) {
+            alert('오류가 발생했습니다.');
         }
     };
 
@@ -155,6 +254,14 @@ export default function AdminQnaPage() {
                                     <span className="text-gray-400 text-sm flex items-center gap-1">
                                         <Eye className="w-3 h-3" />{post.views}
                                     </span>
+                                    {/* 게시글 삭제 버튼 */}
+                                    <button
+                                        onClick={(e) => handleDeletePost(post.id, e)}
+                                        className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                                        title="게시글 삭제"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
                                     {expandedId === post.id ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
                                 </div>
                             </div>
@@ -176,16 +283,69 @@ export default function AdminQnaPage() {
                                     {/* 기존 답변 또는 답변 입력 */}
                                     {post.isAnswered && post.answer ? (
                                         <div>
-                                            <h4 className="text-sm font-bold text-green-600 mb-2 flex items-center gap-2">
-                                                <MessageCircle className="w-4 h-4" />
-                                                관리자 답변
-                                                <span className="text-xs text-gray-400 font-normal ml-2">
-                                                    {post.answeredAt && new Date(post.answeredAt).toLocaleString()}
-                                                </span>
-                                            </h4>
-                                            <div className="bg-green-50 p-4 border border-green-200 text-gray-700 whitespace-pre-wrap">
-                                                {post.answer}
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h4 className="text-sm font-bold text-green-600 flex items-center gap-2">
+                                                    <MessageCircle className="w-4 h-4" />
+                                                    관리자 답변
+                                                    <span className="text-xs text-gray-400 font-normal ml-2">
+                                                        {post.answeredAt && new Date(post.answeredAt).toLocaleString()}
+                                                    </span>
+                                                </h4>
+                                                {/* 답변 수정/삭제 버튼 */}
+                                                {editingAnswerId !== post.id && (
+                                                    <div className="flex items-center gap-2">
+                                                        <button
+                                                            onClick={() => handleStartEditAnswer(post)}
+                                                            className="flex items-center gap-1 px-3 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                                                        >
+                                                            <Edit className="w-3 h-3" />
+                                                            수정
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteAnswer(post.id)}
+                                                            disabled={submitting === post.id}
+                                                            className="flex items-center gap-1 px-3 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                                                        >
+                                                            <Trash2 className="w-3 h-3" />
+                                                            삭제
+                                                        </button>
+                                                    </div>
+                                                )}
                                             </div>
+
+                                            {/* 수정 모드 */}
+                                            {editingAnswerId === post.id ? (
+                                                <div>
+                                                    <textarea
+                                                        rows={4}
+                                                        value={editAnswerText}
+                                                        onChange={(e) => setEditAnswerText(e.target.value)}
+                                                        className="w-full border border-gray-300 p-4 text-gray-900 focus:outline-none focus:border-blue-500 resize-none"
+                                                        placeholder="답변 내용을 입력하세요..."
+                                                    />
+                                                    <div className="flex justify-end gap-2 mt-3">
+                                                        <button
+                                                            onClick={handleCancelEditAnswer}
+                                                            className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition-colors"
+                                                        >
+                                                            <X className="w-4 h-4" />
+                                                            취소
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleSaveEditAnswer(post.id)}
+                                                            disabled={submitting === post.id}
+                                                            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white font-bold hover:bg-blue-600 transition-colors disabled:opacity-50"
+                                                        >
+                                                            <Check className="w-4 h-4" />
+                                                            {submitting === post.id ? '저장 중...' : '저장'}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="bg-green-50 p-4 border border-green-200 text-gray-700 whitespace-pre-wrap">
+                                                    {post.answer}
+                                                </div>
+                                            )}
                                         </div>
                                     ) : (
                                         <div>

@@ -30,7 +30,7 @@ const MAIN_CATEGORIES = [
         },
         features: [
             { icon: Users, title: '누구나', desc: '간편한 사용법으로 누구나 시공가능' },
-            { icon: Leaf, title: '환경표지인증 보유', desc: '친환경 인증 제품으로 안전하게 사용' },
+            { icon: Leaf, title: '고내구성', desc: '내구성이 뛰어나 반영구적 효과가 있음' },
             { icon: Palette, title: '공간 특화', desc: '공간에 맞는 특화 기능을 제공' }
         ]
     },

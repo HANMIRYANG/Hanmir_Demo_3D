@@ -505,8 +505,8 @@ export default function AdminNoticesPage() {
                                     )}
                                 </div>
                                 {formData.thumbnail && (
-                                    <div className="mt-2 max-w-xs aspect-video bg-zinc-800 overflow-hidden">
-                                        <img src={formData.thumbnail} alt="Thumbnail" className="w-full h-full object-cover" />
+                                    <div className="mt-2 max-w-md bg-zinc-800 rounded overflow-hidden">
+                                        <img src={formData.thumbnail} alt="Thumbnail" className="w-full max-h-64 object-contain" />
                                     </div>
                                 )}
                             </div>

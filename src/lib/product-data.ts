@@ -1,5 +1,3 @@
-import { Thermometer, Shield, Zap, Droplets, Layers, Microscope, Battery, Building2, Tv } from 'lucide-react';
-
 // Feature Section 정의
 export interface FeatureSection {
     title: string;
@@ -8,12 +6,10 @@ export interface FeatureSection {
 }
 
 export interface ProductData {
-    id: string;
     title: string;
     koreanTitle: string;
     description: string;
     longDescription: string;
-    icon: any;
     heroImage: string;
     features: string[];
     featureSections: FeatureSection[];
@@ -24,66 +20,13 @@ export interface ProductData {
 
 export const products: Record<string, ProductData> = {
     // ========================================
-    // 페인트 (기능성 도료 솔루션)
-    // ========================================
-    "paint": {
-        id: "paint",
-        title: "Functional Paint Solutions",
-        koreanTitle: "기능성 도료 솔루션",
-        description: "방열, 불연, EMI 차폐, 초발수 등 다양한 기능성 도료의 원스톱 솔루션",
-        longDescription: "한미르는 20년간의 연구개발을 통해 방열, 불연, 전자파 차폐, 초발수, 자가치유, 정밀 박막 등 다양한 기능성 도료를 개발해왔습니다. 산업별 맞춤 솔루션을 제공하며, ISO 9001 품질경영 인증과 다수의 특허를 보유하고 있습니다.",
-        icon: Layers,
-        heroImage: "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=2670&auto=format&fit=crop",
-        features: [
-            "방열 코팅 - 기기 과열 방지, 30% 향상된 열전도 효율",
-            "불연 도료 - ISO 1182 인증, 유독가스 Zero",
-            "EMI 차폐 - 30MHz~10GHz 광대역 차폐",
-            "초발수 코팅 - 접촉각 155° 이상, 자가 세정",
-            "자가치유 - 스크래치 자동 복원",
-            "정밀 박막 - 나노 단위 두께 제어"
-        ],
-        featureSections: [
-            {
-                title: "다양한 기능성 도료 라인업",
-                description: "방열, 불연, EMI 차폐, 초발수, 자가치유, 정밀 박막 등 산업별 맞춤 솔루션을 제공합니다. 20년간의 R&D를 통해 축적된 기술력으로 최고의 품질을 보장합니다.",
-                image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=2532&auto=format&fit=crop"
-            },
-            {
-                title: "국제 인증과 특허 보유",
-                description: "ISO 9001 품질경영 인증, ISO 1182 불연재 인증을 보유하고 있으며, 핵심 기술 관련 다수의 국내외 특허를 등록하고 있습니다.",
-                image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2670&auto=format&fit=crop"
-            },
-            {
-                title: "맞춤형 솔루션 제공",
-                description: "고객의 요구사항에 맞춘 맞춤형 도료 개발 서비스를 제공합니다. 기재 분석부터 시제품 제작, 양산까지 원스톱으로 지원합니다.",
-                image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=2670&auto=format&fit=crop"
-            }
-        ],
-        techSpecs: {
-            "방열 코팅 열전도율": "12 W/m·K 이상",
-            "불연 등급": "ISO 1182 (불연재)",
-            "EMI 차폐 효과": "평균 60dB 이상",
-            "초발수 접촉각": "> 155°",
-            "자가치유 복원율": "90% 이상",
-            "박막 두께 정밀도": "± 5% 이내"
-        },
-        applications: [
-            "전자/IT - 스마트폰, LED, 배터리 하우징",
-            "산업/건설 - 공장, 데이터센터, 터널",
-            "모빌리티 - 전기차, 드론, 항공"
-        ]
-    },
-
-    // ========================================
     // 2차전지 열폭방지 면압패드
     // ========================================
     "battery-pad": {
-        id: "battery-pad",
         title: "Battery Thermal Runaway Prevention Pad",
         koreanTitle: "2차 전지 열폭방지 면압패드",
         description: "전기차 배터리의 열폭주를 방지하고 안전성을 극대화하는 고성능 면압패드",
         longDescription: "전기차(EV)와 에너지 저장장치(ESS)의 핵심 안전 부품인 열폭방지 면압패드입니다. 배터리 셀 간 균일한 압력 분산과 우수한 열관리 성능으로 열폭주(Thermal Runaway) 현상을 효과적으로 방지합니다. 고온에서도 물성을 유지하는 특수 실리콘 소재를 사용하여 배터리 수명 전체에 걸쳐 안정적인 성능을 보장합니다.",
-        icon: Battery,
         heroImage: "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=2672&auto=format&fit=crop",
         features: [
             "균일 압력 분산으로 배터리 셀 보호",
@@ -128,12 +71,10 @@ export const products: Record<string, ProductData> = {
     // 건축자재
     // ========================================
     "building-materials": {
-        id: "building-materials",
         title: "Eco-Friendly Building Materials",
         koreanTitle: "친환경 건축자재",
         description: "단열, 불연, 흡음 성능을 갖춘 차세대 친환경 건축 소재",
         longDescription: "한미르의 건축자재는 무기질 불연 소재를 기반으로 뛰어난 단열 성능과 화재 안전성을 동시에 제공합니다. 녹색건축 인증(G-SEED)과 에너지 효율 기준을 충족하며, 실내 공기질을 깨끗하게 유지하는 친환경 소재입니다.",
-        icon: Building2,
         heroImage: "https://images.unsplash.com/photo-1486718448742-163732cd1544?q=80&w=2574&auto=format&fit=crop",
         features: [
             "무기질 불연 코어로 화재 안전",
@@ -177,12 +118,10 @@ export const products: Record<string, ProductData> = {
     // 가전제품 코팅 (개발 진행중)
     // ========================================
     "home-appliances": {
-        id: "home-appliances",
         title: "Home Appliance Coating Solutions",
         koreanTitle: "가전제품 코팅 솔루션",
         description: "프리미엄 가전의 외관과 내구성을 높이는 특수 코팅 기술",
         longDescription: "가전제품의 외장재와 내부 부품에 적용되는 특수 코팅 솔루션입니다. 항균, 지문방지(AFP), 자가치유 등 다양한 기능을 통해 제품의 가치를 높이고 사용자 경험을 개선합니다.",
-        icon: Tv,
         heroImage: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=2670&auto=format&fit=crop",
         isDevelopment: true, // ⚠️ 개발 진행중
         features: [

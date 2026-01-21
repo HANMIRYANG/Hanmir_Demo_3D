@@ -109,3 +109,104 @@ export async function POST(
         return NextResponse.json({ error: 'Failed to add answer' }, { status: 500 });
     }
 }
+
+// PUT: 관리자 답변 수정
+export async function PUT(
+    request: Request,
+    context: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await context.params;
+        const body = await request.json();
+        const { answer } = body;
+
+        if (!answer || answer.trim() === '') {
+            return NextResponse.json({ error: '답변 내용을 입력해주세요.' }, { status: 400 });
+        }
+
+        // 게시글 조회
+        const existingPost = await (prisma as any).qnaPost.findUnique({
+            where: { id }
+        });
+
+        if (!existingPost) {
+            return NextResponse.json({ error: '게시글을 찾을 수 없습니다.' }, { status: 404 });
+        }
+
+        if (!existingPost.isAnswered) {
+            return NextResponse.json({ error: '등록된 답변이 없습니다.' }, { status: 400 });
+        }
+
+        // 답변 수정
+        const updatedPost = await (prisma as any).qnaPost.update({
+            where: { id },
+            data: {
+                answer,
+                answeredAt: new Date(),
+            },
+            select: {
+                id: true,
+                number: true,
+                title: true,
+                answer: true,
+                isAnswered: true,
+                answeredAt: true,
+            }
+        });
+
+        return NextResponse.json({
+            post: updatedPost,
+            message: '답변이 수정되었습니다.'
+        });
+    } catch (error) {
+        console.error('Failed to update answer:', error);
+        return NextResponse.json({ error: '답변 수정 중 오류가 발생했습니다.' }, { status: 500 });
+    }
+}
+
+// DELETE: 관리자 답변 삭제 (게시글은 유지, 미답변 상태로 전환)
+export async function DELETE(
+    request: Request,
+    context: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await context.params;
+
+        // 게시글 조회
+        const existingPost = await (prisma as any).qnaPost.findUnique({
+            where: { id }
+        });
+
+        if (!existingPost) {
+            return NextResponse.json({ error: '게시글을 찾을 수 없습니다.' }, { status: 404 });
+        }
+
+        if (!existingPost.isAnswered) {
+            return NextResponse.json({ error: '등록된 답변이 없습니다.' }, { status: 400 });
+        }
+
+        // 답변 삭제 (미답변 상태로 전환)
+        const updatedPost = await (prisma as any).qnaPost.update({
+            where: { id },
+            data: {
+                answer: null,
+                isAnswered: false,
+                answeredAt: null,
+            },
+            select: {
+                id: true,
+                number: true,
+                title: true,
+                isAnswered: true,
+            }
+        });
+
+        return NextResponse.json({
+            post: updatedPost,
+            message: '답변이 삭제되었습니다.'
+        });
+    } catch (error) {
+        console.error('Failed to delete answer:', error);
+        return NextResponse.json({ error: '답변 삭제 중 오류가 발생했습니다.' }, { status: 500 });
+    }
+}
