@@ -109,43 +109,43 @@ export const PaintProductModal: React.FC<PaintProductModalProps> = ({
                         </div>
 
                         {/* Right: Product Details */}
-                        <div className="space-y-6">
+                        <div className="space-y-0">
                             {/* Description */}
                             {product.description && (
-                                <div>
-                                    <h3 className="text-sm font-bold text-gray-500 mb-2">요약 설명</h3>
+                                <div className="py-4 border-b border-gray-200">
+                                    <h3 className="text-sm font-bold text-amber-600 mb-2">요약 설명</h3>
                                     <p className="text-gray-700">{product.description}</p>
                                 </div>
                             )}
 
                             {/* Usage */}
                             {product.usage && (
-                                <div>
-                                    <h3 className="text-sm font-bold text-gray-500 mb-2">용도</h3>
+                                <div className="py-4 border-b border-gray-200">
+                                    <h3 className="text-sm font-bold text-amber-600 mb-2">용도</h3>
                                     <p className="text-gray-700 whitespace-pre-wrap">{product.usage}</p>
                                 </div>
                             )}
 
                             {/* Features */}
                             {product.features && (
-                                <div>
-                                    <h3 className="text-sm font-bold text-gray-500 mb-2">특성</h3>
+                                <div className="py-4 border-b border-gray-200">
+                                    <h3 className="text-sm font-bold text-amber-600 mb-2">특성</h3>
                                     <p className="text-gray-700 whitespace-pre-wrap">{product.features}</p>
                                 </div>
                             )}
 
                             {/* Specification */}
                             {product.specification && (
-                                <div>
-                                    <h3 className="text-sm font-bold text-gray-500 mb-2">규격</h3>
+                                <div className="py-4 border-b border-gray-200">
+                                    <h3 className="text-sm font-bold text-amber-600 mb-2">규격</h3>
                                     <p className="text-gray-700 whitespace-pre-wrap">{product.specification}</p>
                                 </div>
                             )}
 
                             {/* Instructions */}
                             {product.instructions && (
-                                <div>
-                                    <h3 className="text-sm font-bold text-gray-500 mb-2">사용방법</h3>
+                                <div className="py-4">
+                                    <h3 className="text-sm font-bold text-amber-600 mb-2">사용방법</h3>
                                     <p className="text-gray-700 whitespace-pre-wrap">{product.instructions}</p>
                                 </div>
                             )}
