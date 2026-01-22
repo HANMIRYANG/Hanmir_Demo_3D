@@ -19,6 +19,7 @@ import {
     Save,
     Upload
 } from 'lucide-react';
+import { upload } from '@vercel/blob/client';
 
 // 메인 카테고리 정의 (하드코딩)
 const MAIN_CATEGORIES = [
@@ -113,32 +114,60 @@ export default function PaintProductsPage() {
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
 
-    // 파일 업로드 핸들러
+    // 파일 업로드 핸들러 (Vercel Blob 클라이언트 업로드)
     const handleFileUpload = async (file: File, type: 'thumbnail' | 'dataSheet') => {
+        // 파일 크기 체크 (50MB)
+        if (file.size > 50 * 1024 * 1024) {
+            alert('파일 크기는 50MB를 초과할 수 없습니다.');
+            return;
+        }
+
         setUploading(true);
         try {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('type', type === 'thumbnail' ? 'image' : 'attachment');
+            // Vercel 환경: 클라이언트 직접 업로드
+            const isVercel = window.location.hostname.includes('vercel.app') ||
+                !window.location.hostname.includes('localhost');
 
-            const res = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData
-            });
+            if (isVercel) {
+                const newBlob = await upload(file.name, file, {
+                    access: 'public',
+                    handleUploadUrl: '/api/upload',
+                });
 
-            const data = await res.json();
-            if (res.ok && data.url) {
                 if (type === 'thumbnail') {
-                    setProductForm(prev => ({ ...prev, thumbnail: data.url }));
+                    setProductForm(prev => ({ ...prev, thumbnail: newBlob.url }));
                 } else {
                     setProductForm(prev => ({
                         ...prev,
-                        dataSheetPath: data.url,
-                        dataSheetName: data.originalName
+                        dataSheetPath: newBlob.url,
+                        dataSheetName: file.name
                     }));
                 }
             } else {
-                alert(data.error || '업로드 실패');
+                // 로컬 환경: 기존 FormData 방식
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('type', type === 'thumbnail' ? 'image' : 'attachment');
+
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await res.json();
+                if (res.ok && data.url) {
+                    if (type === 'thumbnail') {
+                        setProductForm(prev => ({ ...prev, thumbnail: data.url }));
+                    } else {
+                        setProductForm(prev => ({
+                            ...prev,
+                            dataSheetPath: data.url,
+                            dataSheetName: data.originalName
+                        }));
+                    }
+                } else {
+                    alert(data.error || '업로드 실패');
+                }
             }
         } catch (error) {
             console.error('Upload error:', error);

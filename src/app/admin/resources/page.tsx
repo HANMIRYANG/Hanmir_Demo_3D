@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Plus, FileText, Trash2, Edit, Download, X, Upload, Loader2, RefreshCw, File } from 'lucide-react';
+import { upload } from '@vercel/blob/client';
 
 interface Resource {
     id: string;
@@ -86,34 +87,59 @@ export default function ResourcesAdminPage() {
         if (!formData.title) return alert("제목을 입력해주세요.");
         if (!selectedFile) return alert("파일을 첨부해주세요.");
 
+        // 파일 크기 체크 (50MB)
+        if (selectedFile.size > 50 * 1024 * 1024) {
+            return alert("파일 크기는 50MB를 초과할 수 없습니다.");
+        }
+
         try {
             setSubmitting(true);
-
-            // 1. 파일 업로드
             setUploading(true);
-            const uploadFormData = new FormData();
-            uploadFormData.append('file', selectedFile);
-            uploadFormData.append('type', 'attachment');
 
-            const uploadRes = await fetch('/api/upload', {
-                method: 'POST',
-                body: uploadFormData
-            });
+            let uploadedUrl: string;
+            let uploadedFileName: string;
 
-            if (!uploadRes.ok) {
-                const uploadError = await uploadRes.json();
-                throw new Error(uploadError.error || '파일 업로드 실패');
+            // Vercel 환경 체크
+            const isVercel = window.location.hostname.includes('vercel.app') ||
+                !window.location.hostname.includes('localhost');
+
+            if (isVercel) {
+                // Vercel 환경: 클라이언트 직접 업로드
+                const newBlob = await upload(selectedFile.name, selectedFile, {
+                    access: 'public',
+                    handleUploadUrl: '/api/upload',
+                });
+                uploadedUrl = newBlob.url;
+                uploadedFileName = selectedFile.name;
+            } else {
+                // 로컬 환경: 기존 FormData 방식
+                const uploadFormData = new FormData();
+                uploadFormData.append('file', selectedFile);
+                uploadFormData.append('type', 'attachment');
+
+                const uploadRes = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: uploadFormData
+                });
+
+                if (!uploadRes.ok) {
+                    const uploadError = await uploadRes.json();
+                    throw new Error(uploadError.error || '파일 업로드 실패');
+                }
+
+                const uploadData = await uploadRes.json();
+                uploadedUrl = uploadData.url;
+                uploadedFileName = uploadData.originalName || selectedFile.name;
             }
 
-            const uploadData = await uploadRes.json();
             setUploading(false);
 
             // 2. 기술자료 등록 (업로드된 파일 정보 사용)
             const resourceData = {
                 title: formData.title,
                 category: formData.category,
-                fileName: uploadData.originalName || selectedFile.name,
-                filePath: uploadData.url,
+                fileName: uploadedFileName,
+                filePath: uploadedUrl,
                 fileSize: formData.fileSize,
                 format: formData.format
             };
