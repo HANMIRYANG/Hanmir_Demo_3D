@@ -40,6 +40,30 @@ export const PaintProductModal: React.FC<PaintProductModalProps> = ({
 
     if (!isOpen || !product) return null;
 
+    // 파일 다운로드 핸들러 (외부 URL도 강제 다운로드)
+    const handleDownload = async () => {
+        if (!product.dataSheetPath) return;
+
+        try {
+            const response = await fetch(product.dataSheetPath);
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = product.dataSheetName || 'datasheet.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            console.error('Download error:', error);
+            // 실패 시 새 탭에서 열기
+            window.open(product.dataSheetPath, '_blank');
+        }
+    };
+
     const handleShare = async () => {
         const domain = selectedDomain === '직접입력' ? emailDomain : selectedDomain;
         const email = `${emailUser}@${domain}`;
@@ -156,14 +180,13 @@ export const PaintProductModal: React.FC<PaintProductModalProps> = ({
                     <div className="flex flex-wrap items-center justify-between gap-4 p-6 border-t border-gray-200 bg-gray-50">
                         {/* DataSheet Download */}
                         {product.dataSheetPath && (
-                            <a
-                                href={product.dataSheetPath}
-                                download={product.dataSheetName}
+                            <button
+                                onClick={handleDownload}
                                 className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-bold hover:bg-gray-800 transition-colors"
                             >
                                 <Download className="w-4 h-4" />
                                 DataSheet 다운로드
-                            </a>
+                            </button>
                         )}
 
                         <div className="flex items-center gap-3">

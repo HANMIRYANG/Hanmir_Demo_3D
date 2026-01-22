@@ -131,7 +131,7 @@ export default function ResourcesAdminPage() {
             setSelectedFile(null);
             setFormData({
                 title: '',
-                category: 'Catalogue',
+                category: 'DATASHEET',
                 fileName: '',
                 filePath: '',
                 fileSize: '',
