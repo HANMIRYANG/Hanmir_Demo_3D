@@ -24,28 +24,77 @@ export default function InquiriesAdminPage() {
     const [selectedInterest, setSelectedInterest] = useState<string>("all");
 
     // Fetch Inquiries
-    useEffect(() => {
-        const fetchInquiries = async () => {
-            try {
-                const queryParams = new URLSearchParams();
-                if (selectedInterest !== "all") queryParams.append("interest", selectedInterest);
+    const fetchInquiries = async () => {
+        try {
+            const queryParams = new URLSearchParams();
+            if (selectedInterest !== "all") queryParams.append("interest", selectedInterest);
 
-                // 실제 API 연동
-                const res = await fetch(`/api/inquiries?${queryParams.toString()}`);
-                const data = await res.json();
+            // 실제 API 연동
+            const res = await fetch(`/api/inquiries?${queryParams.toString()}`);
+            const data = await res.json();
 
-                if (res.ok) {
-                    setInquiries(data.inquiries || []);
-                }
-            } catch (error) {
-                console.error("Failed to fetch inquiries", error);
-            } finally {
-                setLoading(false);
+            if (res.ok) {
+                setInquiries(data.inquiries || []);
             }
-        };
+        } catch (error) {
+            console.error("Failed to fetch inquiries", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchInquiries();
     }, [selectedInterest]);
+
+    // Handle Delete
+    const handleDelete = async (id: string) => {
+        if (!confirm("정말 이 문의 내역을 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.")) return;
+
+        try {
+            const res = await fetch(`/api/inquiries/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                alert("삭제되었습니다.");
+                // 즉시 목록에서 제거 (Optimistic UI)
+                setInquiries(prev => prev.filter(item => item.id !== id));
+            } else {
+                throw new Error("Failed to delete");
+            }
+        } catch (error) {
+            console.error("Error deleting inquiry:", error);
+            alert("삭제에 실패했습니다.");
+        }
+    };
+
+    // Handle Read Status Toggle
+    const handleToggleRead = async (id: string, currentStatus: boolean) => {
+        try {
+            // Optimistic UI Update first
+            setInquiries(prev => prev.map(item =>
+                item.id === id ? { ...item, isRead: !currentStatus } : item
+            ));
+
+            const res = await fetch(`/api/inquiries/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isRead: !currentStatus })
+            });
+
+            if (!res.ok) {
+                // Revert on failure
+                setInquiries(prev => prev.map(item =>
+                    item.id === id ? { ...item, isRead: currentStatus } : item
+                ));
+                throw new Error("Failed to update status");
+            }
+        } catch (error) {
+            console.error("Error updating status:", error);
+            alert("상태 변경에 실패했습니다.");
+        }
+    };
 
     // Filter by Search Term
     const filteredInquiries = inquiries.filter(inquiry =>
@@ -61,7 +110,7 @@ export default function InquiriesAdminPage() {
         }
 
         // CSV Header
-        const headers = ["ID", "이름", "업체명", "연락처", "이메일", "관심분야", "문의내용", "제품ID", "접수일시"];
+        const headers = ["ID", "이름", "업체명", "연락처", "이메일", "관심분야", "문의내용", "제품ID", "접수일시", "읽음여부"];
 
         // CSV Rows
         const rows = inquiries.map(inquiry => [
@@ -73,7 +122,8 @@ export default function InquiriesAdminPage() {
             `"${inquiry.interest}"`,
             `"${(inquiry.message || '').replace(/"/g, '""')}"`, // Extract message and escape double quotes
             inquiry.productId || '',
-            new Date(inquiry.createdAt).toLocaleString()
+            new Date(inquiry.createdAt).toLocaleString(),
+            inquiry.isRead ? "읽음" : "안읽음"
         ]);
 
         // Combine
@@ -143,22 +193,32 @@ export default function InquiriesAdminPage() {
                     <div className="text-center py-20 text-zinc-500">데이터를 불러오는 중...</div>
                 ) : filteredInquiries.length > 0 ? (
                     filteredInquiries.map((inquiry) => (
-                        <div key={inquiry.id} className="bg-zinc-900 border border-zinc-800 p-6 hover:border-zinc-700 transition-colors">
+                        <div key={inquiry.id} className={`bg-zinc-900 border p-6 transition-colors ${inquiry.isRead ? 'border-zinc-800 opacity-75' : 'border-blue-900/50 hover:border-blue-800'
+                            }`}>
                             <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
                                 <div className="flex items-center gap-3">
-                                    <span className={`px-2 py-1 text-[10px] font-bold rounded border ${inquiry.isRead
-                                        ? 'bg-zinc-800 text-zinc-500 border-zinc-700'
-                                        : 'bg-blue-900/30 text-blue-400 border-blue-800'
-                                        }`}>
+                                    <button
+                                        onClick={() => handleToggleRead(inquiry.id, inquiry.isRead)}
+                                        className={`px-2 py-1 text-[10px] font-bold rounded border cursor-pointer transition-all hover:scale-105 ${inquiry.isRead
+                                            ? 'bg-zinc-800 text-zinc-500 border-zinc-700 hover:bg-zinc-700'
+                                            : 'bg-blue-600 text-white border-blue-500 shadow-lg shadow-blue-900/20 hover:bg-blue-500'
+                                            }`}
+                                        title={inquiry.isRead ? "읽지 않음으로 표시" : "읽음으로 표시"}
+                                    >
                                         {inquiry.isRead ? '읽음' : '새 문의'}
-                                    </span>
+                                    </button>
                                     <span className="text-sm text-zinc-500 flex items-center gap-1">
                                         <Calendar className="w-3 h-3" />
                                         {new Date(inquiry.createdAt).toLocaleString()}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <button className="text-xs text-zinc-400 hover:text-white underline">삭제</button>
+                                    <button
+                                        onClick={() => handleDelete(inquiry.id)}
+                                        className="text-xs text-zinc-400 hover:text-red-400 underline transition-colors"
+                                    >
+                                        삭제
+                                    </button>
                                 </div>
                             </div>
 
@@ -209,3 +269,4 @@ export default function InquiriesAdminPage() {
         </div>
     );
 }
+
