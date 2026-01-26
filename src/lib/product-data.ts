@@ -87,12 +87,12 @@ export const products: Record<string, ProductData> = {
         title: "Eco-Friendly Building Materials",
         koreanTitle: "친환경 건축자재",
         description: "단열, 불연, 흡음 성능을 갖춘 차세대 친환경 건축 소재",
-        longDescription: "한미르의 건축자재는 무기질 불연 소재를 기반으로 뛰어난 단열 성능과 화재 안전성을 동시에 제공합니다. 녹색건축 인증(G-SEED)과 에너지 효율 기준을 충족하며, 실내 공기질을 깨끗하게 유지하는 친환경 소재입니다.",
+        longDescription: "한미르의 건축자재는 화재에 타지 않는 무기질 불연 소재를 기반으로, 화염 확산을 차단하는 동시에 탁월한 단열 성능을 제공합니다. 여름철 열기와 겨울철 냉기를 완벽히 차단하여 에너지 효율을 극대화하는 고기능성 자재입니다. 안전한 공간과 쾌적한 온도를 위한 최적의 솔루션을 제안합니다.",
         heroImage: "https://images.unsplash.com/photo-1486718448742-163732cd1544?q=80&w=2574&auto=format&fit=crop",
         features: [
             "무기질 불연 코어로 화재 안전",
             "고단열 에어로젤 기술 적용",
-            "VOC Free 친환경 소재",
+            "우수건축자재 선정 입증",
             "흡음, 차음 성능 우수"
         ],
         featureSections: [
@@ -102,12 +102,12 @@ export const products: Record<string, ProductData> = {
                 image: "https://images.unsplash.com/photo-1486915309851-b0cc1f8a0084?q=80&w=2574&auto=format&fit=crop"
             },
             {
-                title: "녹색건축 인증 충족",
-                description: "G-SEED(녹색건축인증), 에너지 효율 등급, 제로에너지건축물 인증 기준을 충족합니다. 탄소 중립 건축물 구현에 기여합니다.",
+                title: "우수건축자재 선정 입증",
+                description: "대한건축사협회 주관 '우수건축자재'로 공식 선정되어, 건축 현장에서의 품질 신뢰성과 시공 안정성을 검증받았습니다.",
                 image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2613&auto=format&fit=crop"
             },
             {
-                title: "친환경 실내 환경",
+                title: "유해물질 걱정 없는 안전성",
                 description: "포름알데히드, VOC가 전혀 없는 친환경 소재로 새집증후군 걱정 없이 쾌적한 실내 환경을 유지할 수 있습니다.",
                 image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2670&auto=format&fit=crop"
             }
@@ -127,8 +127,8 @@ export const products: Record<string, ProductData> = {
         ],
         iconFeatures: [
             { icon: "ShieldCheck", title: "불연+단열", desc: "화재 안전성과 단열 동시 제공" },
-            { icon: "Leaf", title: "친환경", desc: "VOC Free 친환경 소재" },
-            { icon: "Award", title: "인증", desc: "G-SEED 녹색건축 인증" }
+            { icon: "Leaf", title: "우수건축자재", desc: "우수건축자재 선정 입증" },
+            { icon: "Award", title: "안전성", desc: "유해물질 걱정 없는 안전성" }
         ]
     },
 
