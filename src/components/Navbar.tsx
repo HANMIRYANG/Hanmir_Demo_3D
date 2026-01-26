@@ -85,12 +85,17 @@ export const Navbar: React.FC<NavbarProps> = ({ isSticky = true }) => {
 
     // 언어 변경 핸들러
     const handleLanguageChange = (langCode: string) => {
-        // 현재 경로에서 언어 접두사 제거 후 새 언어로 교체
-        let newPath = pathname;
-        if (pathname.startsWith('/ko') || pathname.startsWith('/en') || pathname.startsWith('/cn')) {
-            newPath = pathname.substring(3) || '/';
+        // EN, CN 모드: 항상 루트(원페이지 랜딩)로 이동
+        if (langCode === 'en' || langCode === 'cn') {
+            router.push(`/${langCode}`);
+        } else {
+            // KO 모드: 기존 경로 유지 시도
+            let newPath = pathname;
+            if (pathname.startsWith('/ko') || pathname.startsWith('/en') || pathname.startsWith('/cn')) {
+                newPath = pathname.substring(3) || '/';
+            }
+            router.push(`/${langCode}${newPath}`);
         }
-        router.push(`/${langCode}${newPath}`);
         setLangMenuOpen(false);
     };
 
