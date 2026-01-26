@@ -51,7 +51,7 @@ export const ProductSubNav: React.FC<ProductSubNavProps> = ({ productName, items
             {/* 서브 네비게이션 바 */}
             <div
                 ref={navRef}
-                className={`w-full bg-white border-b border-zinc-200 z-40 transition-shadow duration-300 ${isSticky
+                className={`w-full bg-white border-b border-zinc-200 z-[60] transition-shadow duration-300 ${isSticky
                     ? 'fixed top-0 left-0 right-0 shadow-lg'
                     : 'relative'
                     }`}

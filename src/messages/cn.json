@@ -145,15 +145,68 @@
         "title": "涂料",
         "breadcrumb": {
             "home": "首页",
-            "products": "产品",
+            "products": "产品介绍",
             "paint": "涂料"
+        },
+        "categories": {
+            "building": "建筑",
+            "ship": "船舶",
+            "industrial": "工业"
+        },
+        "hero": {
+            "building": {
+                "tagline": "水性环保涂料",
+                "title": "鲜艳持久的建筑涂料",
+                "description": "韩美尔建筑涂料以美丽的色彩为日常空间增添多彩，提供按用途细分的功能，为建筑物带来更高价值。"
+            },
+            "ship": {
+                "tagline": "适用于极端环境的船舶专用",
+                "title": "针对海洋环境优化的船舶涂料",
+                "description": "韩美尔船舶涂料即使在极端海洋条件下也能提供出色的耐久性和防锈性能。延长船舶使用寿命，降低维护成本。"
+            },
+            "industrial": {
+                "tagline": "工业现场专用",
+                "title": "工业现场专用涂料",
+                "description": "韩美尔工业涂料专为工厂、仓库、机械设备等工业现场优化。以优异的耐化学性和耐磨性保护工业设施。"
+            }
+        },
+        "features": {
+            "anyone": "任何人",
+            "anyoneDesc": "简单易用，任何人都能施工",
+            "durability": "高耐久性",
+            "durabilityDesc": "耐久性优异，具有半永久效果",
+            "specialized": "空间专用",
+            "specializedDesc": "提供针对各空间的专用功能",
+            "professional": "专业级",
+            "professionalDesc": "专业施工者使用的高性能产品",
+            "ecoFriendly": "环保",
+            "ecoFriendlyDesc": "考虑海洋环境的环保设计",
+            "safety": "安全性",
+            "safetyDesc": "考虑工人安全的设计",
+            "chemResistant": "耐化学性",
+            "chemResistantDesc": "对化学物质具有强耐久性"
+        },
+        "ui": {
+            "all": "全部",
+            "totalCount": "共 {count} 件",
+            "search": "搜索",
+            "developing": "(开发中)",
+            "noProducts": "暂无产品。",
+            "noSearchResults": "无搜索结果。"
         },
         "calculator": {
             "title": "涂料计算器",
-            "description": "计算所需涂料量",
+            "description": "输入涂装面积，即可轻松计算所需涂料量。",
             "note": "如需了解各产品的准确用量，请联系我们。",
             "openCalculator": "打开计算器"
         }
+    },
+    "products": {
+        "breadcrumb": {
+            "home": "首页",
+            "products": "产品介绍"
+        },
+        "development": "开发中"
     },
     "language": {
         "ko": "한국어",

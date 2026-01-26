@@ -148,12 +148,65 @@
             "products": "Products",
             "paint": "Paint"
         },
+        "categories": {
+            "building": "Architectural",
+            "ship": "Marine",
+            "industrial": "Industrial"
+        },
+        "hero": {
+            "building": {
+                "tagline": "Water-based Eco-friendly Paint",
+                "title": "Vivid and Long-lasting Architectural Paint",
+                "description": "HANMIR architectural paint adds variety to our daily spaces with beautiful colors and provides specialized functions for each purpose to deliver higher value to buildings."
+            },
+            "ship": {
+                "tagline": "Marine-grade for Extreme Environments",
+                "title": "Marine Paint Optimized for Ocean Environment",
+                "description": "HANMIR marine paint provides excellent durability and anti-corrosion properties even in extreme marine conditions. Extend ship lifespan and reduce maintenance costs."
+            },
+            "industrial": {
+                "tagline": "Industrial-grade for Manufacturing",
+                "title": "Industrial Paint for Manufacturing Sites",
+                "description": "HANMIR industrial paint is optimized for factories, warehouses, and machinery. Protects industrial facilities with excellent chemical and abrasion resistance."
+            }
+        },
+        "features": {
+            "anyone": "Anyone",
+            "anyoneDesc": "Easy to apply by anyone",
+            "durability": "High Durability",
+            "durabilityDesc": "Semi-permanent effect with excellent durability",
+            "specialized": "Space Specialized",
+            "specializedDesc": "Specialized functions for each space",
+            "professional": "Professional",
+            "professionalDesc": "High-performance for professional applicators",
+            "ecoFriendly": "Eco-friendly",
+            "ecoFriendlyDesc": "Eco-friendly design considering marine environment",
+            "safety": "Safety",
+            "safetyDesc": "Designed with worker safety in mind",
+            "chemResistant": "Chemical Resistant",
+            "chemResistantDesc": "Strong durability against chemicals"
+        },
+        "ui": {
+            "all": "All",
+            "totalCount": "Total {count} items",
+            "search": "Search",
+            "developing": "(In Development)",
+            "noProducts": "No products registered.",
+            "noSearchResults": "No search results."
+        },
         "calculator": {
             "title": "Paint Calculator",
-            "description": "Calculate the amount of paint you need",
+            "description": "Enter the area to be painted and easily calculate the amount of paint needed.",
             "note": "For accurate usage per product, please contact us.",
             "openCalculator": "Open Calculator"
         }
+    },
+    "products": {
+        "breadcrumb": {
+            "home": "Home",
+            "products": "Products"
+        },
+        "development": "In Development"
     },
     "language": {
         "ko": "한국어",

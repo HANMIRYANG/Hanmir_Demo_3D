@@ -76,9 +76,6 @@ function OverviewTab({ koreanTitle, features, longDescription }: { koreanTitle: 
                             혁신을 위한 <br />
                             <span className="text-blue-500">최적의 솔루션</span>
                         </h2>
-                        <p className="text-zinc-400 text-lg leading-relaxed mb-8">
-                            {longDescription}
-                        </p>
                         <div className="h-1 w-20 bg-gradient-to-r from-blue-500 to-purple-500"></div>
                     </div>
                     <div className="grid grid-cols-1 gap-4">

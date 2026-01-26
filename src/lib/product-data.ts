@@ -5,6 +5,13 @@ export interface FeatureSection {
     image: string;
 }
 
+// 아이콘 특징 섹션 정의
+export interface IconFeature {
+    icon: string;  // lucide 아이콘 이름
+    title: string;
+    desc: string;
+}
+
 export interface ProductData {
     title: string;
     koreanTitle: string;
@@ -16,6 +23,7 @@ export interface ProductData {
     techSpecs: Record<string, string>;
     applications: string[];
     isDevelopment?: boolean; // 개발 진행중 표시
+    iconFeatures?: IconFeature[]; // 히어로 섹션 아래 아이콘 특징
 }
 
 export const products: Record<string, ProductData> = {
@@ -64,6 +72,11 @@ export const products: Record<string, ProductData> = {
             "에너지 저장장치(ESS)",
             "배터리 모듈 조립 공정",
             "하이브리드 차량 배터리"
+        ],
+        iconFeatures: [
+            { icon: "Flame", title: "열폭방지", desc: "배터리 셀 간 열전파 차단" },
+            { icon: "Target", title: "균일 압력", desc: "±2% 이내 압력 편차" },
+            { icon: "Thermometer", title: "고내열", desc: "300°C 이상 고온 안정성" }
         ]
     },
 
@@ -111,6 +124,11 @@ export const products: Record<string, ProductData> = {
             "아파트, 주택 등 주거시설",
             "공장, 물류센터 등 산업시설",
             "지하철역, 터널 등 공공시설"
+        ],
+        iconFeatures: [
+            { icon: "ShieldCheck", title: "불연+단열", desc: "화재 안전성과 단열 동시 제공" },
+            { icon: "Leaf", title: "친환경", desc: "VOC Free 친환경 소재" },
+            { icon: "Award", title: "인증", desc: "G-SEED 녹색건축 인증" }
         ]
     },
 
@@ -158,6 +176,11 @@ export const products: Record<string, ProductData> = {
             "커피머신, 에어프라이어 등 소형가전",
             "인덕션, 후드 등 주방가전",
             "TV, 오디오 등 AV 기기"
+        ],
+        iconFeatures: [
+            { icon: "Shield", title: "항균", desc: "99.9% 세균 제거" },
+            { icon: "Fingerprint", title: "지문방지", desc: "지문과 유분 부착 방지" },
+            { icon: "Sparkles", title: "자가치유", desc: "스크래치 자동 복원" }
         ]
     }
 };

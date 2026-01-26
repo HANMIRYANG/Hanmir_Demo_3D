@@ -35,6 +35,13 @@ export const TechResources: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [downloading, setDownloading] = useState(false);
 
+    // 공유 모달 관련 상태
+    const [emailUser, setEmailUser] = useState('');
+    const [emailDomain, setEmailDomain] = useState('');
+    const [selectedDomain, setSelectedDomain] = useState('직접입력');
+    const [shareLoading, setShareLoading] = useState(false);
+    const [shareSuccess, setShareSuccess] = useState(false);
+
     // Fetch Resources
     React.useEffect(() => {
         const fetchResources = async () => {
@@ -114,7 +121,54 @@ export const TechResources: React.FC = () => {
 
     const handleShare = (resource: Resource) => {
         setSharedResource(resource);
+        setEmailUser('');
+        setEmailDomain('');
+        setSelectedDomain('직접입력');
+        setShareSuccess(false);
         setShareModalOpen(true);
+    };
+
+    // 공유 제출 핸들러
+    const handleShareSubmit = async () => {
+        if (!sharedResource) return;
+
+        const domain = selectedDomain === '직접입력' ? emailDomain : selectedDomain;
+        const email = `${emailUser}@${domain}`;
+
+        if (!emailUser || !domain) {
+            alert('이메일을 입력해주세요.');
+            return;
+        }
+
+        setShareLoading(true);
+        try {
+            const res = await fetch('/api/product-share', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    productName: sharedResource.title,
+                    productDescription: `${sharedResource.category} - ${sharedResource.title}`,
+                    recipientEmail: email,
+                    fileType: sharedResource.format
+                })
+            });
+
+            if (res.ok) {
+                setShareSuccess(true);
+                setTimeout(() => {
+                    setShareModalOpen(false);
+                    setShareSuccess(false);
+                    setEmailUser('');
+                    setEmailDomain('');
+                }, 2000);
+            } else {
+                alert('공유 실패');
+            }
+        } catch {
+            alert('공유 중 오류 발생');
+        } finally {
+            setShareLoading(false);
+        }
     };
 
     const handleBulkDownload = async () => {
@@ -378,62 +432,85 @@ export const TechResources: React.FC = () => {
 
                         <h3 className="text-2xl font-bold text-gray-900 mb-8">메일 공유</h3>
 
-                        <div className="space-y-6">
-                            <div className="bg-gray-50 p-4 border border-gray-200 text-sm text-gray-600">
-                                공유할 기술자료의 파일형태와 이메일 정보를 입력해주시기 바랍니다.
+                        {shareSuccess ? (
+                            <div className="py-12 text-center">
+                                <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
+                                    <Check className="w-8 h-8 text-green-600" />
+                                </div>
+                                <p className="text-lg font-bold text-gray-900">공유 완료!</p>
+                                <p className="text-gray-500 mt-2">이메일이 성공적으로 발송되었습니다.</p>
                             </div>
-
-                            <div className="grid grid-cols-[100px_1fr] gap-y-6 items-center text-sm">
-                                <div className="font-bold text-gray-500">유형</div>
-                                <div className="text-gray-900">{sharedResource.category}</div>
-
-                                <div className="font-bold text-gray-500">자료명</div>
-                                <div className="text-gray-900 font-medium">{sharedResource.title}</div>
-
-                                <div className="font-bold text-gray-500">파일형태 <span className="text-amber-500">*</span></div>
-                                <div className="flex gap-4">
-                                    {["PDF", "JPG"].map(ft => (
-                                        <label key={ft} className="flex items-center gap-2 cursor-pointer group">
-                                            <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${sharedResource.format === ft || (ft === "PDF" && sharedResource.format !== "JPG")
-                                                ? "bg-amber-500 border-amber-500"
-                                                : "border-gray-300 group-hover:border-gray-400"
-                                                }`}>
-                                                {(sharedResource.format === ft || (ft === "PDF" && sharedResource.format !== "JPG")) && <Check className="w-3 h-3 text-white" />}
-                                            </div>
-                                            <span className="text-gray-700">{ft}</span>
-                                        </label>
-                                    ))}
+                        ) : (
+                            <div className="space-y-6">
+                                <div className="bg-gray-50 p-4 border border-gray-200 text-sm text-gray-600">
+                                    공유할 기술자료의 파일형태와 이메일 정보를 입력해주시기 바랍니다.
                                 </div>
 
-                                <div className="font-bold text-gray-500 self-start pt-3">
-                                    이메일 <span className="text-amber-500">*</span>
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            placeholder="Email User"
-                                            className="w-full bg-white border border-gray-300 px-3 py-2 text-gray-900 focus:border-amber-500 focus:outline-none placeholder-gray-400"
-                                        />
-                                        <span className="text-gray-400 self-center">@</span>
-                                        <input
-                                            type="text"
-                                            placeholder="Domain"
-                                            className="w-full bg-white border border-gray-300 px-3 py-2 text-gray-900 focus:border-amber-500 focus:outline-none placeholder-gray-400"
-                                        />
+                                <div className="grid grid-cols-[100px_1fr] gap-y-6 items-center text-sm">
+                                    <div className="font-bold text-gray-500">유형</div>
+                                    <div className="text-gray-900">{sharedResource.category}</div>
+
+                                    <div className="font-bold text-gray-500">자료명</div>
+                                    <div className="text-gray-900 font-medium">{sharedResource.title}</div>
+
+                                    <div className="font-bold text-gray-500">파일형태 <span className="text-amber-500">*</span></div>
+                                    <div className="flex gap-4">
+                                        {["PDF", "JPG"].map(ft => (
+                                            <label key={ft} className="flex items-center gap-2 cursor-pointer group">
+                                                <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${sharedResource.format === ft || (ft === "PDF" && sharedResource.format !== "JPG")
+                                                    ? "bg-amber-500 border-amber-500"
+                                                    : "border-gray-300 group-hover:border-gray-400"
+                                                    }`}>
+                                                    {(sharedResource.format === ft || (ft === "PDF" && sharedResource.format !== "JPG")) && <Check className="w-3 h-3 text-white" />}
+                                                </div>
+                                                <span className="text-gray-700">{ft}</span>
+                                            </label>
+                                        ))}
                                     </div>
-                                    <select className="w-full bg-white border border-gray-300 px-3 py-2 text-gray-600 focus:border-amber-500 focus:outline-none">
-                                        <option>직접입력</option>
-                                        <option>gmail.com</option>
-                                        <option>naver.com</option>
-                                    </select>
-                                </div>
-                            </div>
 
-                            <button className="w-full bg-amber-500 text-white font-bold py-4 mt-4 hover:bg-amber-600 transition-colors">
-                                공유하기
-                            </button>
-                        </div>
+                                    <div className="font-bold text-gray-500 self-start pt-3">
+                                        이메일 <span className="text-amber-500">*</span>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                placeholder="Email User"
+                                                value={emailUser}
+                                                onChange={(e) => setEmailUser(e.target.value)}
+                                                className="w-full bg-white border border-gray-300 px-3 py-2 text-gray-900 focus:border-amber-500 focus:outline-none placeholder-gray-400"
+                                            />
+                                            <span className="text-gray-400 self-center">@</span>
+                                            <input
+                                                type="text"
+                                                placeholder="Domain"
+                                                value={emailDomain}
+                                                onChange={(e) => setEmailDomain(e.target.value)}
+                                                disabled={selectedDomain !== '직접입력'}
+                                                className="w-full bg-white border border-gray-300 px-3 py-2 text-gray-900 focus:border-amber-500 focus:outline-none placeholder-gray-400 disabled:bg-gray-100"
+                                            />
+                                        </div>
+                                        <select
+                                            value={selectedDomain}
+                                            onChange={(e) => setSelectedDomain(e.target.value)}
+                                            className="w-full bg-white border border-gray-300 px-3 py-2 text-gray-600 focus:border-amber-500 focus:outline-none"
+                                        >
+                                            <option>직접입력</option>
+                                            <option>gmail.com</option>
+                                            <option>naver.com</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={handleShareSubmit}
+                                    disabled={shareLoading}
+                                    className="w-full bg-amber-500 text-white font-bold py-4 mt-4 hover:bg-amber-600 transition-colors disabled:opacity-50"
+                                >
+                                    {shareLoading ? '공유 중...' : '공유하기'}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
