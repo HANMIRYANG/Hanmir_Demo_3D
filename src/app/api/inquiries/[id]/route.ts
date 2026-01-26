@@ -10,9 +10,9 @@ import prisma from '@/lib/prisma';
 import { getCurrentAdmin } from '@/lib/auth';
 
 interface RouteContext {
-    params: {
+    params: Promise<{
         id: string;
-    };
+    }>;
 }
 
 // ============================================================================
@@ -32,7 +32,7 @@ export async function DELETE(
             );
         }
 
-        const { id } = context.params;
+        const { id } = await context.params;
 
         await prisma.inquiry.delete({
             where: { id }
@@ -68,7 +68,7 @@ export async function PATCH(
             );
         }
 
-        const { id } = context.params;
+        const { id } = await context.params;
         const body = await request.json();
         const { isRead } = body;
 
