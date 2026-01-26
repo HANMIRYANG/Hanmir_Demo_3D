@@ -22,7 +22,7 @@ export async function PUT(
 
         const { id } = await context.params;
         const body = await request.json();
-        const { title, category, thumbnail, content, images, link } = body;
+        const { title, category, thumbnail, content, images, link, createdAt } = body;
 
         if (!title) {
             return NextResponse.json(
@@ -39,7 +39,8 @@ export async function PUT(
                 thumbnail: thumbnail || '',
                 content: content || null,
                 images: images || null,
-                link: link || null
+                link: link || null,
+                createdAt: createdAt ? new Date(createdAt) : undefined
             }
         });
 

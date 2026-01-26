@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { title, category, thumbnail, content, images, link } = body;
+        const { title, category, thumbnail, content, images, link, createdAt } = body;
 
         if (!title || !category) {
             return NextResponse.json(
@@ -76,7 +76,8 @@ export async function POST(request: NextRequest) {
                 thumbnail: thumbnail || '',
                 content: content || null,
                 images: images || null,
-                link: link || ''
+                link: link || '',
+                createdAt: createdAt ? new Date(createdAt) : undefined
             }
         });
 

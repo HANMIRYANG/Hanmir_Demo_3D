@@ -35,7 +35,8 @@ export default function MediaAdminPage() {
         thumbnail: '',
         content: '',
         images: [] as string[],
-        link: ''
+        link: '',
+        createdAt: ''
     });
 
     // Fetch Media
@@ -114,7 +115,8 @@ export default function MediaAdminPage() {
             thumbnail: '',
             content: '',
             images: [],
-            link: ''
+            link: '',
+            createdAt: new Date().toISOString().split('T')[0] // Default to today
         });
         setIsModalOpen(true);
     };
@@ -133,7 +135,8 @@ export default function MediaAdminPage() {
             thumbnail: item.thumbnail || '',
             content: item.content || '',
             images: parsedImages,
-            link: item.link || ''
+            link: item.link || '',
+            createdAt: item.createdAt.replace(/\./g, '-') // Convert YYYY.MM.DD back to YYYY-MM-DD
         });
         setIsModalOpen(true);
     };
@@ -179,7 +182,8 @@ export default function MediaAdminPage() {
                 thumbnail: '',
                 content: '',
                 images: [],
-                link: ''
+                link: '',
+                createdAt: ''
             });
         } catch (error) {
             console.error("Error saving media:", error);
@@ -473,6 +477,17 @@ export default function MediaAdminPage() {
                                     value={formData.link}
                                     onChange={e => setFormData({ ...formData, link: e.target.value })}
                                 />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-zinc-500 mb-1">등록일 (선택)</label>
+                                <input
+                                    type="date"
+                                    className="w-full bg-black border border-zinc-700 p-3 text-white focus:border-blue-500 focus:outline-none"
+                                    value={formData.createdAt}
+                                    onChange={e => setFormData({ ...formData, createdAt: e.target.value })}
+                                />
+                                <p className="text-xs text-zinc-500 mt-1">미리 지정된 날짜로 등록하거나 수정할 수 있습니다.</p>
                             </div>
 
                             <div className="pt-4 flex gap-3 border-t border-zinc-700">
