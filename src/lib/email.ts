@@ -114,3 +114,80 @@ export async function sendInquiryNotification(inquiry: {
     }
 }
 
+// ============================================================================
+// 제품 공유 이메일 발송 함수
+// ============================================================================
+export async function sendProductShareEmail(data: {
+    productName: string;
+    productDescription?: string;
+    recipientEmail: string;
+    senderName?: string;
+    productUrl?: string;
+}): Promise<boolean> {
+    const smtpConfig = getSMTPConfig();
+
+    // SMTP 설정이 없으면 로그만 남기고 성공 반환
+    if (!smtpConfig.auth.user || !smtpConfig.auth.pass) {
+        console.log('📧 [이메일 시뮬레이션] SMTP 설정 없음, 로그만 기록');
+        console.log('받는 사람:', data.recipientEmail);
+        console.log('제품 정보:', data);
+        return true;
+    }
+
+    try {
+        const transporter = nodemailer.createTransport(smtpConfig);
+
+        const mailOptions = {
+            from: `"한미르(주)" <${smtpConfig.auth.user}>`,
+            to: data.recipientEmail,
+            subject: `[한미르] ${data.productName} 제품 정보 공유`,
+            html: `
+                <div style="font-family: 'Noto Sans KR', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9;">
+                    <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <h2 style="color: #333; border-bottom: 3px solid #f59e0b; padding-bottom: 15px; margin-bottom: 20px;">
+                            🎨 제품 정보 공유
+                        </h2>
+                        
+                        <p style="color: #666; margin-bottom: 25px;">
+                            ${data.senderName ? `${data.senderName}님이` : '누군가가'} 한미르(주)의 제품 정보를 공유했습니다.
+                        </p>
+                        
+                        <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                            <h3 style="color: #d97706; margin: 0 0 10px 0; font-size: 18px;">
+                                ${data.productName}
+                            </h3>
+                            ${data.productDescription ? `
+                                <p style="color: #666; margin: 0; line-height: 1.6;">
+                                    ${data.productDescription}
+                                </p>
+                            ` : ''}
+                        </div>
+                        
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="https://hanmirfe.com/ko/products/paint" 
+                               style="display: inline-block; background: #f59e0b; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                                제품 상세 보기
+                            </a>
+                        </div>
+                        
+                        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;" />
+                        
+                        <div style="text-align: center;">
+                            <p style="color: #999; font-size: 12px; margin: 0;">
+                                이 이메일은 한미르(주) 웹사이트에서 발송되었습니다.<br />
+                                <a href="https://hanmirfe.com" style="color: #f59e0b;">www.hanmirfe.com</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log('✅ 제품 공유 이메일 발송 완료:', data.recipientEmail);
+        return true;
+    } catch (error) {
+        console.error('❌ 제품 공유 이메일 발송 실패:', error);
+        return false;
+    }
+}

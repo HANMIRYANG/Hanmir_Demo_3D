@@ -4,6 +4,7 @@
 // ============================================================================
 
 import { NextRequest, NextResponse } from 'next/server';
+import { sendProductShareEmail } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
     try {
@@ -13,7 +14,6 @@ export async function POST(request: NextRequest) {
             productDescription,
             recipientEmail,
             senderName,
-            fileType
         } = body;
 
         if (!productName || !recipientEmail) {
@@ -32,21 +32,25 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // TODO: 실제 이메일 발송 로직 구현 (SendGrid, Nodemailer 등)
-        // 현재는 성공 응답만 반환
-        console.log('Product share request:', {
+        // 실제 이메일 발송
+        const success = await sendProductShareEmail({
             productName,
             productDescription,
             recipientEmail,
             senderName,
-            fileType,
-            timestamp: new Date().toISOString()
         });
 
-        return NextResponse.json({
-            success: true,
-            message: '제품 정보가 성공적으로 공유되었습니다.'
-        });
+        if (success) {
+            return NextResponse.json({
+                success: true,
+                message: '제품 정보가 성공적으로 공유되었습니다.'
+            });
+        } else {
+            return NextResponse.json(
+                { error: '이메일 발송에 실패했습니다.' },
+                { status: 500 }
+            );
+        }
     } catch (error) {
         console.error('POST /api/product-share error:', error);
         return NextResponse.json(
