@@ -43,7 +43,7 @@ export default function CEOPage() {
                             <div className="relative">
                                 <div className="w-full aspect-[3/4] bg-gradient-to-b from-gray-100 to-gray-200 rounded-lg overflow-hidden shadow-xl">
                                     <img
-                                        src="/ceo.jpg"
+                                        src="/ceo.png"
                                         alt="한미르(주) 대표이사"
                                         className="w-full h-full object-cover"
                                     />
@@ -88,7 +88,7 @@ export default function CEOPage() {
                             {/* CEO 서명 */}
                             <div className="mt-12 pt-8 border-t border-gray-200">
                                 <p className="text-sm text-gray-400 mb-2">한미르(주) 대표이사</p>
-                                <p className="text-2xl font-bold text-gray-900">대표이사</p>
+                                <p className="text-2xl font-bold text-gray-900">한승우</p>
                             </div>
 
                             {/* 통계 */}

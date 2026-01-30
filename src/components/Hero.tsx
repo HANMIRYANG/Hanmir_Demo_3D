@@ -61,7 +61,7 @@ export const Hero: React.FC = () => {
                     {/* 메인 슬로건 */}
                     <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight leading-[1.1] mb-8">
                         {t('hero.title1')} <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-500">
+                        <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(to right, #9A9EA3, #A8B4C0, #C8D0D8, #7A8A98, #B0C0CC, #5A6878, #A0B0C0, #D0D8E0)' }}>
                             {t('hero.title2')}
                         </span>
                     </h1>

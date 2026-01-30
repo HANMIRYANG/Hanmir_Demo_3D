@@ -27,8 +27,17 @@ export const CustomCursor: React.FC = () => {
     const lastPos = useRef({ x: 0, y: 0 });
     const particleIdCounter = useRef(0);
 
-    // Hanmir Brand Colors: Blue and Orange
-    const brandColors = ['#2563EB', '#EA580C'];
+    // Steel Blue Metallic Colors (matches Hero gradient)
+    const brandColors = [
+        '#9A9EA3', // Neutral Silver
+        '#A8B4C0', // Steel Blue
+        '#C8D0D8', // Ice Silver
+        '#7A8A98', // Dark Steel
+        '#B0C0CC', // Sky Metal
+        '#5A6878', // Gunmetal Blue
+        '#A0B0C0', // Blue Silver
+        '#D0D8E0', // Light Platinum
+    ];
 
     useEffect(() => {
         if (isAdmin) return;
