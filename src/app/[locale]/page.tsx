@@ -11,6 +11,7 @@ import { Footer } from '@/components/Footer';
 import { CustomCursor } from '@/components/CustomCursor';
 import { useTranslations } from 'next-intl';
 import { OneLandingPage } from '@/components/landing/OneLandingPage';
+import { MainPopup } from '@/components/MainPopup';
 
 // ============================================================================
 // [locale]/page.tsx - 메인 홈페이지 (다국어 지원)
@@ -27,12 +28,18 @@ export default function Home() {
 
     // EN/CN은 원페이지 랜딩
     if (!isKorean) {
-        return <OneLandingPage />;
+        return (
+            <>
+                <MainPopup />
+                <OneLandingPage />
+            </>
+        );
     }
 
     // KO는 기존 구조 유지
     return (
         <div className="min-h-screen bg-black text-white selection:bg-blue-500 selection:text-white cursor-none">
+            <MainPopup />
             <CustomCursor />
             <Navbar />
 

@@ -17,21 +17,50 @@ interface Setting {
 export default function SettingsPage() {
     const [brochureUrl, setBrochureUrl] = useState("");
     const [originalUrl, setOriginalUrl] = useState("");
+
+    // 메인 팝업 설정 상태
+    const [popupConfig, setPopupConfig] = useState({
+        enabled: false,
+        title: "",
+        content: "",
+        imageUrl: ""
+    });
+    const [originalPopupConfig, setOriginalPopupConfig] = useState({
+        enabled: false,
+        title: "",
+        content: "",
+        imageUrl: ""
+    });
+
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [popupUploading, setPopupUploading] = useState(false);
 
     // 설정 불러오기
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const res = await fetch("/api/admin/settings?key=company_brochure_url");
-                if (res.ok) {
-                    const data = await res.json();
+                const [brochureRes, popupRes] = await Promise.all([
+                    fetch("/api/admin/settings?key=company_brochure_url"),
+                    fetch("/api/admin/settings?key=main_popup_config")
+                ]);
+
+                if (brochureRes.ok) {
+                    const data = await brochureRes.json();
                     if (data?.value) {
                         setBrochureUrl(data.value);
                         setOriginalUrl(data.value);
+                    }
+                }
+
+                if (popupRes.ok) {
+                    const data = await popupRes.json();
+                    if (data?.value) {
+                        const config = JSON.parse(data.value);
+                        setPopupConfig(config);
+                        setOriginalPopupConfig(config);
                     }
                 }
             } catch (error) {
@@ -44,21 +73,21 @@ export default function SettingsPage() {
     }, []);
 
     // 설정 저장
-    const handleSave = async () => {
+    const handleSave = async (key: string, value: string, label: string) => {
         setSaving(true);
         try {
             const res = await fetch("/api/admin/settings", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    key: "company_brochure_url",
-                    value: brochureUrl,
-                    label: "회사소개서 URL"
-                })
+                body: JSON.stringify({ key, value, label })
             });
 
             if (res.ok) {
-                setOriginalUrl(brochureUrl);
+                if (key === "company_brochure_url") {
+                    setOriginalUrl(value);
+                } else if (key === "main_popup_config") {
+                    setOriginalPopupConfig(JSON.parse(value));
+                }
                 setSaved(true);
                 setTimeout(() => setSaved(false), 2000);
             }
@@ -70,20 +99,11 @@ export default function SettingsPage() {
         }
     };
 
-    // 파일 업로드
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        if (file.type !== "application/pdf") {
-            alert("PDF 파일만 업로드 가능합니다.");
-            return;
-        }
-
-        setUploading(true);
-
+    // 파일 업로드 (범용)
+    const uploadFile = async (file: File, type: 'image' | 'attachment') => {
         const formData = new FormData();
         formData.append("file", file);
+        formData.append("type", type);
 
         try {
             const res = await fetch("/api/upload", {
@@ -92,20 +112,47 @@ export default function SettingsPage() {
             });
 
             if (res.ok) {
-                const { url } = await res.json();
-                setBrochureUrl(url);
+                const data = await res.json();
+                return data.url;
             } else {
-                alert("업로드 실패");
+                const error = await res.json();
+                throw new Error(error.error || "업로드 실패");
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Upload error:", error);
-            alert("업로드 중 오류가 발생했습니다.");
-        } finally {
-            setUploading(false);
+            alert(error.message || "업로드 중 오류가 발생했습니다.");
+            return null;
         }
     };
 
-    const hasChanges = brochureUrl !== originalUrl;
+    const handleBrochureUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (file.type !== "application/pdf") {
+            alert("PDF 파일만 업로드 가능합니다.");
+            return;
+        }
+        setUploading(true);
+        const url = await uploadFile(file, 'attachment');
+        if (url) setBrochureUrl(url);
+        setUploading(false);
+    };
+
+    const handlePopupImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+            alert("이미지 파일만 업로드 가능합니다.");
+            return;
+        }
+        setPopupUploading(true);
+        const url = await uploadFile(file, 'image');
+        if (url) setPopupConfig(prev => ({ ...prev, imageUrl: url }));
+        setPopupUploading(false);
+    };
+
+    const brochureChanged = brochureUrl !== originalUrl;
+    const popupChanged = JSON.stringify(popupConfig) !== JSON.stringify(originalPopupConfig);
 
     if (loading) {
         return (
@@ -116,138 +163,166 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 max-w-5xl">
             {/* 헤더 */}
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">사이트 설정</h1>
-                <p className="text-gray-500 mt-1">
+                <h1 className="text-2xl font-bold text-white">사이트 설정</h1>
+                <p className="text-zinc-400 mt-1">
                     사이트 전체에 적용되는 설정을 관리합니다.
                 </p>
             </div>
 
-            {/* 회사소개서 설정 */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            {/* 1. 메인 팝업 설정 */}
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <ExternalLink className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div>
+                            <h2 className="text-lg font-semibold text-gray-900">메인 팝업 관리</h2>
+                            <p className="text-sm text-gray-500">홈페이지 접속 시 첫 화면에 표시될 팝업을 설정합니다.</p>
+                        </div>
+                    </div>
+                    <label className="flex items-center cursor-pointer">
+                        <div className="relative">
+                            <input
+                                type="checkbox"
+                                className="sr-only"
+                                checked={popupConfig.enabled}
+                                onChange={(e) => setPopupConfig(prev => ({ ...prev, enabled: e.target.checked }))}
+                            />
+                            <div className={`block w-14 h-8 rounded-full transition-colors ${popupConfig.enabled ? 'bg-blue-500' : 'bg-gray-300'}`}></div>
+                            <div className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${popupConfig.enabled ? 'transform translate-x-6' : ''}`}></div>
+                        </div>
+                        <span className="ml-3 text-sm font-medium text-gray-700">{popupConfig.enabled ? "활성화됨" : "비활성화됨"}</span>
+                    </label>
+                </div>
+
+                <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">팝업 제목</label>
+                            <input
+                                type="text"
+                                value={popupConfig.title}
+                                onChange={(e) => setPopupConfig(prev => ({ ...prev, title: e.target.value }))}
+                                placeholder="예: 신규 홈페이지 오픈 안내"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-zinc-900"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">팝업 내용</label>
+                            <textarea
+                                value={popupConfig.content}
+                                onChange={(e) => setPopupConfig(prev => ({ ...prev, content: e.target.value }))}
+                                placeholder="사용자에게 보여줄 내용을 입력하세요."
+                                rows={5}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none text-zinc-900"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">팝업 이미지 (700x450 권장)</label>
+                            <div className="relative aspect-[7/4] bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 overflow-hidden group">
+                                {popupConfig.imageUrl ? (
+                                    <>
+                                        <img src={popupConfig.imageUrl} alt="Popup preview" className="w-full h-full object-cover" />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <label className="cursor-pointer bg-white text-gray-900 px-4 py-2 rounded-lg font-medium shadow-lg hover:bg-gray-50 flex items-center gap-2">
+                                                <Upload className="w-4 h-4" />
+                                                이미지 변경
+                                                <input type="file" accept="image/*" onChange={handlePopupImageUpload} className="hidden" />
+                                            </label>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <label className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200/50 transition-colors">
+                                        {popupUploading ? <Loader2 className="w-8 h-8 animate-spin text-blue-500" /> : <Upload className="w-8 h-8 text-gray-400 mb-2" />}
+                                        <span className="text-gray-500 text-sm">{popupUploading ? "업로드 중..." : "이미지 업로드"}</span>
+                                        <input type="file" accept="image/*" onChange={handlePopupImageUpload} className="hidden" />
+                                    </label>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end">
+                    <button
+                        onClick={() => handleSave("main_popup_config", JSON.stringify(popupConfig), "메인 팝업 설정")}
+                        disabled={saving || !popupChanged}
+                        className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-all ${saving ? "bg-blue-400 text-white" : popupChanged ? "bg-blue-500 text-white hover:bg-blue-600" : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                            }`}
+                    >
+                        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        팝업 설정 저장
+                    </button>
+                </div>
+            </div>
+
+            {/* 2. 회사소개서 설정 */}
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                 <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
                     <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-amber-500" />
+                        <div className="p-2 bg-amber-100 rounded-lg">
+                            <FileText className="w-5 h-5 text-amber-600" />
+                        </div>
                         <h2 className="text-lg font-semibold text-gray-900">회사소개서 관리</h2>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1 ml-8">
-                        회사소개 페이지에서 다운로드되는 PDF 파일을 설정합니다.
-                    </p>
                 </div>
 
                 <div className="p-6 space-y-6">
-                    {/* URL 입력 */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            <LinkIcon className="w-4 h-4 inline mr-1" />
-                            회사소개서 URL
-                        </label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">현재 파일 URL</label>
                         <div className="flex gap-2">
                             <input
                                 type="url"
                                 value={brochureUrl}
                                 onChange={(e) => setBrochureUrl(e.target.value)}
-                                placeholder="https://example.com/회사소개서.pdf"
-                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                placeholder="PDF 파일 URL"
+                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-zinc-900"
                             />
                             {brochureUrl && (
-                                <a
-                                    href={brochureUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2"
-                                >
-                                    <ExternalLink className="w-4 h-4" />
-                                    미리보기
+                                <a href={brochureUrl} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-gray-600">
+                                    <ExternalLink className="w-5 h-5" />
                                 </a>
                             )}
                         </div>
-                        <p className="text-xs text-gray-500 mt-2">
-                            Vercel Blob Storage URL 또는 외부 파일 URL을 입력하세요.
-                        </p>
                     </div>
 
-                    {/* 또는 구분선 */}
-                    <div className="flex items-center gap-4">
-                        <div className="flex-1 h-px bg-gray-200" />
-                        <span className="text-sm text-gray-400">또는</span>
-                        <div className="flex-1 h-px bg-gray-200" />
-                    </div>
-
-                    {/* 파일 업로드 */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            <Upload className="w-4 h-4 inline mr-1" />
-                            새 파일 업로드
-                        </label>
-                        <label className="block">
-                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer">
-                                {uploading ? (
-                                    <div className="flex flex-col items-center">
-                                        <Loader2 className="w-8 h-8 animate-spin text-blue-500 mb-2" />
-                                        <span className="text-gray-500">업로드 중...</span>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <Upload className="w-10 h-10 text-gray-400 mx-auto mb-2" />
-                                        <p className="text-gray-600 font-medium">클릭하여 PDF 업로드</p>
-                                        <p className="text-xs text-gray-400 mt-1">PDF 파일만 지원됩니다</p>
-                                    </>
-                                )}
-                                <input
-                                    type="file"
-                                    accept=".pdf,application/pdf"
-                                    onChange={handleFileUpload}
-                                    className="hidden"
-                                    disabled={uploading}
-                                />
-                            </div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">새 파일 업로드</label>
+                        <label className="block border-2 border-dashed border-gray-300 rounded-lg py-10 text-center hover:bg-gray-50 cursor-pointer transition-colors">
+                            {uploading ? <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto" /> : <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />}
+                            <p className="text-gray-600 font-medium">{uploading ? "업로드 중..." : "PDF 파일 선택"}</p>
+                            <input type="file" accept=".pdf" onChange={handleBrochureUpload} className="hidden" />
                         </label>
                     </div>
 
-                    {/* 저장 버튼 */}
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                        <p className="text-sm text-gray-500">
-                            {hasChanges ? (
-                                <span className="text-amber-600 font-medium">⚠️ 저장되지 않은 변경사항이 있습니다.</span>
-                            ) : (
-                                "변경사항을 저장하려면 저장 버튼을 클릭하세요."
-                            )}
-                        </p>
+                    <div className="flex justify-end pt-4 border-t border-gray-200">
                         <button
-                            onClick={handleSave}
-                            disabled={saving || !hasChanges}
-                            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all ${saved
-                                    ? "bg-green-500 text-white"
-                                    : hasChanges
-                                        ? "bg-blue-500 text-white hover:bg-blue-600"
-                                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                            onClick={() => handleSave("company_brochure_url", brochureUrl, "회사소개서 URL")}
+                            disabled={saving || !brochureChanged}
+                            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-all ${brochureChanged ? "bg-blue-500 text-white hover:bg-blue-600" : "bg-gray-200 text-gray-400 cursor-not-allowed"
                                 }`}
                         >
-                            {saving ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : saved ? (
-                                <Check className="w-4 h-4" />
-                            ) : (
-                                <Save className="w-4 h-4" />
-                            )}
-                            {saving ? "저장 중..." : saved ? "저장됨" : "저장"}
+                            <Save className="w-4 h-4" />
+                            업로드 파일 저장
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* 안내 */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-medium text-blue-800 mb-2">💡 사용 방법</h3>
-                <ul className="text-sm text-blue-700 space-y-1">
-                    <li>• 새 회사소개서 파일을 업로드하면 URL이 자동으로 입력됩니다.</li>
-                    <li>• URL 입력 후 반드시 <strong>저장</strong> 버튼을 클릭해야 적용됩니다.</li>
-                    <li>• 저장된 URL은 회사소개 페이지의 다운로드 버튼에 즉시 반영됩니다.</li>
-                </ul>
-            </div>
+            {saved && (
+                <div className="fixed bottom-8 right-8 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4">
+                    <Check className="w-5 h-5 bg-white text-green-500 rounded-full p-0.5" />
+                    <span className="font-semibold">설정이 저장되었습니다!</span>
+                </div>
+            )}
         </div>
     );
 }
+
