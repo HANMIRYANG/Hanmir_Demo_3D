@@ -30,6 +30,8 @@ model Resource {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([category])
+  @@index([createdAt])
   @@map("resources")
 }
 
@@ -48,6 +50,7 @@ model MediaItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([category, createdAt])
   @@map("media_items")
 }
 
@@ -66,6 +69,7 @@ model Inquiry {
   isRead      Boolean  @default(false) // 읽음 여부
   createdAt   DateTime @default(now())
 
+  @@index([createdAt])
   @@map("inquiries")
 }
 
@@ -80,6 +84,7 @@ model ActivityLog {
   details   String?
   createdAt DateTime @default(now())
 
+  @@index([createdAt])
   @@map("activity_logs")
 }
 
@@ -100,6 +105,8 @@ model Notice {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([category, createdAt])
+  @@index([isImportant, createdAt])
   @@map("notices")
 }
 
@@ -122,6 +129,7 @@ model QnaPost {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
+  @@index([createdAt])
   @@map("qna_posts")
 }
 
@@ -140,6 +148,7 @@ model ConstructionCase {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([category, createdAt])
   @@map("construction_cases")
 }
 
@@ -156,6 +165,7 @@ model CompanyHistory {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([order])
   @@map("company_history")
 }
 
@@ -189,6 +199,7 @@ model PaintCategory {
 
   products  PaintProduct[]
 
+  @@index([mainCategory, isActive, order])
   @@map("paint_categories")
 }
 
@@ -214,5 +225,6 @@ model PaintProduct {
 
   category        PaintCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
+  @@index([categoryId, isActive, order])
   @@map("paint_products")
 }

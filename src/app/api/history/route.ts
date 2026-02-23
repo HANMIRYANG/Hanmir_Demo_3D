@@ -17,7 +17,9 @@ export async function GET(request: NextRequest) {
             ]
         });
 
-        return NextResponse.json({ histories });
+        const response = NextResponse.json({ histories });
+        response.headers.set('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=30');
+        return response;
     } catch (error) {
         console.error('Error fetching histories:', error);
         return NextResponse.json({ error: 'Failed to fetch histories' }, { status: 500 });

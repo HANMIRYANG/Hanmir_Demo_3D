@@ -37,7 +37,7 @@ export const NoticeList: React.FC = () => {
     React.useEffect(() => {
         const fetchNotices = async () => {
             try {
-                const res = await fetch('/api/admin/notices?timestamp=' + Date.now(), { cache: 'no-store' });
+                const res = await fetch('/api/admin/notices');
                 const data = await res.json();
 
                 if (res.ok && data.notices) {

@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
-
-const prisma = new PrismaClient();
 
 // 비밀번호 해시 함수
 function hashPassword(password: string): string {
@@ -12,7 +10,7 @@ function hashPassword(password: string): string {
 // GET: 문의게시판 목록 조회
 export async function GET() {
     try {
-        const posts = await (prisma as any).qnaPost.findMany({
+        const posts = await prisma.qnaPost.findMany({
             orderBy: { createdAt: 'desc' },
             select: {
                 id: true,
@@ -28,7 +26,9 @@ export async function GET() {
                 // 비밀번호, 이메일, 연락처는 제외
             }
         });
-        return NextResponse.json({ posts });
+        const response = NextResponse.json({ posts });
+        response.headers.set('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=30');
+        return response;
     } catch (error) {
         console.error('Failed to fetch QnA posts:', error);
         return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 });
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
         // 비밀번호 해시화
         const hashedPassword = hashPassword(password);
 
-        const post = await (prisma as any).qnaPost.create({
+        const post = await prisma.qnaPost.create({
             data: {
                 author,
                 email,

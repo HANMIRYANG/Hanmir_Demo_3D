@@ -1,18 +1,18 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // GET: 공지사항 목록 조회
 export async function GET() {
     try {
-        const notices = await (prisma as any).notice.findMany({
+        const notices = await prisma.notice.findMany({
             orderBy: [
                 { isImportant: 'desc' },
                 { createdAt: 'desc' }
             ]
         });
-        return NextResponse.json({ notices });
+        const response = NextResponse.json({ notices });
+        response.headers.set('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=30');
+        return response;
     } catch (error) {
         console.error('Failed to fetch notices:', error);
         return NextResponse.json({ error: 'Failed to fetch notices' }, { status: 500 });
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
             createData.createdAt = new Date(createdAt);
         }
 
-        const notice = await (prisma as any).notice.create({
+        const notice = await prisma.notice.create({
             data: createData
         });
 

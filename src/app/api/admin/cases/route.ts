@@ -25,7 +25,9 @@ export async function GET(request: NextRequest) {
             orderBy: { createdAt: 'desc' }
         });
 
-        return NextResponse.json({ cases });
+        const response = NextResponse.json({ cases });
+        response.headers.set('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=30');
+        return response;
     } catch (error) {
         console.error('시공사례 조회 오류:', error);
         return NextResponse.json(

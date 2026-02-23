@@ -65,7 +65,7 @@ export const QnaBoard: React.FC = () => {
 
     const fetchPosts = async () => {
         try {
-            const res = await fetch('/api/qna?timestamp=' + Date.now(), { cache: 'no-store' });
+            const res = await fetch('/api/qna');
             const data = await res.json();
             if (res.ok && data.posts) {
                 setPosts(data.posts.map((p: any) => ({

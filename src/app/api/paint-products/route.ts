@@ -38,7 +38,9 @@ export async function GET(request: NextRequest) {
                 return NextResponse.json({ error: 'Category not found' }, { status: 404 });
             }
 
-            return NextResponse.json({ category });
+            const response = NextResponse.json({ category });
+            response.headers.set('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=30');
+            return response;
         }
 
         // 메인 카테고리별 서브 카테고리 및 제품 조회
@@ -65,7 +67,9 @@ export async function GET(request: NextRequest) {
                 }
             });
 
-            return NextResponse.json({ categories });
+            const response = NextResponse.json({ categories });
+            response.headers.set('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=30');
+            return response;
         }
 
         // 모든 활성 카테고리 및 제품 조회
@@ -83,7 +87,9 @@ export async function GET(request: NextRequest) {
             }
         });
 
-        return NextResponse.json({ categories });
+        const response = NextResponse.json({ categories });
+        response.headers.set('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=30');
+        return response;
     } catch (error) {
         console.error('GET /api/paint-products error:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

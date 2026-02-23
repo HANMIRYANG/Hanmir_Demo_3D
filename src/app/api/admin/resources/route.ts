@@ -37,7 +37,9 @@ export async function GET(request: NextRequest) {
             orderBy: { createdAt: 'desc' }
         });
 
-        return NextResponse.json({ resources });
+        const response = NextResponse.json({ resources });
+        response.headers.set('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=30');
+        return response;
     } catch (error) {
         console.error('자료 조회 오류:', error);
         return NextResponse.json(

@@ -9,10 +9,12 @@ import { usePathname } from "next/navigation";
 
 // ============================================================================
 // [Hero.tsx] - 메인 페이지 히어로(첫 화면) 섹션 (다국어 지원)
+// Three.js 기반 3D 배경 - 기능성 도료(불연, 난연) 기업 이미지
 // ============================================================================
 
-const Spline = dynamic(
-    () => import("@splinetool/react-spline").then((m) => m.default),
+const HeroBackground3D = dynamic(
+    () =>
+        import("./HeroBackground3D").then((m) => m.HeroBackground3D),
     {
         ssr: false,
         loading: () => (
@@ -33,15 +35,12 @@ export const Hero: React.FC = () => {
     };
     const locale = getCurrentLocale();
 
-    const SPLINE_SCENE =
-        "https://prod.spline.design/iCYtFSnvvRwm2M4o/scene.splinecode";
-
     return (
         <section className="relative w-full h-screen overflow-hidden bg-black flex flex-col justify-end pb-20">
             {/* 3D 배경 영역 */}
             <div className="absolute inset-0 w-full h-full z-0">
-                <div className="absolute inset-0 w-full h-full opacity-60 grayscale-[30%] contrast-125 scale-110">
-                    <Spline scene={SPLINE_SCENE} />
+                <div className="absolute inset-0 w-full h-full opacity-70">
+                    <HeroBackground3D />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none" />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent pointer-events-none" />

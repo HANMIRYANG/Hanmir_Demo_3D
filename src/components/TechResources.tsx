@@ -46,7 +46,7 @@ export const TechResources: React.FC = () => {
     React.useEffect(() => {
         const fetchResources = async () => {
             try {
-                const res = await fetch('/api/admin/resources?timestamp=' + Date.now(), { cache: 'no-store' });
+                const res = await fetch('/api/admin/resources');
                 const data = await res.json();
 
                 if (res.ok && data.resources) {
