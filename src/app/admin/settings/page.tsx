@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Upload, Save, Link as LinkIcon, FileText, Loader2, Check, ExternalLink } from "lucide-react";
+import { upload } from "@vercel/blob/client";
 
 // ============================================================================
 // 관리자 사이트 설정 페이지
@@ -99,24 +100,47 @@ export default function SettingsPage() {
         }
     };
 
-    // 파일 업로드 (범용)
+    // 파일 업로드 (범용 - 클라이언트 사이드 업로드 지원)
     const uploadFile = async (file: File, type: 'image' | 'attachment') => {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("type", type);
-
         try {
-            const res = await fetch("/api/upload", {
-                method: "POST",
-                body: formData,
-            });
+            // Vercel 환경인 경우 클라이언트 직접 업로드 시도 (서버 용량 제한 4.5MB 우회용)
+            // .env에 BLOB_READ_WRITE_TOKEN이 있거나 Vercel 배포 환경인지 확인하는 로직은 라이브러리가 내부적으로 처리하거나 API 응답으로 판단
 
-            if (res.ok) {
-                const data = await res.json();
-                return data.url;
-            } else {
-                const error = await res.json();
-                throw new Error(error.error || "업로드 실패");
+            // 1. 클라이언트 직접 업로드 시도
+            try {
+                const blob = await upload(file.name, file, {
+                    access: 'public',
+                    handleUploadUrl: '/api/upload',
+                });
+                return blob.url;
+            } catch (clientUploadError: any) {
+                console.warn("Client upload failed or not supported in this env, falling back to FormData:", clientUploadError);
+
+                // 2. FormData Fallback (로컬 개발 환경 등)
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("type", type);
+
+                const res = await fetch("/api/upload", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    return data.url;
+                } else {
+                    // 에러 메시지 추출 시도
+                    let errorMsg = "업로드 실패";
+                    try {
+                        const errorData = await res.json();
+                        errorMsg = errorData.error || errorMsg;
+                    } catch (e) {
+                        // 413 등 HTML 에러 대응
+                        if (res.status === 413) errorMsg = "파일 용량이 너무 큽니다. (분산 업로드 실패)";
+                    }
+                    throw new Error(errorMsg);
+                }
             }
         } catch (error: any) {
             console.error("Upload error:", error);

@@ -9,6 +9,7 @@ import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
 import { put } from '@vercel/blob';
 import path from 'path';
 import fs from 'fs/promises';
+import { getCurrentAdmin } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,11 +46,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                 body,
                 request,
                 onBeforeGenerateToken: async (pathname) => {
-                    // 허용된 Content-Type 설정
+                    // 1. 관리자 인증 확인 (보안)
+                    const admin = await getCurrentAdmin();
+                    if (!admin) {
+                        throw new Error('인증되지 않은 사용자입니다.');
+                    }
+
+                    // 2. 허용된 Content-Type 및 용량 설정
                     return {
                         allowedContentTypes: [...ALLOWED_IMAGE_TYPES, ...ALLOWED_DOCUMENT_TYPES],
                         maximumSizeInBytes: 50 * 1024 * 1024, // 50MB
-                        tokenPayload: JSON.stringify({ uploadedAt: new Date().toISOString() }),
+                        tokenPayload: JSON.stringify({
+                            adminId: admin.adminId,
+                            uploadedAt: new Date().toISOString()
+                        }),
                     };
                 },
                 onUploadCompleted: async ({ blob, tokenPayload }) => {
