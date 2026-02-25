@@ -17,7 +17,6 @@ import { Loader2, Calculator, Search, Users, Leaf, Palette } from 'lucide-react'
 
 // ============================================================================
 // 메인 카테고리 데이터 (하드코딩 - 사용자 요청)
-// ============================================================================
 const MAIN_CATEGORIES = [
     {
         id: 'building',
@@ -62,6 +61,21 @@ const MAIN_CATEGORIES = [
             { icon: Users, title: '산업용', desc: '산업 현장에 최적화된 제품' },
             { icon: Leaf, title: '안전성', desc: '작업자 안전을 고려한 설계' },
             { icon: Palette, title: '내화학성', desc: '화학물질에 강한 내구성' }
+        ]
+    },
+    {
+        id: 'ev-fire-safety',
+        name: 'EV 화재 안전',
+        isDevelopment: false,
+        hero: {
+            title: '1,000℃의 극한을 견디는 나노 세라믹 방어막',
+            description: '전기차 시대, 충전구역의 화재 안전은 필수입니다. 화염 확산을 차단하고 골든타임을 확보하세요.',
+            image: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=2672&auto=format&fit=crop'
+        },
+        features: [
+            { icon: Leaf, title: '일체형 솔루션', desc: '벽면, 천장, 바닥, 배관 완벽 보호' },
+            { icon: Users, title: '초고온 내열성', desc: '1,000℃ 이상의 화염 차단' },
+            { icon: Palette, title: '골든타임 확보', desc: '열전파 지연 및 확산 억제' }
         ]
     }
 ];
@@ -223,18 +237,49 @@ export default function PaintProductsPage() {
                                         </div>
                                     </div>
 
-                                    {/* 아이콘 섹션 */}
-                                    <div className="grid grid-cols-3 gap-8 mt-16 pt-12 border-t border-gray-200">
-                                        {mainCategoryData.features.map((feature, idx) => (
-                                            <div key={idx} className="text-center">
-                                                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-100 flex items-center justify-center">
-                                                    <feature.icon className="w-8 h-8 text-amber-600" />
-                                                </div>
-                                                <h3 className="font-bold text-gray-900 mb-2">{feature.title}</h3>
-                                                <p className="text-sm text-gray-500">{feature.desc}</p>
+                                    {/* EV 화재 안전 특화 섹션 (HMR EV FIRE SAFETY ZONE) */}
+                                    {mainCategoryData.id === 'ev-fire-safety' ? (
+                                        <div className="mt-16 pt-12 border-t border-gray-200">
+                                            <div className="text-center mb-10">
+                                                <h2 className="text-2xl font-bold text-gray-900 mb-4">HMR EV FIRE SAFETY ZONE</h2>
+                                                <p className="text-gray-600">
+                                                    전기차 충전 구역의 화재를 원천 차단하는 일체형 방어막 코팅 솔루션입니다.
+                                                </p>
                                             </div>
-                                        ))}
-                                    </div>
+                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                                {mainCategoryData.features.map((feature, idx) => (
+                                                    <div key={idx} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center">
+                                                        <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-amber-50 flex items-center justify-center">
+                                                            <feature.icon className="w-7 h-7 text-amber-600" />
+                                                        </div>
+                                                        <h3 className="font-bold text-gray-900 mb-2">{feature.title}</h3>
+                                                        <p className="text-sm text-gray-500">{feature.desc}</p>
+                                                    </div>
+                                                ))}
+                                                {/* 추가 공간 특화 솔루션 */}
+                                                <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center">
+                                                    <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-amber-50 flex items-center justify-center">
+                                                        <Users className="w-7 h-7 text-amber-600" />
+                                                    </div>
+                                                    <h3 className="font-bold text-gray-900 mb-2">시공 편의성</h3>
+                                                    <p className="text-sm text-gray-500">우수한 접착력으로 다양한 기재에 단독 코팅 가능</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        /* 기본 아이콘 섹션 */
+                                        <div className="grid grid-cols-3 gap-8 mt-16 pt-12 border-t border-gray-200">
+                                            {mainCategoryData.features.map((feature, idx) => (
+                                                <div key={idx} className="text-center">
+                                                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-100 flex items-center justify-center">
+                                                        <feature.icon className="w-8 h-8 text-amber-600" />
+                                                    </div>
+                                                    <h3 className="font-bold text-gray-900 mb-2">{feature.title}</h3>
+                                                    <p className="text-sm text-gray-500">{feature.desc}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </section>
                         )

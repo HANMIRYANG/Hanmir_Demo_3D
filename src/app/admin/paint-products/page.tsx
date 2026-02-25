@@ -25,7 +25,8 @@ import { upload } from '@vercel/blob/client';
 const MAIN_CATEGORIES = [
     { id: 'building', name: '건축' },
     { id: 'ship', name: '선박 (개발진행중)' },
-    { id: 'industrial', name: '일반공업' }
+    { id: 'industrial', name: '일반공업' },
+    { id: 'ev-fire-safety', name: 'EV 화재 안전' }
 ];
 
 // Types
