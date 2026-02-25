@@ -10,7 +10,8 @@ export function MainPopup() {
         enabled: false,
         title: "",
         content: "",
-        imageUrl: ""
+        imageUrl: "",
+        linkUrl: ""
     });
 
     useEffect(() => {
@@ -99,20 +100,32 @@ export function MainPopup() {
                 </div>
 
                 {/* 하단 버튼 영역 */}
-                <div className="flex border-t border-zinc-100 bg-zinc-50 font-medium">
-                    <button
-                        onClick={handleHideToday}
-                        className="flex-1 py-4 text-sm text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100 transition-colors"
-                    >
-                        오늘 하루 보지 않기
-                    </button>
-                    <div className="w-[1px] bg-zinc-200"></div>
-                    <button
-                        onClick={handleClose}
-                        className="flex-1 py-4 text-sm text-blue-600 hover:text-blue-700 hover:bg-zinc-100 transition-colors font-bold"
-                    >
-                        닫기
-                    </button>
+                <div className="flex flex-col border-t border-zinc-100 bg-zinc-50 font-medium">
+                    {/* 링크 URL이 있을 경우에만 렌더링 */}
+                    {config.linkUrl && (
+                        <a
+                            href={config.linkUrl}
+                            className="w-full py-4 text-center text-white bg-blue-600 hover:bg-blue-700 transition-colors font-bold text-[15px]"
+                        >
+                            자세히 보기 →
+                        </a>
+                    )}
+
+                    <div className="flex w-full">
+                        <button
+                            onClick={handleHideToday}
+                            className="flex-1 py-4 text-sm text-zinc-500 hover:text-zinc-800 hover:bg-zinc-200 transition-colors"
+                        >
+                            오늘 하루 보지 않기
+                        </button>
+                        <div className="w-[1px] bg-zinc-200"></div>
+                        <button
+                            onClick={handleClose}
+                            className="flex-1 py-4 text-sm text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200 transition-colors font-medium"
+                        >
+                            닫기
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

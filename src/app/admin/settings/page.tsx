@@ -24,13 +24,15 @@ export default function SettingsPage() {
         enabled: false,
         title: "",
         content: "",
-        imageUrl: ""
+        imageUrl: "",
+        linkUrl: ""
     });
     const [originalPopupConfig, setOriginalPopupConfig] = useState({
         enabled: false,
         title: "",
         content: "",
-        imageUrl: ""
+        imageUrl: "",
+        linkUrl: ""
     });
 
     const [loading, setLoading] = useState(true);
@@ -244,6 +246,17 @@ export default function SettingsPage() {
                                 rows={5}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none text-zinc-900"
                             />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">자세히 보기 링크 URL (선택)</label>
+                            <input
+                                type="url"
+                                value={popupConfig.linkUrl || ""}
+                                onChange={(e) => setPopupConfig(prev => ({ ...prev, linkUrl: e.target.value }))}
+                                placeholder="예: /ko/products/paint?main=ev-fire-safety"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-zinc-900"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">입력 시 팝업 하단에 해당 경로로 이동하는 버튼이 활성화됩니다.</p>
                         </div>
                     </div>
 
