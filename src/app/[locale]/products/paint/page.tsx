@@ -7,7 +7,8 @@
 // 3. 서브 카테고리 탭 + 제품 그리드 (검색 기능)
 // ============================================================================
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { CustomCursor } from '@/components/CustomCursor';
@@ -102,10 +103,14 @@ interface PaintCategory {
     products: PaintProduct[];
 }
 
-export default function PaintProductsPage() {
+function PaintProductsContent() {
+    const searchParams = useSearchParams();
+    const mainParam = searchParams.get('main');
+    const initialMain = MAIN_CATEGORIES.some(cat => cat.id === mainParam) ? mainParam! : 'building';
+
     const [categories, setCategories] = useState<PaintCategory[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeMain, setActiveMain] = useState('building');
+    const [activeMain, setActiveMain] = useState(initialMain);
     const [activeSub, setActiveSub] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedProduct, setSelectedProduct] = useState<PaintProduct | null>(null);
@@ -428,5 +433,17 @@ export default function PaintProductsPage() {
                 onClose={() => setCalculatorOpen(false)}
             />
         </div >
+    );
+}
+
+export default function PaintProductsPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-white flex items-center justify-center">
+                <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        }>
+            <PaintProductsContent />
+        </Suspense>
     );
 }
