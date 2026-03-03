@@ -14,6 +14,7 @@ import { Footer } from '@/components/Footer';
 import { CustomCursor } from '@/components/CustomCursor';
 import { PaintProductModal } from '@/components/PaintProductModal';
 import { PaintCalculator } from '@/components/PaintCalculator';
+import { EvFireSafetyPremiumView } from '@/components/EvFireSafetyPremiumView';
 import { Loader2, Calculator, Search, Users, Leaf, Palette } from 'lucide-react';
 
 // ============================================================================
@@ -159,10 +160,8 @@ function PaintProductsContent() {
 
             {/* Navbar 높이만큼 여백 */}
             <div className="pt-20">
-                {/* ================================================================
-                    1. 메인 카테고리 탭 (Navbar 바로 아래 고정)
-                ================================================================ */}
-                <div className="bg-white border-b border-gray-200 sticky top-[72px] z-30">
+                {/* 1. 메인 카테고리 탭 */}
+                <div className="bg-white border-b border-gray-200 sticky top-[72px] z-50">
                     <div className="max-w-7xl mx-auto px-6">
                         <div className="flex items-center gap-8">
                             {MAIN_CATEGORIES.map((mc) => (
@@ -187,41 +186,39 @@ function PaintProductsContent() {
                     </div>
                 </div>
 
-                <main>
-                    {/* ================================================================
-                    0. Breadcrumb + 페이지 타이틀
+                {/* ================================================================
+                    프리미엄 뷰 분기 처리 (EV 화재 안전)
                 ================================================================ */}
-                    <section className="bg-white">
-                        {/* Breadcrumb 네비게이션 (오른쪽 정렬) */}
-                        <div className="max-w-7xl mx-auto px-6 pt-4">
-                            <nav className="flex justify-end text-sm">
-                                <span className="text-gray-400">홈</span>
-                                <span className="mx-2 text-gray-300">&gt;</span>
-                                <span className="text-amber-600">페인트</span>
-                                <span className="mx-2 text-gray-300">&gt;</span>
-                                <span className="text-amber-600 font-medium">
-                                    {mainCategoryData?.name}페인트
-                                </span>
-                            </nav>
-                        </div>
+                {activeMain === 'ev-fire-safety' ? (
+                    <main>
+                        <EvFireSafetyPremiumView />
+                    </main>
+                ) : (
+                    /* 기존 일반 카테고리 뷰 (건축, 선박, 산업용 등) */
+                    <main>
+                        <section className="bg-white">
+                            <div className="max-w-7xl mx-auto px-6 pt-4">
+                                <nav className="flex justify-end text-sm">
+                                    <span className="text-gray-400">홈</span>
+                                    <span className="mx-2 text-gray-300">&gt;</span>
+                                    <span className="text-amber-600">페인트</span>
+                                    <span className="mx-2 text-gray-300">&gt;</span>
+                                    <span className="text-amber-600 font-medium">
+                                        {mainCategoryData?.name}페인트
+                                    </span>
+                                </nav>
+                            </div>
+                            <div className="max-w-7xl mx-auto px-6 py-10">
+                                <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
+                                    페인트
+                                </h1>
+                            </div>
+                        </section>
 
-                        {/* 페이지 타이틀 */}
-                        <div className="max-w-7xl mx-auto px-6 py-10">
-                            <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
-                                페인트
-                            </h1>
-                        </div>
-                    </section>
-
-                    {/* ================================================================
-                    2. 히어로 섹션
-                ================================================================ */}
-                    {
-                        mainCategoryData && (
+                        {mainCategoryData && (
                             <section className="bg-gray-50">
                                 <div className="max-w-7xl mx-auto px-6 py-16">
                                     <div className="grid md:grid-cols-2 gap-12 items-center">
-                                        {/* 텍스트 영역 */}
                                         <div>
                                             <p className="text-sm text-gray-500 mb-2">수성인 방식의 친환경 페인트</p>
                                             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
@@ -231,8 +228,6 @@ function PaintProductsContent() {
                                                 {mainCategoryData.hero.description}
                                             </p>
                                         </div>
-
-                                        {/* 이미지 영역 */}
                                         <div className="aspect-[4/3] rounded-lg overflow-hidden">
                                             <img
                                                 src={mainCategoryData.hero.image}
@@ -241,193 +236,146 @@ function PaintProductsContent() {
                                             />
                                         </div>
                                     </div>
-
-                                    {/* EV 화재 안전 특화 섹션 (HMR EV FIRE SAFETY ZONE) */}
-                                    {mainCategoryData.id === 'ev-fire-safety' ? (
-                                        <div className="mt-16 pt-12 border-t border-gray-200">
-                                            <div className="text-center mb-10">
-                                                <h2 className="text-2xl font-bold text-gray-900 mb-4">HMR EV FIRE SAFETY ZONE</h2>
-                                                <p className="text-gray-600">
-                                                    전기차 충전 구역의 화재를 원천 차단하는 일체형 방어막 코팅 솔루션입니다.
-                                                </p>
-                                            </div>
-                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                                {mainCategoryData.features.map((feature, idx) => (
-                                                    <div key={idx} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center">
-                                                        <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-amber-50 flex items-center justify-center">
-                                                            <feature.icon className="w-7 h-7 text-amber-600" />
-                                                        </div>
-                                                        <h3 className="font-bold text-gray-900 mb-2">{feature.title}</h3>
-                                                        <p className="text-sm text-gray-500">{feature.desc}</p>
-                                                    </div>
-                                                ))}
-                                                {/* 추가 공간 특화 솔루션 */}
-                                                <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center">
-                                                    <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-amber-50 flex items-center justify-center">
-                                                        <Users className="w-7 h-7 text-amber-600" />
-                                                    </div>
-                                                    <h3 className="font-bold text-gray-900 mb-2">시공 편의성</h3>
-                                                    <p className="text-sm text-gray-500">우수한 접착력으로 다양한 기재에 단독 코팅 가능</p>
+                                    <div className="grid grid-cols-3 gap-8 mt-16 pt-12 border-t border-gray-200">
+                                        {mainCategoryData.features.map((feature, idx) => (
+                                            <div key={idx} className="text-center">
+                                                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-100 flex items-center justify-center">
+                                                    <feature.icon className="w-8 h-8 text-amber-600" />
                                                 </div>
+                                                <h3 className="font-bold text-gray-900 mb-2">{feature.title}</h3>
+                                                <p className="text-sm text-gray-500">{feature.desc}</p>
                                             </div>
-                                        </div>
-                                    ) : (
-                                        /* 기본 아이콘 섹션 */
-                                        <div className="grid grid-cols-3 gap-8 mt-16 pt-12 border-t border-gray-200">
-                                            {mainCategoryData.features.map((feature, idx) => (
-                                                <div key={idx} className="text-center">
-                                                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-100 flex items-center justify-center">
-                                                        <feature.icon className="w-8 h-8 text-amber-600" />
-                                                    </div>
-                                                    <h3 className="font-bold text-gray-900 mb-2">{feature.title}</h3>
-                                                    <p className="text-sm text-gray-500">{feature.desc}</p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+                                        ))}
+                                    </div>
                                 </div>
                             </section>
-                        )
-                    }
+                        )}
 
-                    {/* ================================================================
-                    3. 서브 카테고리 탭 + 제품 그리드
-                ================================================================ */}
-                    <section className="py-12">
-                        <div className="max-w-7xl mx-auto px-6">
-                            {/* 서브 카테고리 탭 */}
-                            <div className="flex flex-wrap items-center gap-2 mb-8 pb-4 border-b border-gray-200">
-                                <button
-                                    onClick={() => setActiveSub('all')}
-                                    className={`px-4 py-2 text-sm font-medium transition-colors ${activeSub === 'all'
-                                        ? 'text-amber-600 border-b-2 border-amber-500'
-                                        : 'text-gray-500 hover:text-gray-900'
-                                        }`}
-                                >
-                                    전체
-                                </button>
-                                {categories.map((cat) => (
+                        <section className="py-12">
+                            <div className="max-w-7xl mx-auto px-6">
+                                <div className="flex flex-wrap items-center gap-2 mb-8 pb-4 border-b border-gray-200">
                                     <button
-                                        key={cat.id}
-                                        onClick={() => setActiveSub(cat.slug)}
-                                        className={`px-4 py-2 text-sm font-medium transition-colors ${activeSub === cat.slug
+                                        onClick={() => setActiveSub('all')}
+                                        className={`px-4 py-2 text-sm font-medium transition-colors ${activeSub === 'all'
                                             ? 'text-amber-600 border-b-2 border-amber-500'
                                             : 'text-gray-500 hover:text-gray-900'
                                             }`}
                                     >
-                                        {cat.name}
+                                        전체
                                     </button>
-                                ))}
-                            </div>
-
-                            {/* 검색 및 정렬 */}
-                            <div className="flex items-center justify-between mb-6">
-                                <span className="text-sm text-gray-500">
-                                    전체 {searchedProducts.length}건
-                                </span>
-                                <div className="flex items-center gap-4">
-                                    <div className="relative">
-                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                        <input
-                                            type="text"
-                                            placeholder="검색"
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:border-amber-500 focus:outline-none"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* 제품 그리드 */}
-                            {loading ? (
-                                <div className="flex items-center justify-center py-20">
-                                    <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
-                                </div>
-                            ) : searchedProducts.length === 0 ? (
-                                <div className="text-center py-20 text-gray-400">
-                                    {searchQuery ? '검색 결과가 없습니다.' : '등록된 제품이 없습니다.'}
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                    {searchedProducts.map((product) => (
+                                    {categories.map((cat) => (
                                         <button
-                                            key={product.id}
-                                            onClick={() => setSelectedProduct(product)}
-                                            className="group text-left bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-300"
+                                            key={cat.id}
+                                            onClick={() => setActiveSub(cat.slug)}
+                                            className={`px-4 py-2 text-sm font-medium transition-colors ${activeSub === cat.slug
+                                                ? 'text-amber-600 border-b-2 border-amber-500'
+                                                : 'text-gray-500 hover:text-gray-900'
+                                                }`}
                                         >
-                                            {/* Product Image */}
-                                            <div className="aspect-square bg-gray-50 relative overflow-hidden">
-                                                <img
-                                                    src={product.thumbnail}
-                                                    alt={product.name}
-                                                    className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-                                                />
-                                            </div>
-
-                                            {/* Product Info */}
-                                            <div className="p-4 border-t border-gray-100">
-                                                <h3 className="font-bold text-gray-900 text-sm mb-1 line-clamp-2 group-hover:text-amber-600 transition-colors">
-                                                    {product.name}
-                                                </h3>
-                                                {product.description && (
-                                                    <p className="text-xs text-gray-500 line-clamp-2">
-                                                        {product.description}
-                                                    </p>
-                                                )}
-                                            </div>
+                                            {cat.name}
                                         </button>
                                     ))}
                                 </div>
-                            )}
-                        </div>
-                    </section>
 
-                    {/* ================================================================
-                    4. 페인트량 계산기 섹션
-                ================================================================ */}
-                    <section className="py-16 bg-gradient-to-b from-gray-100 to-white">
-                        <div className="max-w-7xl mx-auto px-6">
-                            <div className="bg-white border border-gray-200 rounded-2xl p-8 md:p-12 shadow-lg">
-                                <div className="flex flex-col md:flex-row items-center gap-8">
-                                    <div className="flex-1">
-                                        <span className="inline-block px-3 py-1 bg-amber-100 text-amber-700 text-sm font-bold rounded-full mb-4">
-                                            CALCULATOR
-                                        </span>
-                                        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                                            페인트량 계산기
-                                        </h2>
-                                        <p className="text-gray-600 mb-6">
-                                            도장할 면적을 입력하시면 필요한 페인트 양을 간편하게 계산할 수 있습니다.
-                                        </p>
-                                        <button
-                                            onClick={() => setCalculatorOpen(true)}
-                                            className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white font-bold rounded-lg hover:bg-amber-600 transition-colors shadow-lg"
-                                        >
-                                            <Calculator className="w-5 h-5" />
-                                            계산기 열기
-                                        </button>
+                                <div className="flex items-center justify-between mb-6">
+                                    <span className="text-sm text-gray-500">
+                                        전체 {searchedProducts.length}건
+                                    </span>
+                                    <div className="flex items-center gap-4">
+                                        <div className="relative">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                            <input
+                                                type="text"
+                                                placeholder="검색"
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:border-amber-500 focus:outline-none"
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="w-48 h-48 bg-amber-100 rounded-full flex items-center justify-center">
-                                        <Calculator className="w-20 h-20 text-amber-500" />
+                                </div>
+
+                                {loading ? (
+                                    <div className="flex items-center justify-center py-20">
+                                        <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+                                    </div>
+                                ) : searchedProducts.length === 0 ? (
+                                    <div className="text-center py-20 text-gray-400">
+                                        {searchQuery ? '검색 결과가 없습니다.' : '등록된 제품이 없습니다.'}
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                                        {searchedProducts.map((product) => (
+                                            <button
+                                                key={product.id}
+                                                onClick={() => setSelectedProduct(product)}
+                                                className="group text-left bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-300"
+                                            >
+                                                <div className="aspect-square bg-gray-50 relative overflow-hidden">
+                                                    <img
+                                                        src={product.thumbnail}
+                                                        alt={product.name}
+                                                        className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                                                    />
+                                                </div>
+                                                <div className="p-4 border-t border-gray-100">
+                                                    <h3 className="font-bold text-gray-900 text-sm mb-1 line-clamp-2 group-hover:text-amber-600 transition-colors">
+                                                        {product.name}
+                                                    </h3>
+                                                    {product.description && (
+                                                        <p className="text-xs text-gray-500 line-clamp-2">
+                                                            {product.description}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </section>
+
+                        <section className="py-16 bg-gradient-to-b from-gray-100 to-white">
+                            <div className="max-w-7xl mx-auto px-6">
+                                <div className="bg-white border border-gray-200 rounded-2xl p-8 md:p-12 shadow-lg">
+                                    <div className="flex flex-col md:flex-row items-center gap-8">
+                                        <div className="flex-1">
+                                            <span className="inline-block px-3 py-1 bg-amber-100 text-amber-700 text-sm font-bold rounded-full mb-4">
+                                                CALCULATOR
+                                            </span>
+                                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                                                페인트량 계산기
+                                            </h2>
+                                            <p className="text-gray-600 mb-6">
+                                                도장할 면적을 입력하시면 필요한 페인트 양을 간편하게 계산할 수 있습니다.
+                                            </p>
+                                            <button
+                                                onClick={() => setCalculatorOpen(true)}
+                                                className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white font-bold rounded-lg hover:bg-amber-600 transition-colors shadow-lg"
+                                            >
+                                                <Calculator className="w-5 h-5" />
+                                                계산기 열기
+                                            </button>
+                                        </div>
+                                        <div className="w-48 h-48 bg-amber-100 rounded-full flex items-center justify-center">
+                                            <Calculator className="w-20 h-20 text-amber-500" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </section>
-                </main>
+                        </section>
+                    </main>
+                )}
             </div>
 
             <Footer />
 
-            {/* Product Detail Modal */}
             <PaintProductModal
                 product={selectedProduct}
                 isOpen={!!selectedProduct}
                 onClose={() => setSelectedProduct(null)}
             />
 
-            {/* Paint Calculator Modal */}
             <PaintCalculator
                 isOpen={calculatorOpen}
                 onClose={() => setCalculatorOpen(false)}
