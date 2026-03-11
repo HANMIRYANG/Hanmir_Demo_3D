@@ -131,7 +131,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isSticky = true }) => {
 
     return (
         <nav
-            className={`${positionClass} top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out border-b ${isSticky && scrolled
+            className={`${positionClass} top-0 left-0 right-0 z-[100] transition-all duration-500 ease-in-out border-b ${isSticky && scrolled
                 ? 'bg-black/90 backdrop-blur-md border-zinc-800 py-4'
                 : 'bg-black border-zinc-800 py-6'
                 }`}
