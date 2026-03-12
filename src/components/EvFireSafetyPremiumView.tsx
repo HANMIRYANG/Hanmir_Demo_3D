@@ -6,6 +6,23 @@ import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ShieldCheck, Flame, ThermometerSun, Leaf, Users, CheckCircle, Calculator } from 'lucide-react';
+import { JsonLdFaq, JsonLdBreadcrumb } from '@/components/JsonLd';
+
+// EV 화재안전 FAQ 구조화 데이터 (구글/네이버 리치 스니펫)
+const evFaqItems = [
+    {
+        question: 'EV 전기차 지하주차장 화재 시 일반 건축물의 위험성은?',
+        answer: '일반 건축물 구조는 전기차 배터리 화염(1,000℃ 이상)에 노출 시 10분 이내에 구조적 손상과 콘크리트 폭열 현상이 발생하여 붕괴 위험에 직면합니다.',
+    },
+    {
+        question: '한미르 나노 세라믹 방화코팅의 내열 성능은?',
+        answer: '표면에 형성된 세라믹 방어막이 화염과 열을 근본적으로 차단하여 이면 온도를 300℃ 이하로 유지하고, 최소 1시간 이상의 구조적 안정성을 보장합니다.',
+    },
+    {
+        question: 'EV 충전구역 방화코팅 솔루션의 적용 범위는?',
+        answer: '벽면, 천장, 바닥, 배관 등 충전구역 전체를 일체형으로 보호하며, 면적 기반 물량 산출과 전문 시공팀의 상세 견적 서비스를 제공합니다.',
+    },
+];
 
 const temperatureData = [
     { time: '0분', normal: 20, hanmir: 20 },
@@ -22,11 +39,20 @@ export function EvFireSafetyPremiumView() {
 
     return (
         <div className="bg-zinc-950 text-white min-h-screen font-sans selection:bg-amber-500 selection:text-white">
+            {/* SEO 구조화 데이터 */}
+            <JsonLdFaq items={evFaqItems} />
+            <JsonLdBreadcrumb items={[
+                { name: '홈', url: 'https://hanmirfe.com/ko' },
+                { name: '제품소개', url: 'https://hanmirfe.com/ko/products' },
+                { name: '페인트', url: 'https://hanmirfe.com/ko/products/paint' },
+                { name: 'EV 전기차 화재안전 솔루션', url: 'https://hanmirfe.com/ko/products/paint?main=ev-fire-safety' },
+            ]} />
+
             {/* 1. Hero / Video Intro */}
-            <section className="relative w-full h-screen flex items-center justify-center overflow-hidden">
+            <section aria-label="EV 전기차 화재안전 히어로" className="relative w-full h-screen flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-zinc-900/60 via-zinc-950/80 to-zinc-950 z-10" />
-                {/* 비디오 연출용 백그라운드 (실제 비디오로 교체 예정, 현재는 분위기 있는 화염 Placeholder) */}
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=2672&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat scale-105 animate-[pulse_10s_ease-in-out_infinite]" />
+                {/* 비디오 연출용 백그라운드 */}
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=2672&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat scale-105 animate-[pulse_10s_ease-in-out_infinite]" role="img" aria-label="EV 전기차 충전구역 화재안전 솔루션 배경 이미지" />
 
                 <div className="relative z-20 text-center px-6 max-w-5xl mx-auto mt-20">
                     <motion.div
@@ -73,7 +99,7 @@ export function EvFireSafetyPremiumView() {
             </section>
 
             {/* 3. 데이터 증명 (차트) & Scrollytelling Section */}
-            <section className="py-32 relative bg-zinc-950 border-t border-zinc-900">
+            <section aria-label="EV 화재안전 내열 성능 데이터" className="py-32 relative bg-zinc-950 border-t border-zinc-900">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center mb-20">
                         <h2 className="text-3xl md:text-5xl font-bold mb-6">골든타임을 확보하는 <span className="text-amber-500">압도적 내열 성능</span></h2>
@@ -122,7 +148,7 @@ export function EvFireSafetyPremiumView() {
             </section>
 
             {/* 4. 인증 마크 갤러리 */}
-            <section className="py-24 bg-zinc-900 border-t border-zinc-800">
+            <section aria-label="한미르 방화코팅 인증 현황" className="py-24 bg-zinc-900 border-t border-zinc-800">
                 <div className="max-w-7xl mx-auto px-6 text-center">
                     <h3 className="text-2xl font-bold text-white mb-12">국내외 공신력 있는 기관의 검증 완료</h3>
                     <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
@@ -150,7 +176,7 @@ export function EvFireSafetyPremiumView() {
             </section>
 
             {/* 5. B2B 스마트 견적 & Lead Generation */}
-            <section className="py-32 relative bg-gradient-to-b from-zinc-950 to-zinc-900 border-t border-zinc-800 overflow-hidden">
+            <section aria-label="EV 충전구역 방화코팅 견적" className="py-32 relative bg-gradient-to-b from-zinc-950 to-zinc-900 border-t border-zinc-800 overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] opacity-20 pointer-events-none">
                     <div className="absolute inset-0 bg-amber-500/20 blur-[100px] rounded-full" />
                 </div>

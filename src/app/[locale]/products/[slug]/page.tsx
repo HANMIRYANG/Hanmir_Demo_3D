@@ -11,6 +11,7 @@ import ProductTabContent from '@/components/ProductTabContent';
 import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
 import { CustomCursor } from '@/components/CustomCursor';
+import { JsonLdProduct, JsonLdBreadcrumb } from '@/components/JsonLd';
 import { AlertCircle, Flame, Target, Thermometer, ShieldCheck, Leaf, Award, Shield, Fingerprint, Sparkles } from 'lucide-react';
 
 // 아이콘 매핑
@@ -30,8 +31,23 @@ export default function ProductPage({ params }: PageProps) {
         notFound();
     }
 
+    const currentUrl = `https://hanmirfe.com/ko/products/${slug}`;
+
     return (
         <div className="min-h-screen bg-white text-gray-900">
+            {/* SEO 구조화 데이터 */}
+            <JsonLdProduct
+                name={product.koreanTitle}
+                description={product.description}
+                url={currentUrl}
+                image={product.heroImage}
+            />
+            <JsonLdBreadcrumb items={[
+                { name: '홈', url: 'https://hanmirfe.com/ko' },
+                { name: '제품소개', url: 'https://hanmirfe.com/ko/products' },
+                { name: product.koreanTitle, url: currentUrl },
+            ]} />
+
             <CustomCursor />
             <Navbar />
 
