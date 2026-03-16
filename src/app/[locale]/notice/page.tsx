@@ -3,7 +3,8 @@ import { Navbar } from '@/components/Navbar';
 import { NoticeList } from '@/components/NoticeList';
 import { Footer } from '@/components/Footer';
 import { ChatWidget } from '@/components/ChatWidget';
-import { CustomCursor } from '@/components/CustomCursor';
+// [DISABLED] 커스텀 커서 비활성화
+// import { CustomCursor } from '@/components/CustomCursor';
 
 // ============================================================================
 // [notice/page.tsx] - 공지사항 페이지 (/notice)
@@ -15,7 +16,7 @@ import { CustomCursor } from '@/components/CustomCursor';
 export default function NoticePage() {
     return (
         <div className="min-h-screen bg-white text-gray-900 selection:bg-amber-500 selection:text-white flex flex-col">
-            <CustomCursor />
+            {/* [DISABLED] <CustomCursor /> */}
             <Navbar />
 
             {/* 상단 Navbar 고정으로 인한 여백 */}

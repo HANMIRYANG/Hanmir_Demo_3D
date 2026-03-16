@@ -3,7 +3,8 @@ import type { Metadata } from 'next';
 import { Navbar } from '@/components/Navbar';
 import { Features } from '@/components/Features';
 import { Footer } from '@/components/Footer';
-import { CustomCursor } from '@/components/CustomCursor';
+// [DISABLED] 커스텀 커서 비활성화
+// import { CustomCursor } from '@/components/CustomCursor';
 
 // ============================================================================
 // [products/page.tsx] - 제품 목록 페이지 (/products)
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
 export default function ProductsPage() {
     return (
         <div className="min-h-screen bg-white text-gray-900 selection:bg-amber-500 selection:text-white">
-            <CustomCursor />
+            {/* [DISABLED] <CustomCursor /> */}
             <Navbar />
 
             <main className="pt-24">

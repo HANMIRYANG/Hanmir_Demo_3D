@@ -11,7 +11,8 @@ import { LandingAbout } from './sections/LandingAbout';
 import { LandingProducts } from './sections/LandingProducts';
 import { LandingContact } from './sections/LandingContact';
 import { Footer } from '@/components/Footer';
-import { CustomCursor } from '@/components/CustomCursor';
+// [DISABLED] 커스텀 커서 비활성화
+// import { CustomCursor } from '@/components/CustomCursor';
 
 export const OneLandingPage: React.FC = () => {
     const pathname = usePathname();
@@ -25,8 +26,8 @@ export const OneLandingPage: React.FC = () => {
     const locale = getCurrentLocale();
 
     return (
-        <div className="min-h-screen bg-black text-white cursor-none selection:bg-blue-500 selection:text-white relative font-sans">
-            <CustomCursor />
+        <div className="min-h-screen bg-black text-white selection:bg-blue-500 selection:text-white relative font-sans"> {/* [DISABLED] cursor-none 제거 */}
+            {/* [DISABLED] <CustomCursor /> */}
             <LandingNavbar />
 
             <main>

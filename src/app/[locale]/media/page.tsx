@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
-import { CustomCursor } from '@/components/CustomCursor';
+// [DISABLED] 커스텀 커서 비활성화
+// import { CustomCursor } from '@/components/CustomCursor';
 import { MediaSidebar } from '@/components/media/MediaSidebar';
 import { NewsGrid } from '@/components/media/NewsGrid';
 import { SNSSlider } from '@/components/media/SNSSlider';
@@ -53,7 +54,7 @@ export default function MediaPage() {
 
     return (
         <div className="min-h-screen bg-white text-gray-900 selection:bg-amber-500 selection:text-white">
-            <CustomCursor />
+            {/* [DISABLED] <CustomCursor /> */}
             <Navbar />
 
             <main className="pt-32 pb-20">

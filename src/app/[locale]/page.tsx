@@ -8,7 +8,8 @@ import { Features } from '@/components/Features';
 import { ChatWidget } from '@/components/ChatWidget';
 import { Contact } from '@/components/Contact';
 import { Footer } from '@/components/Footer';
-import { CustomCursor } from '@/components/CustomCursor';
+// [DISABLED] 커스텀 커서 비활성화
+// import { CustomCursor } from '@/components/CustomCursor';
 import { useTranslations } from 'next-intl';
 import { OneLandingPage } from '@/components/landing/OneLandingPage';
 import { MainPopup } from '@/components/MainPopup';
@@ -38,16 +39,16 @@ export default function Home() {
 
     // KO는 기존 구조 유지
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-blue-500 selection:text-white cursor-none">
+        <div className="min-h-screen bg-black text-white selection:bg-blue-500 selection:text-white"> {/* [DISABLED] cursor-none 제거 */}
             <MainPopup />
-            <CustomCursor />
+            {/* [DISABLED] <CustomCursor /> */}
             <Navbar />
 
             <main>
                 <Hero />
 
                 {/* 통계 밴드 */}
-                <div className="w-full bg-zinc-900 border-y border-zinc-800 py-12 cursor-none">
+                <div className="w-full bg-zinc-900 border-y border-zinc-800 py-12"> {/* [DISABLED] cursor-none 제거 */}
                     <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
                         {[
                             { label: t('stats.partners'), val: "100+" },
@@ -66,7 +67,7 @@ export default function Home() {
                 <Features />
 
                 {/* 중간 인용문 구간 */}
-                <section className="py-32 bg-black relative overflow-hidden cursor-none">
+                <section className="py-32 bg-black relative overflow-hidden"> {/* [DISABLED] cursor-none 제거 */}
                     <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center opacity-20 grayscale"></div>
                     <div className="relative max-w-7xl mx-auto px-6 text-center">
                         <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 tracking-tight leading-snug">

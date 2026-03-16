@@ -11,7 +11,8 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
-import { CustomCursor } from '@/components/CustomCursor';
+// [DISABLED] 커스텀 커서 비활성화
+// import { CustomCursor } from '@/components/CustomCursor';
 import { PaintProductModal } from '@/components/PaintProductModal';
 import { PaintCalculator } from '@/components/PaintCalculator';
 import { EvFireSafetyPremiumView } from '@/components/EvFireSafetyPremiumView';
@@ -155,7 +156,7 @@ function PaintProductsContent() {
 
     return (
         <div className="min-h-screen bg-white text-gray-900">
-            <CustomCursor />
+            {/* [DISABLED] <CustomCursor /> */}
             <Navbar />
 
             {/* Navbar 높이만큼 여백 */}

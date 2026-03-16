@@ -10,7 +10,8 @@ import { products, IconFeature } from '@/lib/product-data';
 import ProductTabContent from '@/components/ProductTabContent';
 import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
-import { CustomCursor } from '@/components/CustomCursor';
+// [DISABLED] 커스텀 커서 비활성화
+// import { CustomCursor } from '@/components/CustomCursor';
 import { JsonLdProduct, JsonLdBreadcrumb } from '@/components/JsonLd';
 import { AlertCircle, Flame, Target, Thermometer, ShieldCheck, Leaf, Award, Shield, Fingerprint, Sparkles } from 'lucide-react';
 
@@ -48,7 +49,7 @@ export default function ProductPage({ params }: PageProps) {
                 { name: product.koreanTitle, url: currentUrl },
             ]} />
 
-            <CustomCursor />
+            {/* [DISABLED] <CustomCursor /> */}
             <Navbar />
 
             <main className="pt-20">

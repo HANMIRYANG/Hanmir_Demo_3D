@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { Search, ArrowRight, FileText, Package, Bell, Image, MessageCircle, Building2, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
-import { CustomCursor } from '@/components/CustomCursor';
+// [DISABLED] 커스텀 커서 비활성화
+// import { CustomCursor } from '@/components/CustomCursor';
 import { SearchResultItem, SearchResponse, SearchContentType } from '@/types';
 
 // ============================================================================
@@ -258,8 +259,8 @@ function SearchFallback() {
 // 메인 페이지 컴포넌트 - Suspense로 감싸기
 export default function SearchPage() {
     return (
-        <div className="min-h-screen bg-black text-white cursor-none">
-            <CustomCursor />
+        <div className="min-h-screen bg-black text-white"> {/* [DISABLED] cursor-none 제거 */}
+            {/* [DISABLED] <CustomCursor /> */}
             <Navbar />
 
             <main className="pt-24 pb-16">
