@@ -55,7 +55,7 @@ export const products: Record<string, ProductData> = {
             },
             {
                 title: "고내열 특수 소재",
-                description: "300°C 이상의 고온에서도 물성을 유지하는 특수 실리콘 컴파운드를 사용합니다. 배터리 수명 전체(10년 이상)에 걸쳐 안정적인 성능을 보장합니다.",
+                description: "300°C 이상의 고온에서도 물성을 유지하는 특수 소재를 사용합니다. 배터리 수명 전체(10년 이상)에 걸쳐 안정적인 성능을 보장합니다.",
                 image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=2532&auto=format&fit=crop"
             }
         ],
