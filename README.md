@@ -98,7 +98,7 @@
 | **Q&A 관리** | 답변 등록, 답변 완료 상태 |
 | **활동 로그** | CREATE / UPDATE / DELETE 추적 |
 | **사이트 설정** | 회사소개서 URL 등 key-value 설정 |
-| **인증** | JWT + bcryptjs 로그인, 미들웨어 보호 |
+| **인증** | JWT + bcryptjs 로그인, 미들웨어 보호, 환경변수 기반 자격증명 |
 
 ### 📧 알림 & 연동
 
@@ -212,18 +212,46 @@ npm install
 
 ### 환경변수 설정
 
-`.env` 파일을 생성하고 아래 항목을 설정합니다:
+`.env` 파일을 생성하고 아래 항목을 설정합니다. Vercel 배포 시에는 **Settings → Environment Variables** 에 동일한 값을 등록하세요.
 
 ```env
-DATABASE_URL=                  # NeonDB PostgreSQL 연결 URL (pooled)
-DATABASE_URL_UNPOOLED=         # NeonDB 직접 연결 URL (마이그레이션용)
+# --- Database (Neon PostgreSQL) ---
+DATABASE_URL=                  # Neon pooled 연결 URL
+DATABASE_URL_UNPOOLED=         # Neon direct 연결 URL (마이그레이션용)
+
+# --- 관리자 인증 ---
+ADMIN_ID=                      # 관리자 로그인 ID
+ADMIN_PASSWORD_HASH=           # bcrypt 해시 ($2b$12$... 형태, 평문 금지)
+JWT_SECRET=                    # JWT 시크릿 (최소 32자 랜덤 문자열)
+
+# --- 파일 저장 / AI ---
 BLOB_READ_WRITE_TOKEN=         # Vercel Blob 토큰
 GEMINI_API_KEY=                # Google Generative AI 키
-EMAIL_USER=                    # 이메일 발신 계정
-EMAIL_PASS=                    # 이메일 비밀번호 (앱 비밀번호)
-JWT_SECRET=                    # 관리자 JWT 시크릿
-BASE_URL=https://hanmirfe.com  # 사이트 기본 URL
+
+# --- 이메일 (Nodemailer / 하이웍스 SMTP) ---
+SMTP_HOST=                     # smtps.hiworks.com 등
+SMTP_PORT=                     # 465 (SSL) / 587 (TLS)
+SMTP_USER=                     # 발신 계정
+SMTP_PASS=                     # 발신 비밀번호
+ADMIN_EMAIL=                   # 문의 수신 이메일
+
+# --- 사이트 ---
+BASE_URL=https://hanmirfe.com
 ```
+
+#### 🔐 관리자 자격증명 생성
+
+```bash
+# 1) 비밀번호 bcrypt 해시 생성 (원하는 비밀번호로 교체)
+node -e "console.log(require('bcryptjs').hashSync('원하는비밀번호', 12))"
+
+# 2) JWT 시크릿 생성
+node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
+```
+
+> ⚠️ `ADMIN_PASSWORD_HASH`에는 반드시 **bcrypt 해시값**을 저장합니다. 평문 비밀번호를 절대 저장하지 마세요.
+> ⚠️ `JWT_SECRET`이 없거나 32자 미만이면 인증이 실패합니다 (런타임 에러).
+> ⚠️ `.env` 파일은 `.gitignore`(`env*`)로 보호되며, 절대 커밋 금지.
 
 ### 개발 서버
 
@@ -246,6 +274,49 @@ npx tsx prisma/seed-cases.ts        # 시공사례 시드
 npx tsx prisma/seed-history.ts      # 연혁 시드
 node prisma/seed-media.js           # 미디어 시드
 ```
+
+---
+
+## 🔒 보안 / 인증
+
+### 관리자 인증 흐름
+
+```
+로그인 폼 (/admin/login)
+    │ POST { id, password }
+    ▼
+/api/admin/auth
+    │ verifyCredentials(id, pw)
+    │   └─ bcrypt.compare(pw, env.ADMIN_PASSWORD_HASH)
+    │ generateToken(id)
+    │   └─ jwt.sign(..., env.JWT_SECRET, 24h)
+    ▼
+Set-Cookie: hanmir_admin_token (httpOnly, sameSite=lax, secure in prod)
+    ▼
+middleware.ts → /admin/* 진입 시 쿠키 존재 검증
+서버 핸들러 → getCurrentAdmin() 으로 JWT 서명 검증
+```
+
+### 보안 원칙
+
+- **자격증명 무(無)하드코딩** — `ADMIN_ID` / `ADMIN_PASSWORD_HASH` / `JWT_SECRET` 전부 환경변수
+- **bcrypt.compare** 실제 사용 (cost factor 12) + 타이밍 공격 완화 (ID 불일치 시에도 해시 비교 수행)
+- **JWT_SECRET 폴백 제거** — 미설정 시 런타임 에러로 부팅 실패 (실수로 약한 기본키 사용 방지)
+- **httpOnly 쿠키** — JS에서 접근 불가, XSS로 토큰 탈취 차단
+- **관리자 API 전체** `getCurrentAdmin()` 체크 후 실행
+- **Q&A 게시글 비밀번호** — DB에 bcrypt 해시로 저장
+
+### 운영 체크리스트
+
+| 항목 | 상태 |
+|------|:---:|
+| `.env` 파일 `.gitignore` 제외 | ✅ |
+| 관리자 자격증명 env 분리 | ✅ |
+| JWT secret 32자 이상 랜덤 | ✅ |
+| Q&A 비밀번호 해시 저장 | ✅ |
+| 로그인 rate limiting | ⚠️ 미구현 (Vercel KV 또는 Upstash Redis로 추가 권장) |
+| Edge Runtime JWT 서명 검증 | ⚠️ 미들웨어는 쿠키 존재만 체크 (서명 검증은 서버 핸들러에서 수행). `jose` 교체 검토 |
+| 다중 관리자 계정 | ⚠️ 단일 관리자. 필요 시 `Admin` 모델 추가 |
 
 ---
 
