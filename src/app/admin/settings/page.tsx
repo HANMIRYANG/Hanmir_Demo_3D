@@ -262,7 +262,7 @@ export default function SettingsPage() {
 
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">팝업 이미지 (700x450 권장)</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">팝업 이미지 (자유 크기 - 이미지에 맞춰 자동 조절)</label>
                             <div className="relative aspect-[7/4] bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 overflow-hidden group">
                                 {popupConfig.imageUrl ? (
                                     <>
