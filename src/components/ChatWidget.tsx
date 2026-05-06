@@ -33,7 +33,7 @@ export const ChatWidget: React.FC = () => {
             setMessages([{
                 id: 'init',
                 role: 'model',
-                text: '안녕하세요. 한미르(주) 기술 지원 AI입니다. 해당 AI는 Genmini 를 기반으로 하였기 때문에 정확한 정보는 문의하기를 통해 주시길 바랍니다.',
+                text: '안녕하세요. 한미르(주) 기술 지원 AI입니다. 해당 AI는 Gemini 를 기반으로 하였기 때문에 정확한 정보는 문의하기를 통해 주시길 바랍니다.',
                 timestamp: new Date()
             }]);
             setIsInitialized(true);
