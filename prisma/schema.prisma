@@ -58,16 +58,20 @@ model MediaItem {
 // 문의 내역 (Inquiries)
 // ============================================================================
 model Inquiry {
-  id          String   @id @default(cuid())
-  name        String   // 담당자 성명
-  company     String?  // 업체명 (선택)
-  phone       String   // 연락처
-  email       String   // 이메일
-  interest    String   // 관심 분야 (자동차 배터리, 선박, 건축 및 중공업, 기타)
-  message     String?  // 문의 내용
-  productId   String?  // 관련 제품 ID (선택)
-  isRead      Boolean  @default(false) // 읽음 여부
-  createdAt   DateTime @default(now())
+  id          String    @id @default(cuid())
+  name        String    // 담당자 성명
+  company     String?   // 업체명 (선택)
+  phone       String    // 연락처
+  email       String    // 이메일
+  interest    String    // 관심 분야 (자동차 배터리, 선박, 건축 및 중공업, 기타)
+  message     String?   // 문의 내용
+  productId   String?   // 관련 제품 ID (선택)
+  isRead      Boolean   @default(false) // 읽음 여부
+  isAnswered  Boolean   @default(false) // 답변 완료 여부
+  answeredAt  DateTime? // 답변 처리 시각
+  answeredBy  String?   // 처리자 이름 (수기 입력)
+  answerNote  String?   // 회신 방법/메모 (예: "전화로 회신 완료")
+  createdAt   DateTime  @default(now())
 
   @@index([createdAt])
   @@map("inquiries")
@@ -125,6 +129,7 @@ model QnaPost {
   isAnswered   Boolean   @default(false)
   answer       String?   // 관리자 답변
   answeredAt   DateTime? // 답변 시간
+  answeredBy   String?   // 답변자 이름 (수기 입력)
   views        Int       @default(0)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt

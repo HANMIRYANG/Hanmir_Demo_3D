@@ -14,25 +14,49 @@ interface QnaPost {
     isAnswered: boolean;
     answer?: string;
     answeredAt?: string;
+    answeredBy?: string;
     views: number;
     createdAt: string;
 }
+
+const RESPONDER_STORAGE_KEY = 'hanmir_admin_responder_name';
 
 export default function AdminQnaPage() {
     const [posts, setPosts] = useState<QnaPost[]>([]);
     const [loading, setLoading] = useState(true);
     const [expandedId, setExpandedId] = useState<string | null>(null);
     const [answerText, setAnswerText] = useState<{ [key: string]: string }>({});
+    const [answererName, setAnswererName] = useState<{ [key: string]: string }>({});
     const [submitting, setSubmitting] = useState<string | null>(null);
     const [filter, setFilter] = useState<'all' | 'pending' | 'answered'>('all');
 
     // 답변 수정 모드 상태
     const [editingAnswerId, setEditingAnswerId] = useState<string | null>(null);
     const [editAnswerText, setEditAnswerText] = useState<string>('');
+    const [editAnswererName, setEditAnswererName] = useState<string>('');
+
+    // 마지막에 입력한 담당자 이름을 localStorage에 저장하여 다음 입력 시 prefill
+    const [rememberedName, setRememberedName] = useState<string>('');
 
     useEffect(() => {
         fetchPosts();
+        if (typeof window !== 'undefined') {
+            const saved = window.localStorage.getItem(RESPONDER_STORAGE_KEY);
+            if (saved) setRememberedName(saved);
+        }
     }, []);
+
+    const persistResponderName = (name: string) => {
+        const trimmed = name.trim();
+        if (!trimmed) return;
+        setRememberedName(trimmed);
+        if (typeof window !== 'undefined') {
+            window.localStorage.setItem(RESPONDER_STORAGE_KEY, trimmed);
+        }
+    };
+
+    const getAnswererInputValue = (postId: string) =>
+        answererName[postId] !== undefined ? answererName[postId] : rememberedName;
 
     const fetchPosts = async () => {
         try {
@@ -58,6 +82,12 @@ export default function AdminQnaPage() {
     // 답변 등록
     const handleSubmitAnswer = async (postId: string) => {
         const answer = answerText[postId];
+        const responder = getAnswererInputValue(postId).trim();
+
+        if (!responder) {
+            alert('답변자 이름을 입력해주세요.');
+            return;
+        }
         if (!answer || answer.trim() === '') {
             alert('답변 내용을 입력해주세요.');
             return;
@@ -68,12 +98,14 @@ export default function AdminQnaPage() {
             const res = await fetch(`/api/admin/qna/${postId}/answer`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ answer })
+                body: JSON.stringify({ answer, answeredBy: responder })
             });
             const data = await res.json();
             if (res.ok) {
                 alert('답변이 등록되었습니다. 작성자에게 이메일 알림이 발송됩니다.');
                 setAnswerText({ ...answerText, [postId]: '' });
+                setAnswererName({ ...answererName, [postId]: '' });
+                persistResponderName(responder);
                 fetchPosts();
             } else {
                 alert(data.error || '답변 등록에 실패했습니다.');
@@ -89,12 +121,15 @@ export default function AdminQnaPage() {
     const handleStartEditAnswer = (post: QnaPost) => {
         setEditingAnswerId(post.id);
         setEditAnswerText(post.answer || '');
+        // 기존 답변자 이름은 그대로 두되, 비어있으면 기억된 이름으로 보조
+        setEditAnswererName(post.answeredBy || rememberedName || '');
     };
 
     // 답변 수정 취소
     const handleCancelEditAnswer = () => {
         setEditingAnswerId(null);
         setEditAnswerText('');
+        setEditAnswererName('');
     };
 
     // 답변 수정 저장
@@ -103,19 +138,26 @@ export default function AdminQnaPage() {
             alert('답변 내용을 입력해주세요.');
             return;
         }
+        const responder = editAnswererName.trim();
+        if (!responder) {
+            alert('답변자 이름을 입력해주세요.');
+            return;
+        }
 
         setSubmitting(postId);
         try {
             const res = await fetch(`/api/admin/qna/${postId}/answer`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ answer: editAnswerText })
+                body: JSON.stringify({ answer: editAnswerText, answeredBy: responder })
             });
             const data = await res.json();
             if (res.ok) {
                 alert('답변이 수정되었습니다.');
                 setEditingAnswerId(null);
                 setEditAnswerText('');
+                setEditAnswererName('');
+                persistResponderName(responder);
                 fetchPosts();
             } else {
                 alert(data.error || '답변 수정에 실패했습니다.');
@@ -284,10 +326,15 @@ export default function AdminQnaPage() {
                                     {post.isAnswered && post.answer ? (
                                         <div>
                                             <div className="flex items-center justify-between mb-2">
-                                                <h4 className="text-sm font-bold text-green-600 flex items-center gap-2">
+                                                <h4 className="text-sm font-bold text-green-600 flex items-center gap-2 flex-wrap">
                                                     <MessageCircle className="w-4 h-4" />
                                                     관리자 답변
-                                                    <span className="text-xs text-gray-400 font-normal ml-2">
+                                                    {post.answeredBy && (
+                                                        <span className="text-xs text-gray-700 font-bold">
+                                                            · {post.answeredBy}님
+                                                        </span>
+                                                    )}
+                                                    <span className="text-xs text-gray-400 font-normal">
                                                         {post.answeredAt && new Date(post.answeredAt).toLocaleString()}
                                                     </span>
                                                 </h4>
@@ -316,6 +363,16 @@ export default function AdminQnaPage() {
                                             {/* 수정 모드 */}
                                             {editingAnswerId === post.id ? (
                                                 <div>
+                                                    <label className="block text-xs font-bold text-gray-600 mb-1">
+                                                        답변자 이름 <span className="text-red-500">*</span>
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={editAnswererName}
+                                                        onChange={(e) => setEditAnswererName(e.target.value)}
+                                                        className="w-full border border-gray-300 p-2 mb-3 text-gray-900 focus:outline-none focus:border-blue-500"
+                                                        placeholder="예: 양호준"
+                                                    />
                                                     <textarea
                                                         rows={4}
                                                         value={editAnswerText}
@@ -350,6 +407,16 @@ export default function AdminQnaPage() {
                                     ) : (
                                         <div>
                                             <h4 className="text-sm font-bold text-amber-600 mb-2">답변 작성</h4>
+                                            <label className="block text-xs font-bold text-gray-600 mb-1">
+                                                답변자 이름 <span className="text-red-500">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={getAnswererInputValue(post.id)}
+                                                onChange={(e) => setAnswererName({ ...answererName, [post.id]: e.target.value })}
+                                                className="w-full border border-gray-300 p-2 mb-3 text-gray-900 focus:outline-none focus:border-amber-500"
+                                                placeholder="예: 양호준"
+                                            />
                                             <textarea
                                                 rows={4}
                                                 value={answerText[post.id] || ''}

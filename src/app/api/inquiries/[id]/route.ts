@@ -53,6 +53,12 @@ export async function DELETE(
 
 // ============================================================================
 // PATCH - 문의 상태 변경
+// ----------------------------------------------------------------------------
+// body 형식:
+//  { isRead: boolean }                        → 읽음 토글
+//  { action: "markAsAnswered",
+//    answeredBy: string, answerNote?: string} → 답변완료 처리
+//  { action: "unmarkAsAnswered" }             → 답변완료 취소
 // ============================================================================
 export async function PATCH(
     request: NextRequest,
@@ -70,13 +76,45 @@ export async function PATCH(
 
         const { id } = await context.params;
         const body = await request.json();
-        const { isRead } = body;
+        const { action, isRead, answeredBy, answerNote } = body;
+
+        let data: Record<string, unknown> = {};
+
+        if (action === 'markAsAnswered') {
+            if (!answeredBy || typeof answeredBy !== 'string' || answeredBy.trim() === '') {
+                return NextResponse.json(
+                    { error: '처리자 이름을 입력해주세요.' },
+                    { status: 400 }
+                );
+            }
+            data = {
+                isAnswered: true,
+                answeredAt: new Date(),
+                answeredBy: answeredBy.trim(),
+                answerNote: typeof answerNote === 'string' && answerNote.trim() !== ''
+                    ? answerNote.trim()
+                    : null,
+                isRead: true,
+            };
+        } else if (action === 'unmarkAsAnswered') {
+            data = {
+                isAnswered: false,
+                answeredAt: null,
+                answeredBy: null,
+                answerNote: null,
+            };
+        } else if (typeof isRead === 'boolean') {
+            data = { isRead };
+        } else {
+            return NextResponse.json(
+                { error: '요청 형식이 올바르지 않습니다.' },
+                { status: 400 }
+            );
+        }
 
         const updatedInquiry = await prisma.inquiry.update({
             where: { id },
-            data: {
-                isRead: isRead
-            }
+            data
         });
 
         return NextResponse.json({

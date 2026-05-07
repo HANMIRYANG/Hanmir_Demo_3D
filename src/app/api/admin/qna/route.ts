@@ -22,6 +22,7 @@ export async function GET() {
                 isAnswered: true,
                 answer: true,
                 answeredAt: true,
+                answeredBy: true,
                 views: true,
                 createdAt: true,
             }

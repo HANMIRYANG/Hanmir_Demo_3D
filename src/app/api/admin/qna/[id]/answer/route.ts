@@ -63,10 +63,14 @@ export async function POST(
     try {
         const { id } = await context.params;
         const body = await request.json();
-        const { answer } = body;
+        const { answer, answeredBy } = body;
 
         if (!answer || answer.trim() === '') {
             return NextResponse.json({ error: '답변 내용을 입력해주세요.' }, { status: 400 });
+        }
+
+        if (!answeredBy || answeredBy.trim() === '') {
+            return NextResponse.json({ error: '답변자 이름을 입력해주세요.' }, { status: 400 });
         }
 
         // 게시글 조회
@@ -83,6 +87,7 @@ export async function POST(
             where: { id },
             data: {
                 answer,
+                answeredBy: answeredBy.trim(),
                 isAnswered: true,
                 answeredAt: new Date(),
             },
@@ -93,6 +98,7 @@ export async function POST(
                 answer: true,
                 isAnswered: true,
                 answeredAt: true,
+                answeredBy: true,
                 email: true,
             }
         });
@@ -118,7 +124,7 @@ export async function PUT(
     try {
         const { id } = await context.params;
         const body = await request.json();
-        const { answer } = body;
+        const { answer, answeredBy } = body;
 
         if (!answer || answer.trim() === '') {
             return NextResponse.json({ error: '답변 내용을 입력해주세요.' }, { status: 400 });
@@ -137,13 +143,19 @@ export async function PUT(
             return NextResponse.json({ error: '등록된 답변이 없습니다.' }, { status: 400 });
         }
 
+        // 답변자 이름은 수정 가능 (미전달 시 기존 값 유지)
+        const updateData: { answer: string; answeredAt: Date; answeredBy?: string } = {
+            answer,
+            answeredAt: new Date(),
+        };
+        if (typeof answeredBy === 'string' && answeredBy.trim() !== '') {
+            updateData.answeredBy = answeredBy.trim();
+        }
+
         // 답변 수정
         const updatedPost = await (prisma as any).qnaPost.update({
             where: { id },
-            data: {
-                answer,
-                answeredAt: new Date(),
-            },
+            data: updateData,
             select: {
                 id: true,
                 number: true,
@@ -151,6 +163,7 @@ export async function PUT(
                 answer: true,
                 isAnswered: true,
                 answeredAt: true,
+                answeredBy: true,
             }
         });
 
@@ -192,6 +205,7 @@ export async function DELETE(
                 answer: null,
                 isAnswered: false,
                 answeredAt: null,
+                answeredBy: null,
             },
             select: {
                 id: true,
