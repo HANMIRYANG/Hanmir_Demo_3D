@@ -44,7 +44,7 @@ export default function CEOPage() {
                             <div className="relative">
                                 <div className="w-full aspect-[3/4] bg-gradient-to-b from-gray-100 to-gray-200 rounded-lg overflow-hidden shadow-xl">
                                     <img
-                                        src="/ceo.png"
+                                        src="/ceo.jpg"
                                         alt="한미르(주) 대표이사"
                                         className="w-full h-full object-cover"
                                     />
